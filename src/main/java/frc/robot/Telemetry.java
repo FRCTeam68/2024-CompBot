@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState;
 
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import org.littletonrobotics.junction.Logger;
 
 public class Telemetry {
     private final double MaxSpeed;
@@ -26,6 +28,7 @@ public class Telemetry {
      */
     public Telemetry(double maxSpeed) {
         MaxSpeed = maxSpeed;
+        //SignalLogger.start();
     }
 
     /* What to publish over networktables for telemetry */
@@ -41,7 +44,7 @@ public class Telemetry {
     private final DoublePublisher velocityX = driveStats.getDoubleTopic("Velocity X").publish();
     private final DoublePublisher velocityY = driveStats.getDoubleTopic("Velocity Y").publish();
     private final DoublePublisher speed = driveStats.getDoubleTopic("Speed").publish();
-    private final DoublePublisher odomPeriod = driveStats.getDoubleTopic("Odometry Period").publish();
+    private final DoublePublisher odomFreq = driveStats.getDoubleTopic("Odometry Frequency").publish();
 
     /* Keep a reference of the last pose to calculate the speeds */
     private Pose2d m_lastPose = new Pose2d();
@@ -96,7 +99,12 @@ public class Telemetry {
         speed.set(velocities.getNorm());
         velocityX.set(velocities.getX());
         velocityY.set(velocities.getY());
-        odomPeriod.set(state.OdometryPeriod);
+        odomFreq.set(1.0 / state.OdometryPeriod);
+
+        Logger.recordOutput("Drive/Speed", velocities.getNorm());
+        Logger.recordOutput("Drive/velocityX", velocities.getX());
+        Logger.recordOutput("Drive/velocityY", velocities.getY());
+        Logger.recordOutput("Drive/odomFreq", 1.0 / state.OdometryPeriod);
 
         /* Telemeterize the module's states */
         for (int i = 0; i < 4; ++i) {
@@ -104,7 +112,16 @@ public class Telemetry {
             m_moduleDirections[i].setAngle(state.ModuleStates[i].angle);
             m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
 
-            SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
+            //SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
         }
+        Logger.recordOutput("Drive/ModuleStates", state.ModuleStates);
+        Logger.recordOutput("Drive/ModuleTargetStates", state.ModuleTargets);
+
+        SignalLogger.writeDoubleArray("odometry", new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()});
+        SignalLogger.writeDouble("odom period", state.OdometryPeriod, "seconds");
+
+        
+        Logger.recordOutput("Drive/Pose", pose);
+
     }
 }
