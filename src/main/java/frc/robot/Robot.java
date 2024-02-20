@@ -62,11 +62,13 @@ public class Robot extends LoggedRobot {
     // Start AdvantageKit logger
     Logger.start();
 
+    System.out.println("robot init");
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
-    m_robotContainer.drivetrain.getDaqThread().setThreadPriority(99);
+    m_robotContainer.m_DriveSubSystem.getDaqThread().setThreadPriority(99);
   }
 
   @Override
@@ -84,7 +86,7 @@ public class Robot extends LoggedRobot {
       Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
 
       if (lastResult.valid) {
-        m_robotContainer.drivetrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
+        m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
     }
   }
@@ -92,6 +94,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    m_robotContainer.StopSubSystems();
     SignalLogger.stop();
   }
 
