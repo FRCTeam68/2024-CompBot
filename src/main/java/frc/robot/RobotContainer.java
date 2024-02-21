@@ -85,8 +85,9 @@ public class RobotContainer {
   
     // Register Named Commands
     NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true)));
-    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true)));
+    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true)));
     NamedCommands.registerCommand("wait2s", new WaitCommand(2.00));
+    NamedCommands.registerCommand("intake", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true)));
 
     configureBindings();
 
@@ -96,8 +97,8 @@ public class RobotContainer {
     // Shuffleboard.getTab("ClimberSubSystem").add(m_Climber);
     SmartDashboard.putBoolean("shoot", false);
     SmartDashboard.putBoolean("shoot2", false);
-    SmartDashboard.putBoolean("shoot3", true);
-    SmartDashboard.putBoolean("wait2s", true);
+    SmartDashboard.putBoolean("intake", false);
+    SmartDashboard.putBoolean("wait2s", false);
     //SmartDashboard.putBoolean("NoteSensor1", false);
     SmartDashboard.putBoolean("NoteSensor2", false);
     SmartDashboard.putBoolean("NoteSensor3", false);
@@ -147,8 +148,8 @@ public class RobotContainer {
 
     m_ps4Controller.povLeft().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpShooterSpeed((-Constants.SHOOTER.BUMP_VALUE))));
     m_ps4Controller.povRight().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpShooterSpeed((Constants.SHOOTER.BUMP_VALUE))));
-    m_ps4Controller.povUp().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((Constants.ANGLE.BUMP_VALUE))));
-    m_ps4Controller.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((-Constants.ANGLE.BUMP_VALUE))));
+    m_ps4Controller.povUp().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((-Constants.ANGLE.BUMP_VALUE))));
+    m_ps4Controller.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((Constants.ANGLE.BUMP_VALUE))));
 
     //Left Joystick Y
     m_ps4Controller.axisGreaterThan(1,0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake1Speed((-Constants.INTAKE.BUMP_VALUE))));
