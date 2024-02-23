@@ -26,6 +26,7 @@ public class AngleSubSystem extends SubsystemBase {
 
     public enum State{
         SPEAKER,
+        SPEAKER_1M,
         AMP,
         TRAP,
         INTAKE,
@@ -46,6 +47,7 @@ public class AngleSubSystem extends SubsystemBase {
     private double m_setPoint_Position;
     private double m_setPoint_Adjust;
     private double m_speaker_position;
+    private double m_speaker_1M_position;
     private double m_amp_position;
     private double m_trap_position;
     private double m_intake_position;
@@ -61,6 +63,7 @@ public class AngleSubSystem extends SubsystemBase {
         m_presentState = State.SPEAKER;
         m_presentMode = Mode.MMV;
         m_speaker_position = Constants.ANGLE.SPEAKER;
+        m_speaker_1M_position = Constants.ANGLE.SPEAKER_1M;
         m_amp_position = Constants.ANGLE.AMP;
         m_trap_position = Constants.ANGLE.TRAP;
         m_intake_position = Constants.ANGLE.INTAKE;
@@ -128,19 +131,19 @@ public class AngleSubSystem extends SubsystemBase {
         //NOPE, magnet offset did not work.   go back to set rotor to zero.
     }
 
-    public void setPositionJoy(double desiredAjustPosition){
-        m_bumpCount = m_bumpCount + 1;
-        if ((Math.abs(desiredAjustPosition)>0.5) && (m_bumpTimer.hasElapsed(1))) {
-            m_bumpTimer.restart();
+    // public void setPositionJoy(double desiredAjustPosition){
+    //     m_bumpCount = m_bumpCount + 1;
+    //     if ((Math.abs(desiredAjustPosition)>0.5) && (m_bumpTimer.hasElapsed(1))) {
+    //         m_bumpTimer.restart();
             
-            m_setPoint_Adjust = m_setPoint_Adjust + desiredAjustPosition*Constants.ANGLE.BUMP_VALUE;
-            System.out.println("desired: " + desiredAjustPosition
-                               + "setpoint: " + m_setPoint_Position 
-                               + ", plus: " + m_setPoint_Adjust
-                               + ", count: " + m_bumpCount);
-            setPosition(m_setPoint_Position + m_setPoint_Adjust);
-        }
-    }
+    //         m_setPoint_Adjust = m_setPoint_Adjust + desiredAjustPosition*Constants.ANGLE.BUMP_VALUE;
+    //         System.out.println("desired: " + desiredAjustPosition
+    //                            + "setpoint: " + m_setPoint_Position 
+    //                            + ", plus: " + m_setPoint_Adjust
+    //                            + ", count: " + m_bumpCount);
+    //         setPosition(m_setPoint_Position + m_setPoint_Adjust);
+    //     }
+    // }
 
     public void bumpPosition(double bumpAmount){
         double new_value = m_setPoint_Position + bumpAmount;
@@ -242,6 +245,9 @@ public class AngleSubSystem extends SubsystemBase {
             default:
             case SPEAKER:
                 desiredPosition = m_speaker_position;
+                break;
+            case SPEAKER_1M:
+                desiredPosition = m_speaker_1M_position;
                 break;
             case AMP:
                 desiredPosition = m_amp_position;;

@@ -88,9 +88,11 @@ public final class Constants {
         public static final double AMP = 0; 
         public static final double TRAP = 0;
         public static final double SPEAKER = 0;
-        public static final double INTAKE = 2;
+        public static final double SPEAKER_1M = 2;
+        public static final double INTAKE = 4;
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
+
     }
 
     public static final class CLIMBER {

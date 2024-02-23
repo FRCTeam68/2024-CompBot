@@ -84,10 +84,20 @@ public class RobotContainer {
   public RobotContainer() {
   
     // Register Named Commands
-    NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true)));
-    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true)));
+    NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
+
+    NamedCommands.registerCommand("intake", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.INTAKE))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
+
+    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
+
     NamedCommands.registerCommand("wait2s", new WaitCommand(2.00));
-    NamedCommands.registerCommand("intake", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true)));
+
 
     configureBindings();
 
@@ -157,6 +167,9 @@ public class RobotContainer {
     //Right Joystick Y
     m_ps4Controller.axisGreaterThan(5,0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((-Constants.INTAKE.BUMP_VALUE))));
     m_ps4Controller.axisLessThan(5,-0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((Constants.INTAKE.BUMP_VALUE))));
+
+    m_ps4Controller.share().onTrue(Commands.run(()->m_NoteSubSystem.resetSetpoints()));
+
     //***************************
     // m_Climber.setDefaultCommand(Commands.run( () ->
     //             m_Climber.setSpeedVout(-m_ps4Controller.g+tRightY() * 12), m_Climber));

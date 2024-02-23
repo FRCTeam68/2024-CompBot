@@ -35,7 +35,7 @@ public class NoteSubSystem extends SubsystemBase {
         TRAP,
         INTAKE,
         FEEDSTATION,
-        SPEAKER_PODIUM
+        SPEAKER_PODIUM, SPEAKER_1M
     }
 
     public enum ActionRequest{
@@ -87,15 +87,20 @@ public class NoteSubSystem extends SubsystemBase {
         m_shootRunTime = new Timer();
         m_timeout = new Timer();
 
-        m_angle_setpoint=0;
-        m_shooter_setpoint = Constants.SHOOTER.SHOOT_SPEED;
-        m_shooterRight_setpoint=0;
-        m_shooterfeeder2_setpoint = Constants.FEEDER2.SHOOT_SPEED;
-        m_feeder2_setpoint = Constants.FEEDER2.TAKE_NOTE_SPEED;
-        m_feeder1_setpoint=Constants.FEEDER1.TAKE_NOTE_SPEED;
-        m_intake_setpoint=Constants.INTAKE.TAKE_NOTE_SPEED;
+        resetSetpoints();
 
         System.out.println("Note subsystem created");
+    }
+
+    public void resetSetpoints(){
+        // m_angle_setpoint=0;
+        m_shooter_setpoint = Constants.SHOOTER.SHOOT_SPEED;
+        m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;
+        m_shooterfeeder2_setpoint = Constants.FEEDER2.SHOOT_SPEED;
+
+        m_feeder2_setpoint = Constants.FEEDER2.TAKE_NOTE_SPEED;
+        m_feeder1_setpoint = Constants.FEEDER1.TAKE_NOTE_SPEED;
+        m_intake_setpoint = Constants.INTAKE.TAKE_NOTE_SPEED;
     }
 
     @Override
@@ -160,6 +165,9 @@ public class NoteSubSystem extends SubsystemBase {
             case SPEAKER:
                 m_Angle.setState(AngleSubSystem.State.SPEAKER);
                 break;
+            case SPEAKER_1M:
+                m_Angle.setState(AngleSubSystem.State.SPEAKER_1M);
+                break;
             case AMP:
                 m_Angle.setState(AngleSubSystem.State.AMP);
                 break;
@@ -221,7 +229,7 @@ public class NoteSubSystem extends SubsystemBase {
                     if ((m_Angle.atAngle()) || 
                         (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
 
-                        System.out.println("  do note action: " + m_wantedAction.toString());
+                        System.out.println("  start intake");
                         m_Intake.setSpeed(m_intake_setpoint);
                         m_Feeder1.setSpeed(m_feeder1_setpoint);
                         m_Feeder2.setSpeed(m_feeder2_setpoint);
@@ -233,7 +241,7 @@ public class NoteSubSystem extends SubsystemBase {
                 break;
             case BEAM3:
                 if (m_presentState == State.INTAKING_NOTE1){
-                    System.out.println("  do note action: " + m_wantedAction.toString() + " - STOP INTAKE");
+                    System.out.println("  Beam3 - HAVE_NOTE1 - stop intake");
                     m_Feeder2.setSpeed(0);
                     m_Feeder1.setSpeed(0);
                     m_Intake.setSpeed(0);
@@ -251,15 +259,15 @@ public class NoteSubSystem extends SubsystemBase {
 
                 break;
             case SHOOT:
-                if (m_presentState == State.HAVE_NOTE1){
-                    System.out.println("  do note action1: " + m_wantedAction.toString());
+                if (m_presentState != State.SHOOTING){
+                    System.out.println("  spinup shooter");
                     m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
                     m_Shooter.setSpeed(m_shooter_setpoint);
 
                     m_timeout.restart();
                     if ((m_Angle.atAngle() && m_Shooter.atSpeed()) || 
                         (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
-
+                        System.out.println("  feed shooter");
                         m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
                         m_shootRunTime.restart();
                         setState(State.SHOOTING);
@@ -267,7 +275,7 @@ public class NoteSubSystem extends SubsystemBase {
                 }
                 else if ((m_presentState == State.SHOOTING) && 
                          ( m_shootRunTime.hasElapsed(Constants.SHOOTER.STOP_TIME))) {
-                    System.out.println("  do note action2 - stop shooting");
+                    System.out.println("  coast out shooter");
                     m_Shooter.setSpeed(0);
                     m_Feeder2.setSpeed(0);
                     setState(State.EMPTY);
