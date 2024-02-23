@@ -14,13 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Straight 2m"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Go Back no Turn"
+            "pathName": "Straight 4m rotate 180 CCW"
           }
         }
       ]

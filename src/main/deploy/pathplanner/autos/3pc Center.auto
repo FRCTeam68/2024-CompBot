@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Straight 4m rotate 180 CCW"
+            "pathName": "Straight 4m"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "Tests",
   "choreoAuto": false
 }

@@ -1,0 +1,73 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7336934388833163,
+      "y": 4.348392164717821
+    },
+    "rotation": -56.68936917543914
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source - Source Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait2s"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait2s"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center - Amp Source"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait2s"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
