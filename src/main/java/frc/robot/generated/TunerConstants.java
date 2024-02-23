@@ -53,8 +53,8 @@ public class TunerConstants {
     private static final double kWheelRadiusInches = 2;
 
     private static final boolean kSteerMotorReversed = false; //false
-    private static final boolean kInvertLeftSide = true; //false
-    private static final boolean kInvertRightSide = false; //true
+    private static final boolean kInvertLeftSide = false;  //true; //false
+    private static final boolean kInvertRightSide = true;  //false; //true
 
     private static final String kCANbusName = "DRIVEbus";
     private static final int kPigeonId = 50;
