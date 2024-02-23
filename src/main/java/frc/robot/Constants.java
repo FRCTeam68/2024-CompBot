@@ -77,14 +77,18 @@ public final class Constants {
         public static final int LEFT_CANID = 32;
         public static final int RIGHT_CANID = 33;
         public static final String CANBUS = "rio";
-        //positive value makes shooter side go up
-        //negative value makes shooter side go down
-        public static final double MIN_POSITION = 0;   //in intake position, -12 will put steepest angel
-        public static final double MAX_POSITION = 24;   //motor rotatiions, in intake position, 12 is a low we need to shoot
-        public static final double AMP = 0; // -6;
-        public static final double TRAP = 0; //-4;
-        public static final double SPEAKER = 0; //-2;
-        public static final double INTAKE = 0;
+
+        //increasing value makes shooter side go down
+        //decreasing value makes shooter side go up
+        // as of Feb 22nd we cannot go steeper than speaker position of 0
+        // so AMP and TRAP are also 0
+        //motor rotations
+        public static final double MIN_POSITION = 0;  
+        public static final double MAX_POSITION = 24;
+        public static final double AMP = 0; 
+        public static final double TRAP = 0;
+        public static final double SPEAKER = 0;
+        public static final double INTAKE = 2;
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
     }
