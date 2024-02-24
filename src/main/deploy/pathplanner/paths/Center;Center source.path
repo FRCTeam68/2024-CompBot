@@ -11,7 +11,7 @@
         "x": 2.4000000000000012,
         "y": 5.52811290895741
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     },
     {
@@ -24,7 +24,7 @@
         "y": 5.52811290895741
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     }
   ],
@@ -32,35 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "shoot2",
-      "waypointRelativePos": 1.0,
-      "command": {
-        "type": "parallel",
-        "data": {
-          "commands": []
-        }
-      }
-    },
-    {
-      "name": "wait2s",
-      "waypointRelativePos": 0.0,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "shoot"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
       "name": "middle",
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "sequential",
         "data": {
@@ -68,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "shoot"
+                "name": "Intake"
               }
             }
           ]
