@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -73,12 +74,11 @@ public class RobotContainer {
   boolean m_climbActive = false;
   
   // Dashboard inputs
+  private double m_autoWaitTimeSelected = 0;
+  private final SendableChooser<String> m_autoWaitTimeChooser = new SendableChooser<>();
+
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  //private final LoggedDashboardNumber flywheelSpeedInput =
-  //    new LoggedDashboardNumber("Flywheel Speed", 1500.0);
-  
-  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -96,7 +96,7 @@ public class RobotContainer {
                                                         .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
                                                         .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
 
-    NamedCommands.registerCommand("wait2s", new WaitCommand(2.00));
+    NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 
 
     configureBindings();
@@ -112,6 +112,11 @@ public class RobotContainer {
     //SmartDashboard.putBoolean("NoteSensor1", false);
     SmartDashboard.putBoolean("NoteSensor2", false);
     SmartDashboard.putBoolean("NoteSensor3", false);
+
+    m_autoWaitTimeChooser.setDefaultOption("none", "0");
+    m_autoWaitTimeChooser.addOption("one", "1");
+    m_autoWaitTimeChooser.addOption("two", "2");
+    SmartDashboard.putData("Auto DelayStart (s)", m_autoWaitTimeChooser);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -189,6 +194,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+
+    m_autoWaitTimeSelected = Double.parseDouble(m_autoWaitTimeChooser.getSelected());
+    System.out.println("Auto wait time selected: " + m_autoWaitTimeSelected);
+
     return autoChooser.get();
   }
 
