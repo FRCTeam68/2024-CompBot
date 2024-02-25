@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -69,7 +71,7 @@ public class NoteSubSystem extends SubsystemBase {
 
     public NoteSubSystem(){
         m_presentState = State.EMPTY;
-        m_target = Target.INTAKE;
+        m_target = Target.SPEAKER;
         m_wantedAction = ActionRequest.IDLE;
 
         m_Intake = new RollerSubSystem("Intake", Constants.INTAKE.CANID, Constants.INTAKE.CANBUS, true);
@@ -90,6 +92,10 @@ public class NoteSubSystem extends SubsystemBase {
         resetSetpoints();
 
         System.out.println("Note subsystem created");
+        Logger.recordOutput("Note/Comment",  "Note subsystem created");
+        Logger.recordOutput("Note/State",  m_presentState);
+        Logger.recordOutput("Note/Target",  m_target);
+        Logger.recordOutput("Note/Action",  m_wantedAction);
     }
 
     public void resetSetpoints(){
@@ -159,6 +165,8 @@ public class NoteSubSystem extends SubsystemBase {
     public void setTarget(Target wantedTarget) {
 		m_target = wantedTarget;
         System.out.println("set note target: " + m_target.toString());
+        Logger.recordOutput("Note/Target",  m_target);
+        
 
         switch(m_target){
             default:
@@ -190,6 +198,7 @@ public class NoteSubSystem extends SubsystemBase {
     public void setAction(ActionRequest wantedAction) {
 		m_wantedAction = wantedAction;
         System.out.println("set note action request: " + m_wantedAction.toString());
+        Logger.recordOutput("Note/Action",  m_wantedAction);
     }
 
     // this is the state machine of the notesubsystem
@@ -206,7 +215,7 @@ public class NoteSubSystem extends SubsystemBase {
                 m_Feeder1.setSpeed(0);
                 m_Feeder2.setSpeed(0);
                 m_Shooter.setSpeed(0);
-                m_Angle.setState(AngleSubSystem.State.BRAKE);
+                // m_Angle.setState(AngleSubSystem.State.BRAKE);
                 setAction(ActionRequest.IDLE);
 
                 switch (m_presentState){
@@ -230,6 +239,7 @@ public class NoteSubSystem extends SubsystemBase {
                         (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
 
                         System.out.println("  start intake");
+                        Logger.recordOutput("Note/Comment",  "start intake");
                         m_Intake.setSpeed(m_intake_setpoint);
                         m_Feeder1.setSpeed(m_feeder1_setpoint);
                         m_Feeder2.setSpeed(m_feeder2_setpoint);
@@ -242,6 +252,7 @@ public class NoteSubSystem extends SubsystemBase {
             case BEAM3:
                 if (m_presentState == State.INTAKING_NOTE1){
                     System.out.println("  Beam3 - HAVE_NOTE1 - stop intake");
+                    Logger.recordOutput("Note/Comment",  "stop intake");
                     m_Feeder2.setSpeed(0);
                     m_Feeder1.setSpeed(0);
                     m_Intake.setSpeed(0);
@@ -261,6 +272,7 @@ public class NoteSubSystem extends SubsystemBase {
             case SHOOT:
                 if (m_presentState != State.SHOOTING){
                     System.out.println("  spinup shooter");
+                    Logger.recordOutput("Note/Comment",  "spinup shooter");
                     m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
                     m_Shooter.setSpeed(m_shooter_setpoint);
 
@@ -268,6 +280,7 @@ public class NoteSubSystem extends SubsystemBase {
                     if ((m_Angle.atAngle() && m_Shooter.atSpeed()) || 
                         (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
                         System.out.println("  feed shooter");
+                        Logger.recordOutput("Note/Comment",  "feed shooter");
                         m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
                         m_shootRunTime.restart();
                         setState(State.SHOOTING);
@@ -276,6 +289,7 @@ public class NoteSubSystem extends SubsystemBase {
                 else if ((m_presentState == State.SHOOTING) && 
                          ( m_shootRunTime.hasElapsed(Constants.SHOOTER.STOP_TIME))) {
                     System.out.println("  coast out shooter");
+                    Logger.recordOutput("Note/Comment",  "coastout shooter");
                     m_Shooter.setSpeed(0);
                     m_Feeder2.setSpeed(0);
                     setState(State.EMPTY);
@@ -288,6 +302,7 @@ public class NoteSubSystem extends SubsystemBase {
     private void setState(State desiredStation){
         m_presentState = desiredStation;
         System.out.println("  set note state: " + m_presentState.toString());
+        Logger.recordOutput("Note/State",  m_presentState);
     }
     public State getState(){
         return this.m_presentState;

@@ -88,7 +88,7 @@ public class RobotContainer {
                                                         .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
                                                         .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
 
-    NamedCommands.registerCommand("intake", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true))
+    NamedCommands.registerCommand("intake2", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true))
                                                         .andThen(()->m_NoteSubSystem.setTarget(Target.INTAKE))
                                                         .andThen(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
 
@@ -96,7 +96,11 @@ public class RobotContainer {
                                                         .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
                                                         .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
 
-    NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
+    // NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
+
+    NamedCommands.registerCommand("DelayStart", 
+                                                Commands.runOnce(()->System.out.println("delaystart: " + m_autoWaitTimeSelected))
+                                                        .andThen(new WaitCommand(m_autoWaitTimeSelected))   );
 
 
     configureBindings();
@@ -149,6 +153,9 @@ public class RobotContainer {
 
     m_xboxController.pov(0).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0.2 * MaxSpeed).withVelocityY(0)));
     m_xboxController.pov(180).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(-0.2 * MaxSpeed).withVelocityY(0)));
+    m_xboxController.pov(90).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(-0.2 * MaxSpeed)));
+    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
+
 
     m_ps4Controller.triangle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
     m_ps4Controller.circle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
@@ -173,7 +180,7 @@ public class RobotContainer {
     m_ps4Controller.axisGreaterThan(5,0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((-Constants.INTAKE.BUMP_VALUE))));
     m_ps4Controller.axisLessThan(5,-0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((Constants.INTAKE.BUMP_VALUE))));
 
-    m_ps4Controller.share().onTrue(Commands.run(()->m_NoteSubSystem.resetSetpoints()));
+    m_ps4Controller.share().onTrue(Commands.runOnce(()->m_NoteSubSystem.resetSetpoints()));
 
     //***************************
     // m_Climber.setDefaultCommand(Commands.run( () ->

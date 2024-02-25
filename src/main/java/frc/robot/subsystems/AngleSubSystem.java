@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -76,6 +78,7 @@ public class AngleSubSystem extends SubsystemBase {
         angleMotorInit();
 
         System.out.println("Angle subsystem created.    mode: " + m_presentMode.toString());
+        Logger.recordOutput("Angle/Comment",  "Angle subsystem created");
     }
 
     private void angleMotorInit(){
@@ -159,14 +162,17 @@ public class AngleSubSystem extends SubsystemBase {
         if (desiredPosition < Constants.ANGLE.MIN_POSITION){
             m_setPoint_Position = Constants.ANGLE.MIN_POSITION;
             System.out.println("  trimmed to min position: " + Constants.ANGLE.MIN_POSITION);
+            Logger.recordOutput("Angle/Comment",  "trimmed to min position: " + Constants.ANGLE.MIN_POSITION);
         }
         else if (desiredPosition > Constants.ANGLE.MAX_POSITION){
             m_setPoint_Position = Constants.ANGLE.MAX_POSITION;
             System.out.println("  trimmed to max position: " + Constants.ANGLE.MAX_POSITION);
+            Logger.recordOutput("Angle/Comment",  "trimmed to max position: " + Constants.ANGLE.MAX_POSITION);
         }
         else{
             m_setPoint_Position = desiredPosition;
         }
+        Logger.recordOutput("Angle/setPosition",  desiredPosition);
 
         switch(m_presentMode){
             default:
@@ -183,6 +189,7 @@ public class AngleSubSystem extends SubsystemBase {
     public boolean atAngle(){
         double motorPosition = m_angleLeftMotor.getPosition().getValueAsDouble();
         System.out.println("  angle setpoint position:" + m_setPoint_Position + ", motor position: " + motorPosition );
+        Logger.recordOutput("Angle/AtAngle",  "setpoint position:" + m_setPoint_Position + ", motor position: " + motorPosition );
         boolean conditionMet =  Math.abs(m_setPoint_Position-motorPosition) < 1.0;
         conditionMet = true;  //bypass for simulation
         return conditionMet;
@@ -239,9 +246,10 @@ public class AngleSubSystem extends SubsystemBase {
 
         double desiredPosition = 0;
 
-        System.out.println("set angle state: " + wantedState.toString());
+        System.out.println("set angle state: " + m_presentState.toString());
+        Logger.recordOutput("Angle/State",  m_presentState);
 
-        switch(wantedState){
+        switch(m_presentState){
             default:
             case SPEAKER:
                 desiredPosition = m_speaker_position;

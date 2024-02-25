@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -90,6 +92,8 @@ public class RollerSubSystem extends SubsystemBase {
         }
 
         m_rollerMotor.setControl(m_voltageOut.withOutput(0));
+
+        Logger.recordOutput(m_name+"/Comment",  m_name+" subsystem created");
     }
 
     public void setSpeedVout(double desiredVoltage){
@@ -101,6 +105,7 @@ public class RollerSubSystem extends SubsystemBase {
                 m_setPoint_Voltage = desiredVoltage;
             }
             System.out.println("              desired voltage: " + m_setPoint_Voltage);
+            Logger.recordOutput(m_name+"/setVoltage",  m_setPoint_Voltage);
             m_rollerMotor.setControl(m_voltageOut.withOutput(m_setPoint_Voltage));
         }
     }
@@ -127,14 +132,18 @@ public class RollerSubSystem extends SubsystemBase {
             if (desiredRotationsPerSecond > Constants.ROLLER.MAX_SPEED){
                 m_setPoint_Speed = Constants.ROLLER.MAX_SPEED;
                 System.out.println("  trimmed to max speed: " + m_setPoint_Speed);
+                Logger.recordOutput(m_name+"/Comment",  "  trimmed to max speed: " + m_setPoint_Speed);
             }
             else if (desiredRotationsPerSecond < -Constants.ROLLER.MAX_SPEED){
                 m_setPoint_Speed = -Constants.ROLLER.MAX_SPEED;
                 System.out.println("  trimmed to max speed: " + m_setPoint_Speed);
+                Logger.recordOutput(m_name+"/Comment",  "  trimmed to min speed: " + m_setPoint_Speed);
             }
             else{
                 m_setPoint_Speed = desiredRotationsPerSecond;
             }
+
+            Logger.recordOutput(m_name+"/setSpeed",  m_setPoint_Speed);
 
             switch(m_presentMode){
                 case VOLTAGE_OUT:
