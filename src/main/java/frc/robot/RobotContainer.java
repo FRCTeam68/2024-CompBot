@@ -71,6 +71,9 @@ public class RobotContainer {
   Trigger m_NoteSensorTrigger2 = new Trigger(m_noteSensor2::get);
   Trigger m_NoteSensorTrigger3 = new Trigger(m_noteSensor3::get);
 
+  DigitalInput m_angleZeroLimitSwitch = new DigitalInput(2);
+  Trigger m_angleZeroLimitSwitchTrigger = new Trigger(m_angleZeroLimitSwitch::get);
+
   boolean m_climbActive = false;
   
   // Dashboard inputs
@@ -116,6 +119,7 @@ public class RobotContainer {
     //SmartDashboard.putBoolean("NoteSensor1", false);
     SmartDashboard.putBoolean("NoteSensor2", false);
     SmartDashboard.putBoolean("NoteSensor3", false);
+    SmartDashboard.putBoolean("AngleLimitLowSwitch", false);
 
     m_autoWaitTimeChooser.setDefaultOption("none", "0");
     m_autoWaitTimeChooser.addOption("one", "1");
@@ -193,6 +197,12 @@ public class RobotContainer {
     m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
                                         .andThen(()->SmartDashboard.putBoolean("NoteSensor3", true)))
                        .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
+
+
+
+    m_angleZeroLimitSwitchTrigger.onTrue(Commands.runOnce(()->m_NoteSubSystem.zeroAngleSubsystem())
+                                                .andThen(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", true)))
+                                .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", false)));
   }
 
   /**

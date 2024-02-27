@@ -344,4 +344,8 @@ public class NoteSubSystem extends SubsystemBase {
         m_Angle.bumpPosition(bumpAmount);
     }
 
+    public void zeroAngleSubsystem(){
+        m_Angle.zeroAngleSensor();
+    }
+
 }

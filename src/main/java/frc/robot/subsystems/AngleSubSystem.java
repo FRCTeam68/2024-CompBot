@@ -84,7 +84,7 @@ public class AngleSubSystem extends SubsystemBase {
     private void angleMotorInit(){
         m_angleLeftMotor = new TalonFX(Constants.ANGLE.LEFT_CANID, "rio");
         m_angleRightMotor = new TalonFX(Constants.ANGLE.RIGHT_CANID, "rio");
-        m_angleRightMotor.setControl(new Follower(Constants.ANGLE.LEFT_CANID, true));
+        //m_angleRightMotor.setControl(new Follower(Constants.ANGLE.LEFT_CANID, true));
 
         m_angleMotorMMV = new MotionMagicVoltage(Constants.ANGLE.SPEAKER);  
 
@@ -115,23 +115,47 @@ public class AngleSubSystem extends SubsystemBase {
           if (status.isOK()) break;
         }
         if (!status.isOK()) {
-          System.out.println("Could not configure rotate motor. Error: " + status.toString());
+          System.out.println("Could not configure left angle motor. Error: " + status.toString());
         }
 
+        //------------------------------------------
+        TalonFXConfiguration cfgRight = new TalonFXConfiguration();
+        /* Configure current limits */
+        cfgRight.MotionMagic.MotionMagicCruiseVelocity = 80; //106; // 5 rotations per second cruise
+        cfgRight.MotionMagic.MotionMagicAcceleration = 100; // Take approximately 0.5 seconds to reach max vel
+        
+        cfgRight.Slot0.kP = 55.0F;
+        cfgRight.Slot0.kI = 0.0F;
+        cfgRight.Slot0.kD = 0.0F;
+        cfgRight.Slot0.kV = 0.0F;
+        cfgRight.Slot0.kS = 0.25F; // Approximately 0.25V to get the mechanism moving
+
+        cfgRight.CurrentLimits.SupplyCurrentLimitEnable = true;
+        cfgRight.CurrentLimits.SupplyCurrentLimit = 30.0;
+
+        status = StatusCode.StatusCodeNotInitialized;
+        for(int i = 0; i < 5; ++i) {
+          status = m_angleRightMotor.getConfigurator().apply(cfgRight);
+          if (status.isOK()) break;
+        }
+        if (!status.isOK()) {
+          System.out.println("Could not configure right angle motor. Error: " + status.toString());
+        }
+
+        m_angleRightMotor.setControl(new Follower(Constants.ANGLE.LEFT_CANID, true));
+
         m_angleMotorMMV.OverrideBrakeDurNeutral = true;
-        m_angleLeftMotor.setVoltage(0);
+        
         // m_angleMotor.setSafetyEnabled(false);
 
         zeroAngleSensor(); 
     }
 
     public void zeroAngleSensor(){
-        // m_rotateMotor.setRotorPosition(0);  no setRotorPosition anymore.  does setPosition do the same thing???
+        m_angleLeftMotor.setVoltage(0);
         m_angleLeftMotor.setPosition(0);
-        //move arm to speaker '0' position
-        //  No need to zero.   absolute CAN coder position will be used.
-        //  so if it starts off zero, it will go to zero upon going to Nuetral state 
-        //NOPE, magnet offset did not work.   go back to set rotor to zero.
+        m_angleRightMotor.setPosition(0);
+        m_setPoint_Position=Constants.ANGLE.MIN_POSITION;   //0
     }
 
     // public void setPositionJoy(double desiredAjustPosition){
