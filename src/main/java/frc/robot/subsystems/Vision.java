@@ -10,6 +10,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTagDetector;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -47,17 +48,39 @@ public class Vision {
 
 
     public Pose3d getRobotLocation(PhotonTrackedTarget target){
+        
         return PhotonUtils.estimateFieldToRobotAprilTag(
             target.getBestCameraToTarget(), layout.getTagPose(target.getFiducialId()).get(), currentCamTrans);
     }
 
     // Aims at the best April Tag
     public double aimWithYaw() {
+        
         if (resultsInUse.hasTargets()) {
             return TunerConstants.steerPid.calculate(resultsInUse.getBestTarget().getYaw(), 0);
         }
 
         return 0;
+    }
+
+    // Probably the most useful one
+    /**
+     * @apiNote Probably best to refresh the target every cycle for ACCURACY! (Sein would do it)
+     * @param target
+     * @return
+     */
+    public double aimWithYawAtTarget(PhotonTrackedTarget target) {
+        // Ori, what are you doing!?
+        return TunerConstants.steerPid.calculate(target.getYaw(), 0);
+    }
+
+    public PhotonTrackedTarget getFiscalIDTarget(int id, List<PhotonTrackedTarget> visibleTargets) {
+        for (PhotonTrackedTarget targ : visibleTargets) {
+            if (targ.getFiducialId() == id)
+                return targ;
+        }
+
+        return null;
     }
 
     public List<PhotonTrackedTarget> getCurrentTargets(){
