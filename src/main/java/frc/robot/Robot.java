@@ -19,7 +19,7 @@ import com.ctre.phoenix6.SignalLogger;
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+  public static RobotContainer m_robotContainer;
 
   private final boolean UseLimelight = false;
 
@@ -77,7 +77,7 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
+    m_robotContainer.m_Vision.updateCurrentCam();
     if (UseLimelight) {    
       var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
 
