@@ -31,7 +31,8 @@ public class TunerConstants {
 
 
         //Monkey PID stuff
-        public static final PIDController steerPid = new PIDController(steerGains.kP, steerGains.kI, steerGains.kD);
+        public static final PIDController steerPID = new PIDController(steerGains.kP, steerGains.kI, steerGains.kD);
+        public static final PIDController drivePID = new PIDController(driveGains.kP, driveGains.kI, driveGains.kD);
         
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors

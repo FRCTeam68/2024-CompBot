@@ -13,6 +13,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagDetector;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.Constants;
@@ -57,7 +58,7 @@ public class Vision {
     public double aimWithYaw() {
         
         if (resultsInUse.hasTargets()) {
-            return TunerConstants.steerPid.calculate(resultsInUse.getBestTarget().getYaw(), 0);
+            return TunerConstants.steerPID.calculate(resultsInUse.getBestTarget().getYaw(), 0);
         }
 
         return 0;
@@ -71,7 +72,23 @@ public class Vision {
      */
     public double aimWithYawAtTarget(PhotonTrackedTarget target) {
         // Ori, what are you doing!?
-        return TunerConstants.steerPid.calculate(target.getYaw(), 0);
+        return TunerConstants.steerPID.calculate(target.getYaw(), 0);
+    }
+
+    //Slightly less useful one
+    /** This one drives forward only. I could make one for swerve but it might be better for it to just go forward.
+     * 
+     * @hidden May you have luck through the Blind Forest
+     * @param target
+     * @param targetHeight 
+     * @param targetPitch
+     * @param dMeters Distance you WANT to be from the target
+     * @return the value to shove through the y drive, PID included
+     */
+    public double driveDistFromTarget(PhotonTrackedTarget target, double targetHeight, double targetPitch, double dMeters) {
+        return TunerConstants.drivePID.calculate(PhotonUtils.calculateDistanceToTargetMeters(
+            Constants.Vision.frontCameraLocation.getY(), targetHeight, Constants.Vision.frontCameraLocation.getRotation().getY()
+            , targetPitch), dMeters);
     }
 
     public PhotonTrackedTarget getFiscalIDTarget(int id, List<PhotonTrackedTarget> visibleTargets) {
