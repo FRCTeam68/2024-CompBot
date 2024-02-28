@@ -117,5 +117,7 @@ public final class Constants {
         public static final Transform3d backCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(14.5)), new Rotation3d(0, Units.degreesToRadians(5), 0)); // TODO: Fix these values
     
         // Field Constants...
+        public static final int tallThingFiscal = 8;
+        public static final double tallThingHeight = Units.inchesToMeters(57);
     }
 }

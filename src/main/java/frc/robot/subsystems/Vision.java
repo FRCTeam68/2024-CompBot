@@ -1,25 +1,41 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonUtils;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.apriltag.AprilTagDetector;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 
+    /**
+     * The Vision class is a class which sees
+     * It sees all and knows all.
+     * It can see the stars upon the heavens
+     * See even the little bugs on the ground
+     * It can see into your soul
+     * And into your darkest sins
+     * 
+     * You cannot hide from this class here
+     * All will not be well
+     * 
+     * The Vision here is what our Robot knows
+     * What this sees, it sees
+     * We process it all here and grind it up
+     * Processed food yuck!
+     * <h1>Head for your cats</h1>
+     * 
+     * @hidden Do not let it eat after midnight
+     * @author ajmoritz2
+     */
 public class Vision {
+
 
     public enum Camera {
         FRONT,
@@ -31,8 +47,6 @@ public class Vision {
     private Transform3d currentCamTrans;
     private AprilTagFieldLayout layout;
 
-    private PhotonPoseEstimator fPoseEst, bPoseEst;
-
     private PhotonCamera camF;
     private PhotonCamera camB;
 
@@ -40,9 +54,11 @@ public class Vision {
         camF = new PhotonCamera(Constants.Vision.camLName);
         camB = new PhotonCamera(Constants.Vision.camRName);
         layout =  AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+        /* Keeping for might later use
         fPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.frontCameraLocation);
         bPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.backCameraLocation);
-
+        */
         cameraInUse = camF;
         currentCamTrans = Constants.Vision.frontCameraLocation;
     }

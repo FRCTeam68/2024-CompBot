@@ -103,11 +103,11 @@ public class RobotContainer {
     System.out.println("config bindings");
     
     m_DriveSubSystem.setDefaultCommand( // Drivetrain will execute this command periodically
-        m_DriveSubSystem.applyRequest(() -> drive.withVelocityX(-m_xboxController.getLeftY() * MaxSpeed) // Drive forward with
+        m_DriveSubSystem.drive(() -> drive.withVelocityX(-m_xboxController.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-m_xboxController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-m_xboxController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-        ).ignoringDisable(true));
+        , m_xboxController).ignoringDisable(true));
 
     m_xboxController.a().whileTrue(m_DriveSubSystem.applyRequest(() -> brake));
     m_xboxController.b().whileTrue(m_DriveSubSystem
