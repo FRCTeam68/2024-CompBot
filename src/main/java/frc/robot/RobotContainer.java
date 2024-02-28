@@ -126,6 +126,10 @@ public class RobotContainer {
     m_autoWaitTimeChooser.addOption("two", "2");
     SmartDashboard.putData("Auto DelayStart (s)", m_autoWaitTimeChooser);
 
+    System.out.println("note sensor switch: " + m_noteSensor2.get());
+    System.out.println("low limit switch: " + m_angleZeroLimitSwitch.get());
+    
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
   }

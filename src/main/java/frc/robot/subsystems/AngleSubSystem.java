@@ -93,17 +93,17 @@ public class AngleSubSystem extends SubsystemBase {
 
         TalonFXConfiguration cfg = new TalonFXConfiguration();
         /* Configure current limits */
-        cfg.MotionMagic.MotionMagicCruiseVelocity = 80; //106; // 5 rotations per second cruise
-        cfg.MotionMagic.MotionMagicAcceleration = 100; // Take approximately 0.5 seconds to reach max vel
-        cfg.MotionMagic.MotionMagicJerk = 700;   
+        cfg.MotionMagic.MotionMagicCruiseVelocity = 20; //80; //106; // 5 rotations per second cruise
+        cfg.MotionMagic.MotionMagicAcceleration = 40; //100; // Take approximately 0.5 seconds to reach max vel
+        cfg.MotionMagic.MotionMagicJerk = 400;  //700;   
 
         cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 		// m_angleLeftMotor.setInverted(true);
         
-        cfg.Slot0.kP = 55.0F;
+        cfg.Slot0.kP = 4.8F; //55.0F;
         cfg.Slot0.kI = 0.0F;
         cfg.Slot0.kD = 0.0F;
-        cfg.Slot0.kV = 0.0F;
+        cfg.Slot0.kV = 0.1; //0.0F;
         cfg.Slot0.kS = 0.25F; // Approximately 0.25V to get the mechanism moving
 
         cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -153,9 +153,11 @@ public class AngleSubSystem extends SubsystemBase {
 
     public void zeroAngleSensor(){
         m_angleLeftMotor.setVoltage(0);
+        // m_angleLeftMotor.setControl(m_brake);
         m_angleLeftMotor.setPosition(0);
-        m_angleRightMotor.setPosition(0);
+        // m_angleRightMotor.setPosition(0);
         m_setPoint_Position=Constants.ANGLE.MIN_POSITION;   //0
+        System.out.println("zeroAngleSensor");
     }
 
     // public void setPositionJoy(double desiredAjustPosition){
@@ -174,9 +176,9 @@ public class AngleSubSystem extends SubsystemBase {
 
     public void bumpPosition(double bumpAmount){
         double new_value = m_setPoint_Position + bumpAmount;
-        if (Math.abs(new_value) < 1){
-            new_value = bumpAmount < 0? -1 : 1;
-        }
+        // if (Math.abs(new_value) < 1){
+        //     new_value = bumpAmount < 0? -1 : 1;
+        // }
         setPosition(new_value);
     }
 
