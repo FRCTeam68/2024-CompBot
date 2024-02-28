@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -70,24 +71,40 @@ public class RobotContainer {
   Trigger m_NoteSensorTrigger2 = new Trigger(m_noteSensor2::get);
   Trigger m_NoteSensorTrigger3 = new Trigger(m_noteSensor3::get);
 
+  DigitalInput m_angleZeroLimitSwitch = new DigitalInput(2);
+  Trigger m_angleZeroLimitSwitchTrigger = new Trigger(m_angleZeroLimitSwitch::get);
+
   boolean m_climbActive = false;
   
   // Dashboard inputs
+  private double m_autoWaitTimeSelected = 0;
+  private final SendableChooser<String> m_autoWaitTimeChooser = new SendableChooser<>();
+
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  //private final LoggedDashboardNumber flywheelSpeedInput =
-  //    new LoggedDashboardNumber("Flywheel Speed", 1500.0);
-  
-  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
   
     // Register Named Commands
-    NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true)));
-    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true)));
-    NamedCommands.registerCommand("wait2s", new WaitCommand(2.00));
-    NamedCommands.registerCommand("intake", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true)));
+    NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
+
+    NamedCommands.registerCommand("intake2", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.INTAKE))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
+
+    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
+
+    // NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
+
+    NamedCommands.registerCommand("DelayStart", 
+                                                Commands.runOnce(()->System.out.println("delaystart: " + m_autoWaitTimeSelected))
+                                                        .andThen(new WaitCommand(m_autoWaitTimeSelected))   );
+
 
     configureBindings();
 
@@ -102,6 +119,16 @@ public class RobotContainer {
     //SmartDashboard.putBoolean("NoteSensor1", false);
     SmartDashboard.putBoolean("NoteSensor2", false);
     SmartDashboard.putBoolean("NoteSensor3", false);
+    SmartDashboard.putBoolean("AngleLimitLowSwitch", false);
+
+    m_autoWaitTimeChooser.setDefaultOption("none", "0");
+    m_autoWaitTimeChooser.addOption("one", "1");
+    m_autoWaitTimeChooser.addOption("two", "2");
+    SmartDashboard.putData("Auto DelayStart (s)", m_autoWaitTimeChooser);
+
+    System.out.println("note sensor switch: " + m_noteSensor2.get());
+    System.out.println("low limit switch: " + m_angleZeroLimitSwitch.get());
+    
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -134,6 +161,9 @@ public class RobotContainer {
 
     m_xboxController.pov(0).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0.2 * MaxSpeed).withVelocityY(0)));
     m_xboxController.pov(180).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(-0.2 * MaxSpeed).withVelocityY(0)));
+    m_xboxController.pov(90).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(-0.2 * MaxSpeed)));
+    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
+
 
     m_ps4Controller.triangle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
     m_ps4Controller.circle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
@@ -157,6 +187,9 @@ public class RobotContainer {
     //Right Joystick Y
     m_ps4Controller.axisGreaterThan(5,0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((-Constants.INTAKE.BUMP_VALUE))));
     m_ps4Controller.axisLessThan(5,-0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((Constants.INTAKE.BUMP_VALUE))));
+
+    m_ps4Controller.share().onTrue(Commands.runOnce(()->m_NoteSubSystem.resetSetpoints()));
+
     //***************************
     // m_Climber.setDefaultCommand(Commands.run( () ->
     //             m_Climber.setSpeedVout(-m_ps4Controller.g+tRightY() * 12), m_Climber));
@@ -168,6 +201,12 @@ public class RobotContainer {
     m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
                                         .andThen(()->SmartDashboard.putBoolean("NoteSensor3", true)))
                        .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
+
+
+
+    m_angleZeroLimitSwitchTrigger.onTrue(Commands.runOnce(()->m_NoteSubSystem.zeroAngleSubsystem())
+                                                .andThen(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", true)))
+                                .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", false)));
   }
 
   /**
@@ -176,6 +215,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+
+    m_autoWaitTimeSelected = Double.parseDouble(m_autoWaitTimeChooser.getSelected());
+    System.out.println("Auto wait time selected: " + m_autoWaitTimeSelected);
+
     return autoChooser.get();
   }
 
