@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "DelayStart"
+            "name": "shoot_spinup"
           }
         },
         {
@@ -26,7 +26,13 @@
         {
           "type": "named",
           "data": {
-            "name": "intake2"
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
@@ -39,6 +45,12 @@
           "type": "wait",
           "data": {
             "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot2"
           }
         }
       ]
