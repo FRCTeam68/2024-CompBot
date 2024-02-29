@@ -87,18 +87,31 @@ public class RobotContainer {
   public RobotContainer() {
   
     // Register Named Commands
-    NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
-                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
-                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
+    // NamedCommands.registerCommand("shoot_spinup", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
+    //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
+    //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP))    );
 
-    NamedCommands.registerCommand("intake2", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true))
-                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.INTAKE))
+    // NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
+    //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
+    //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
+
+    // NamedCommands.registerCommand("intake2", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true))
+    //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.INTAKE))
+    //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
+
+    // NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true))
+    //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
+    //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
+
+    NamedCommands.registerCommand("shoot_spinup", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP))    );
+
+    NamedCommands.registerCommand("shoot", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
+
+    NamedCommands.registerCommand("intake2", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.INTAKE))
                                                         .andThen(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
 
-    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true))
-                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
+    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
                                                         .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
-
     // NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 
     NamedCommands.registerCommand("DelayStart", 
@@ -173,7 +186,7 @@ public class RobotContainer {
     m_ps4Controller.L2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
     m_ps4Controller.R2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
     m_ps4Controller.L1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
-    m_ps4Controller.R1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
+    m_ps4Controller.R1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP)));
 
 
     m_ps4Controller.povLeft().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpShooterSpeed((-Constants.SHOOTER.BUMP_VALUE))));
@@ -190,9 +203,11 @@ public class RobotContainer {
 
     m_ps4Controller.share().onTrue(Commands.runOnce(()->m_NoteSubSystem.resetSetpoints()));
 
+    m_ps4Controller.options().onTrue(Commands.runOnce(()->m_climbActive=true));
+
     //***************************
     // m_Climber.setDefaultCommand(Commands.run( () ->
-    //             m_Climber.setSpeedVout(-m_ps4Controller.g+tRightY() * 12), m_Climber));
+    //             m_Climber.setSpeedVout(-m_ps4Controller.getRightY() * 12), m_Climber));
 
     // m_NoteSensorTrigger1.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", false)));

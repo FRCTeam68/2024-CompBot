@@ -28,7 +28,7 @@ public class NoteSubSystem extends SubsystemBase {
         HAVE_NOTE1,
         INTAKING_NOTE2,
         HAVE_NOTE2,
-        SHOOTING
+        SHOOTING, SHOOT_SPINNING
     }
 
     public enum Target{
@@ -48,7 +48,7 @@ public class NoteSubSystem extends SubsystemBase {
         BEAM1,
         BEAM2,
         SPIT_NOTE2,
-        SHOOT
+        SHOOT, SHOOT_SPINUP
     }
 
     private State m_presentState;
@@ -59,7 +59,8 @@ public class NoteSubSystem extends SubsystemBase {
     private RollerSubSystem m_Feeder2;
     private ShooterSubSystem m_Shooter;
     private AngleSubSystem m_Angle;
-    private Timer m_shootRunTime;
+    private Timer m_shootSpinUpTime;
+    private Timer m_shootStopTime;
     private Timer m_timeout;
     private double m_angle_setpoint;
     private double m_shooter_setpoint;
@@ -86,7 +87,8 @@ public class NoteSubSystem extends SubsystemBase {
         Shuffleboard.getTab("ShooterSubystem").add(m_Shooter);
         Shuffleboard.getTab("AngleSubsystem").add(m_Angle);
         
-        m_shootRunTime = new Timer();
+        m_shootSpinUpTime = new Timer();
+        m_shootStopTime = new Timer();
         m_timeout = new Timer();
 
         resetSetpoints();
@@ -164,7 +166,7 @@ public class NoteSubSystem extends SubsystemBase {
 
     public void setTarget(Target wantedTarget) {
 		m_target = wantedTarget;
-        System.out.println("set note target: " + m_target.toString());
+        // System.out.println("set note target: " + m_target.toString());
         Logger.recordOutput("Note/Target",  m_target);
         
 
@@ -197,7 +199,7 @@ public class NoteSubSystem extends SubsystemBase {
 
     public void setAction(ActionRequest wantedAction) {
 		m_wantedAction = wantedAction;
-        System.out.println("set note action request: " + m_wantedAction.toString());
+        // System.out.println("set note action request: " + m_wantedAction.toString());
         Logger.recordOutput("Note/Action",  m_wantedAction);
     }
 
@@ -207,7 +209,7 @@ public class NoteSubSystem extends SubsystemBase {
         switch(m_wantedAction){
             default:
             case IDLE:
-                m_shootRunTime.reset();
+                m_shootSpinUpTime.reset();
                 m_timeout.reset();
                 break;
             case STOP:
@@ -231,27 +233,27 @@ public class NoteSubSystem extends SubsystemBase {
                 }
                 break;
             case INTAKENOTE:
-                if (m_presentState == State.EMPTY){
+                if (m_presentState != State.HAVE_NOTE1){
                     setTarget(Target.INTAKE);   //incase user did not press X button
 
-                    m_timeout.restart();
-                    if ((m_Angle.atAngle()) || 
-                        (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
+                    // m_timeout.restart();
+                    // if ((m_Angle.atAngle()) || 
+                    //     (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
 
-                        System.out.println("  start intake");
+                        // System.out.println("  start intake");
                         Logger.recordOutput("Note/Comment",  "start intake");
                         m_Intake.setSpeed(m_intake_setpoint);
                         m_Feeder1.setSpeed(m_feeder1_setpoint);
                         m_Feeder2.setSpeed(m_feeder2_setpoint);
                         setState(State.INTAKING_NOTE1);
                         setAction(ActionRequest.IDLE);
-                    }
+                    // }
                 }
 
                 break;
             case BEAM3:
                 if (m_presentState == State.INTAKING_NOTE1){
-                    System.out.println("  Beam3 - HAVE_NOTE1 - stop intake");
+                    // System.out.println("  Beam3 - HAVE_NOTE1 - stop intake");
                     Logger.recordOutput("Note/Comment",  "stop intake");
                     m_Feeder2.setSpeed(0);
                     m_Feeder1.setSpeed(0);
@@ -269,39 +271,41 @@ public class NoteSubSystem extends SubsystemBase {
             case SPIT_NOTE2:
 
                 break;
-            case SHOOT:
-                if (m_presentState != State.SHOOTING){
-                    System.out.println("  spinup shooter");
+            case SHOOT_SPINUP:
                     Logger.recordOutput("Note/Comment",  "spinup shooter");
                     m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
                     m_Shooter.setSpeed(m_shooter_setpoint);
-
-                    m_timeout.restart();
-                    if ((m_Angle.atAngle() && m_Shooter.atSpeed()) || 
-                        (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
-                        System.out.println("  feed shooter");
-                        Logger.recordOutput("Note/Comment",  "feed shooter");
-                        m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
-                        m_shootRunTime.restart();
-                        setState(State.SHOOTING);
-                    }
-                }
-                else if ((m_presentState == State.SHOOTING) && 
-                         ( m_shootRunTime.hasElapsed(Constants.SHOOTER.STOP_TIME))) {
-                    System.out.println("  coast out shooter");
-                    Logger.recordOutput("Note/Comment",  "coastout shooter");
-                    m_Shooter.setSpeed(0);
-                    m_Feeder2.setSpeed(0);
-                    setState(State.EMPTY);
+                    // m_shootSpinUpTime.restart();
+                    setState(State.SHOOT_SPINNING);
                     setAction(ActionRequest.IDLE);
-                }
+                break;
+            case SHOOT:
+                // if (m_shootSpinUpTime.hasElapsed(Constants.SHOOTER.ATSPEED_TIMEOUT)){
+                    // if ((m_Angle.atAngle() && m_Shooter.atSpeed()) || 
+                        // (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
+                        // System.out.println("  feed shooter");
+                    Logger.recordOutput("Note/Comment",  "feed shooter");
+                    m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
+                    // m_shootStopTime.restart();
+                    setState(State.SHOOTING);
+                    setAction(ActionRequest.IDLE);
+                // }
+                // if ((m_presentState == State.SHOOTING) && 
+                //     ( m_shootStopTime.hasElapsed(Constants.SHOOTER.STOP_TIME))) {
+                //     // System.out.println("  coast out shooter");
+                //     Logger.recordOutput("Note/Comment",  "coastout shooter");
+                //     m_Shooter.setSpeed(0);
+                //     m_Feeder2.setSpeed(0);
+                //     setState(State.EMPTY);
+                //     setAction(ActionRequest.IDLE);
+                // }
                 break;
         }
     }
 
     private void setState(State desiredStation){
         m_presentState = desiredStation;
-        System.out.println("  set note state: " + m_presentState.toString());
+        // System.out.println("  set note state: " + m_presentState.toString());
         Logger.recordOutput("Note/State",  m_presentState);
     }
     public State getState(){
