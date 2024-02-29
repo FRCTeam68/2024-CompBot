@@ -84,10 +84,20 @@ public class RobotContainer {
   public RobotContainer() {
   
     // Register Named Commands
-    NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true)));
-    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true)));
+    NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
+
+    NamedCommands.registerCommand("intake", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.INTAKE))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
+
+    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true))
+                                                        .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
+                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
+
     NamedCommands.registerCommand("wait2s", new WaitCommand(2.00));
-    NamedCommands.registerCommand("intake", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true)));
+
 
     configureBindings();
 
