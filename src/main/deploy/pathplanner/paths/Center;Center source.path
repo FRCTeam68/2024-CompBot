@@ -32,7 +32,7 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
+      "name": "middle",
       "waypointRelativePos": 0.5,
       "command": {
         "type": "parallel",
@@ -41,7 +41,24 @@
             {
               "type": "named",
               "data": {
-                "name": "intake2"
+                "name": "intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "beginning",
+      "waypointRelativePos": 0.1,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "target_intake"
               }
             }
           ]

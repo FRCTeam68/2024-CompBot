@@ -49,7 +49,8 @@ public class AngleSubSystem extends SubsystemBase {
     private double m_setPoint_Position;
     private double m_setPoint_Adjust;
     private double m_speaker_position;
-    private double m_speaker_1M_position;
+    private double m_speaker_1m_position;
+    private double m_speaker_podium_position;
     private double m_amp_position;
     private double m_trap_position;
     private double m_intake_position;
@@ -65,7 +66,8 @@ public class AngleSubSystem extends SubsystemBase {
         m_presentState = State.SPEAKER;
         m_presentMode = Mode.MMV;
         m_speaker_position = Constants.ANGLE.SPEAKER;
-        m_speaker_1M_position = Constants.ANGLE.SPEAKER_1M;
+        m_speaker_1m_position = Constants.ANGLE.SPEAKER_1M;
+        m_speaker_podium_position = Constants.ANGLE.SPEAKER_PODIUM;
         m_amp_position = Constants.ANGLE.AMP;
         m_trap_position = Constants.ANGLE.TRAP;
         m_intake_position = Constants.ANGLE.INTAKE;
@@ -281,7 +283,10 @@ public class AngleSubSystem extends SubsystemBase {
                 desiredPosition = m_speaker_position;
                 break;
             case SPEAKER_1M:
-                desiredPosition = m_speaker_1M_position;
+                desiredPosition = m_speaker_1m_position;
+                break;
+            case SPEAKER_PODIUM:
+                desiredPosition = m_speaker_podium_position;
                 break;
             case AMP:
                 desiredPosition = m_amp_position;;
@@ -293,7 +298,6 @@ public class AngleSubSystem extends SubsystemBase {
                 desiredPosition = m_intake_position;
                 break;
             case FEEDSTATION:
-            case SPEAKER_PODIUM:
             case BRAKE:
                 // m_angleLeftMotor.setControl(m_brake);
                 m_angleLeftMotor.setVoltage(0);

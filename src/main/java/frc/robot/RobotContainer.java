@@ -103,21 +103,18 @@ public class RobotContainer {
     //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
     //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
 
+    
     NamedCommands.registerCommand("shoot_spinup", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP))    );
+    NamedCommands.registerCommand("target_speaker", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    NamedCommands.registerCommand("shoot", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
 
-    NamedCommands.registerCommand("shoot", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
+    NamedCommands.registerCommand("target_intake", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.INTAKE)));
+    NamedCommands.registerCommand("intake", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
 
-    NamedCommands.registerCommand("intake2", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.INTAKE))
-                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
+    NamedCommands.registerCommand("target_speaker_1m", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M)));
+    NamedCommands.registerCommand("target_speaker_podium", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
 
-    NamedCommands.registerCommand("shoot2", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
-                                                        .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
-    // NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
-
-    NamedCommands.registerCommand("DelayStart", 
-                                                Commands.runOnce(()->System.out.println("delaystart: " + m_autoWaitTimeSelected))
-                                                        .andThen(new WaitCommand(m_autoWaitTimeSelected))   );
-
+    NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 
     configureBindings();
 
