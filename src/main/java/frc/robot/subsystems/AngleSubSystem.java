@@ -216,8 +216,8 @@ public class AngleSubSystem extends SubsystemBase {
 
     public boolean atAngle(){
         double motorPosition = m_angleLeftMotor.getPosition().getValueAsDouble();
-        System.out.println("  angle setpoint position:" + m_setPoint_Position + ", motor position: " + motorPosition );
-        Logger.recordOutput("Angle/AtAngle",  "setpoint position:" + m_setPoint_Position + ", motor position: " + motorPosition );
+        // System.out.println("  angle setpoint position:" + m_setPoint_Position + ", motor position: " + motorPosition );
+        Logger.recordOutput("Angle/AtAngle", motorPosition );
         boolean conditionMet =  Math.abs(m_setPoint_Position-motorPosition) < 1.0;
         conditionMet = true;  //bypass for simulation
         return conditionMet;

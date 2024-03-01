@@ -241,13 +241,14 @@ public class NoteSubSystem extends SubsystemBase {
                     //     (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
 
                         // System.out.println("  start intake");
-                        Logger.recordOutput("Note/Comment",  "start intake");
-                        m_Intake.setSpeed(m_intake_setpoint);
-                        m_Feeder1.setSpeed(m_feeder1_setpoint);
-                        m_Feeder2.setSpeed(m_feeder2_setpoint);
-                        setState(State.INTAKING_NOTE1);
-                        setAction(ActionRequest.IDLE);
-                    // }
+                        if (m_Angle.atAngle()){
+                            Logger.recordOutput("Note/Comment",  "start intake");
+                            m_Intake.setSpeed(m_intake_setpoint);
+                            m_Feeder1.setSpeed(m_feeder1_setpoint);
+                            m_Feeder2.setSpeed(m_feeder2_setpoint);
+                            setState(State.INTAKING_NOTE1);
+                            setAction(ActionRequest.IDLE);
+                     }
                 }
 
                 break;
@@ -284,12 +285,13 @@ public class NoteSubSystem extends SubsystemBase {
                     // if ((m_Angle.atAngle() && m_Shooter.atSpeed()) || 
                         // (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
                         // System.out.println("  feed shooter");
-                    Logger.recordOutput("Note/Comment",  "feed shooter");
-                    m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
+                        if (m_Angle.atAngle()){
+                            Logger.recordOutput("Note/Comment",  "feed shooter");
+                            m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
                     // m_shootStopTime.restart();
-                    setState(State.SHOOTING);
-                    setAction(ActionRequest.IDLE);
-                // }
+                            setState(State.SHOOTING);
+                            setAction(ActionRequest.IDLE);
+                 }
                 // if ((m_presentState == State.SHOOTING) && 
                 //     ( m_shootStopTime.hasElapsed(Constants.SHOOTER.STOP_TIME))) {
                 //     // System.out.println("  coast out shooter");

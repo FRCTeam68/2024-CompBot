@@ -84,13 +84,13 @@ public final class Constants {
         // so AMP and TRAP are also 0
         //motor rotations
         public static final double MIN_POSITION = 0;  
-        public static final double MAX_POSITION = 24;
+        public static final double MAX_POSITION = 28;
         public static final double AMP = 0; 
         public static final double TRAP = 0;
         public static final double SPEAKER = 0;
-        public static final double SPEAKER_1M = 6;
-        public static final double SPEAKER_PODIUM = 10;
-        public static final double INTAKE = 14;   //16
+        public static final double SPEAKER_1M = 20;
+        public static final double SPEAKER_PODIUM = 24;
+        public static final double INTAKE = 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
         
