@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
@@ -44,6 +46,7 @@ public class ClimberSubSystem extends SubsystemBase {
     private double m_setPoint_Right_Voltage;
     private double m_leftPosition;
     private double m_rightPosition;
+    private boolean m_resetMode;
 
     public ClimberSubSystem(){
         m_presentState = State.IDLE;
@@ -52,6 +55,7 @@ public class ClimberSubSystem extends SubsystemBase {
         m_setPoint_Right_Speed = 0;
         m_leftPosition = 0;
         m_rightPosition = 0;
+        m_resetMode = false;
 
         climberMotorsInit();
     }
@@ -122,38 +126,83 @@ public class ClimberSubSystem extends SubsystemBase {
         }
     }
 
-    public void setSpeedVout(double leftDesiredVoltage, double rightDesiredVoltage){
+    public void setLeftSpeedVout(double desiredVoltage){
         // System.out.println("climber setSpeedesired" + desiredVoltage);
-
-
         if(m_presentMode == Mode.VOLTAGE_OUT){
 
             m_leftPosition = m_climberLeftMotor.getPosition().getValueAsDouble();
-            if ((Math.abs(leftDesiredVoltage) <= 1)){  //|| (m_leftPosition > 12)) {
-                System.out.println("set left zero");
+
+            if ((Math.abs(desiredVoltage) <= 1)){
+                //deadzone for motor control, just make it zero volts
+                // System.out.println("set left zero");
                 m_setPoint_Left_Voltage = 0;
             }
+            else if ((desiredVoltage > 1) && (m_leftPosition > Constants.CLIMBER.MAX_HEIGHT)){
+                //asking to travel up, but already at max height
+                System.out.println("left climber max height reached");
+                m_setPoint_Left_Voltage = 0;
+            } 
+            else if ((desiredVoltage < -1) && (m_leftPosition <= 0)){
+                //asking to travel down, but already at min height
+                //    resetMode active needs negative values to respool climber in the pits
+                //    because when you turn robot on position will be zero.
+                //    So do not limit at zero.
+                if (!m_resetMode){
+                    System.out.println("left climber start height 0 reached");
+                    m_setPoint_Left_Voltage = 0;
+                } 
+            }  
             else {
-                m_setPoint_Left_Voltage = leftDesiredVoltage;
+                m_setPoint_Left_Voltage = desiredVoltage;
             }
 
-            m_rightPosition = m_climberLeftMotor.getPosition().getValueAsDouble();
-            if ((Math.abs(rightDesiredVoltage) <= 1)){  //|| (m_rightPosition > 12)) {
-                System.out.println("set right zero");
+            System.out.println("left climber setSpeedVout: " + m_setPoint_Left_Voltage);
+            Logger.recordOutput("Climber/LeftPos", m_leftPosition );
+            Logger.recordOutput("Climber/LeftVolt", m_setPoint_Left_Voltage );
+            m_climberLeftMotor.setControl(m_voltageOut.withOutput(m_setPoint_Left_Voltage));
+        }
+    }
+
+    public void setRightSpeedVout(double desiredVoltage){
+        // System.out.println("climber setSpeedesired" + desiredVoltage);
+        if(m_presentMode == Mode.VOLTAGE_OUT){
+
+            m_rightPosition = m_climberRightMotor.getPosition().getValueAsDouble();
+
+            if ((Math.abs(desiredVoltage) <= 1)){
+                //deadzone for motor control, just make it zero volts
+                // System.out.println("set left zero");
                 m_setPoint_Right_Voltage = 0;
             }
+            else if ((desiredVoltage > 1) && (m_rightPosition > Constants.CLIMBER.MAX_HEIGHT)){
+                //asking to travel up, but already at max height
+                System.out.println("right climber max height reached");
+                m_setPoint_Right_Voltage = 0;
+            } 
+            else if ((desiredVoltage < -1) && (m_rightPosition <= 0)){
+                //asking to travel down, but already at min height
+                //    resetMode active needs negative values to respool climber in the pits
+                //    because when you turn robot on position will be zero.
+                //    So do not limit at zero.
+                if (!m_resetMode){
+                    System.out.println("right climber start height 0 reached");
+                    m_setPoint_Right_Voltage = 0;
+                }
+            } 
             else {
-                m_setPoint_Right_Voltage = rightDesiredVoltage;
+                m_setPoint_Right_Voltage = desiredVoltage;
             }
 
-
-            System.out.println("climber setSpeedVout, L: " + m_setPoint_Left_Voltage 
-                                                + " , R: " + m_setPoint_Right_Voltage);
-            m_climberLeftMotor.setControl(m_voltageOut.withOutput(m_setPoint_Left_Voltage));
+            System.out.println("right climber setSpeedVout: " + m_setPoint_Right_Voltage);
+            Logger.recordOutput("Climber/RightPos", m_rightPosition );
+            Logger.recordOutput("Climber/RightVolt", m_setPoint_Right_Voltage );
             m_climberRightMotor.setControl(m_voltageOut.withOutput(m_setPoint_Right_Voltage));
         }
     }
 
+    public void setResetMode(boolean resetMode){
+        m_resetMode = resetMode;
+    }
 
     // public void setSpeed(double desiredRotationsPerSecond){
 

@@ -63,7 +63,7 @@ public class RobotContainer {
   CommandPS4Controller m_ps4Controller = new CommandPS4Controller(1);
   
   NoteSubSystem m_NoteSubSystem = new NoteSubSystem();
-  // ClimberSubSystem m_Climber = new ClimberSubSystem();
+  ClimberSubSystem m_Climber = new ClimberSubSystem();
   // DigitalInput m_noteSensor1 = new DigitalInput(0);   will be I2C sensor
   DigitalInput m_noteSensor2 = new DigitalInput(0);
   DigitalInput m_noteSensor3 = new DigitalInput(1);
@@ -75,6 +75,7 @@ public class RobotContainer {
   Trigger m_angleZeroLimitSwitchTrigger = new Trigger(m_angleZeroLimitSwitch::get);
 
   boolean m_climbActive = false;
+  boolean m_climbResetActive = false;
   
   // Dashboard inputs
   private double m_autoWaitTimeSelected = 0;
@@ -121,7 +122,7 @@ public class RobotContainer {
     // Put subsystems to dashboard.
     Shuffleboard.getTab("NoteSubsystem").add(m_NoteSubSystem);
     // Shuffleboard.getTab("Drivetrain").add(m_DriveSubSystem);
-    // Shuffleboard.getTab("ClimberSubSystem").add(m_Climber);
+    Shuffleboard.getTab("ClimberSubSystem").add(m_Climber);
     SmartDashboard.putBoolean("shoot", false);
     SmartDashboard.putBoolean("shoot2", false);
     SmartDashboard.putBoolean("intake", false);
@@ -130,6 +131,8 @@ public class RobotContainer {
     SmartDashboard.putBoolean("NoteSensor2", false);
     SmartDashboard.putBoolean("NoteSensor3", false);
     SmartDashboard.putBoolean("AngleLimitLowSwitch", false);
+    SmartDashboard.putBoolean("ClimbActive", m_climbActive);
+    SmartDashboard.putBoolean("ClimbResetActive", m_climbResetActive);
 
     m_autoWaitTimeChooser.setDefaultOption("none", "0");
     m_autoWaitTimeChooser.addOption("one", "1");
@@ -192,19 +195,23 @@ public class RobotContainer {
     m_ps4Controller.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((Constants.ANGLE.BUMP_VALUE))));
 
     //Left Joystick Y
-    m_ps4Controller.axisGreaterThan(1,0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake1Speed((-Constants.INTAKE.BUMP_VALUE))));
-    m_ps4Controller.axisLessThan(1,-0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake1Speed((Constants.INTAKE.BUMP_VALUE))));
+    m_ps4Controller.axisGreaterThan(1,0.1).whileTrue(Commands.run(()->bumpOrClimb(true, m_ps4Controller.getLeftY())));
+    m_ps4Controller.axisLessThan(1,-0.1).whileTrue(Commands.run(()->bumpOrClimb(true, m_ps4Controller.getLeftY())));
     //Right Joystick Y
-    m_ps4Controller.axisGreaterThan(5,0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((-Constants.INTAKE.BUMP_VALUE))));
-    m_ps4Controller.axisLessThan(5,-0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((Constants.INTAKE.BUMP_VALUE))));
+    m_ps4Controller.axisGreaterThan(5,0.1).whileTrue(Commands.run(()->bumpOrClimb(false, m_ps4Controller.getRightY())));
+    m_ps4Controller.axisLessThan(5,-0.1).whileTrue(Commands.run(()->bumpOrClimb(false, m_ps4Controller.getRightY())));
 
+    m_ps4Controller.options().onTrue(Commands.runOnce(()->m_climbActive=true)
+                                             .andThen(()->SmartDashboard.putBoolean("ClimbActive", m_climbActive)))
+                            .onFalse(Commands.runOnce(()->m_climbActive=false)
+                                             .andThen(()->SmartDashboard.putBoolean("ClimbActive", m_climbActive)));
+
+    m_ps4Controller.touchpad().onTrue(Commands.runOnce(()->m_Climber.setResetMode(true))
+                                             .andThen(()->SmartDashboard.putBoolean("ClimbResetActive", m_climbResetActive)))
+                            .onFalse(Commands.runOnce(()->m_Climber.setResetMode(false))
+                                             .andThen(()->SmartDashboard.putBoolean("ClimbResetActive", m_climbResetActive)));
+                                                 
     m_ps4Controller.share().onTrue(Commands.runOnce(()->m_NoteSubSystem.resetSetpoints()));
-
-    m_ps4Controller.options().onTrue(Commands.runOnce(()->m_climbActive=true));
-
-    //***************************
-    // m_Climber.setDefaultCommand(Commands.run( () ->
-    //             m_Climber.setSpeedVout(-m_ps4Controller.getRightY() * 12), m_Climber));
 
     // m_NoteSensorTrigger1.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", false)));
@@ -215,10 +222,40 @@ public class RobotContainer {
                        .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
 
 
-
     // m_angleZeroLimitSwitchTrigger.onTrue(Commands.runOnce(()->m_NoteSubSystem.zeroAngleSubsystem())
     //                                             .andThen(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", true)))
     //                             .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", false)));
+  }
+
+  private void bumpOrClimb(boolean isLeft, double joyValue){
+
+    if(m_climbActive){
+      if (isLeft){
+        m_Climber.setLeftSpeedVout(joyValue * 12);
+      }
+      else{
+        m_Climber.setRightSpeedVout(joyValue * 12);
+      }
+    }
+    else{
+      //intake bump function
+      if (isLeft){
+        if (joyValue > .7){
+          m_NoteSubSystem.bumpIntake1Speed((-Constants.INTAKE.BUMP_VALUE));
+        }
+        else if (joyValue < -.7){
+          m_NoteSubSystem.bumpIntake1Speed((Constants.INTAKE.BUMP_VALUE));
+        }
+      }
+      else{
+        if (joyValue > .7){
+          m_NoteSubSystem.bumpIntake2Speed((-Constants.INTAKE.BUMP_VALUE));
+        }
+        else if (joyValue < -.7){
+          m_NoteSubSystem.bumpIntake2Speed((Constants.INTAKE.BUMP_VALUE));
+        }
+      }
+    }
   }
 
   /**
