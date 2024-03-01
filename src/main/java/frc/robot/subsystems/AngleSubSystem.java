@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,6 +62,8 @@ public class AngleSubSystem extends SubsystemBase {
     private NeutralOut m_brake;
     private Timer m_bumpTimer;
     private double m_bumpCount;
+    private LinearFilter m_atAngleFilter;
+    private double m_filteredPosition;
 
     public AngleSubSystem(){
         m_presentState = State.SPEAKER;
@@ -76,6 +79,8 @@ public class AngleSubSystem extends SubsystemBase {
         m_bumpTimer = new Timer();
         m_bumpTimer.start();
         m_bumpCount = 0;
+        m_atAngleFilter = LinearFilter.movingAverage(5);
+        m_filteredPosition = 0;
 
         angleMotorInit();
 
@@ -202,7 +207,7 @@ public class AngleSubSystem extends SubsystemBase {
         }
         Logger.recordOutput("Angle/setPosition",  desiredPosition);
 
-        switch(m_presentMode){
+                switch(m_presentMode){
             default:
             case MMV:
                 m_angleLeftMotor.setControl(m_angleMotorMMV.withPosition(m_setPoint_Position));
@@ -214,12 +219,17 @@ public class AngleSubSystem extends SubsystemBase {
         }
     }
 
-    public boolean atAngle(){
+    // this is the state machine of the notesubsystem
+    @Override
+    public void periodic() {
         double motorPosition = m_angleLeftMotor.getPosition().getValueAsDouble();
-        // System.out.println("  angle setpoint position:" + m_setPoint_Position + ", motor position: " + motorPosition );
+        m_filteredPosition = m_atAngleFilter.calculate(motorPosition);
         Logger.recordOutput("Angle/AtAngle", motorPosition );
-        boolean conditionMet =  Math.abs(m_setPoint_Position-motorPosition) < 1.0;
-        conditionMet = true;  //bypass for simulation
+        Logger.recordOutput("Angle/AtAngleF", m_filteredPosition );
+    }
+
+    public boolean atAngle(){
+        boolean conditionMet =  Math.abs(m_setPoint_Position-m_filteredPosition) < 1.0;
         return conditionMet;
     }
 
