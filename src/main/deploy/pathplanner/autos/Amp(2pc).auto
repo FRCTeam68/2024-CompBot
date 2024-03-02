@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4,
-      "y": 5.52811290895741
+      "x": 0.7531929553170285,
+      "y": 6.737082927847566
     },
-    "rotation": 0
+    "rotation": 59.03624346792651
   },
   "command": {
     "type": "sequential",
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center;Center source"
+            "pathName": "Amp -  Amp Note"
           }
         },
         {
@@ -50,7 +50,7 @@
         {
           "type": "named",
           "data": {
-            "name": "target_speaker_1m"
+            "name": "target_speaker_podium"
           }
         },
         {
