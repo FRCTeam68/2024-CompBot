@@ -73,18 +73,7 @@ private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric(
     }
 
     public Command drive(Supplier<SwerveRequest> requestSupplier, CommandXboxController xboxController) { 
-        if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
-        {
-            Vision vision = Robot.m_robotContainer.m_Vision;
-            PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(Constants.Vision.tallThingFiscal, vision.getCurrentTargets());
-            if (wantedTarget != null) {
-                double angleSpeed = vision.aimWithYawAtTarget(wantedTarget);
-                double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
-           
-                return run(() -> this.setControl(drive.withVelocityX(ForwardSpeed).withRotationalRate(angleSpeed)));
-            }
-        }
-        return run(() -> this.setControl(requestSupplier.get()));
+        return run(() -> this.actuallyDrive(requestSupplier.get(), xboxController));
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -94,6 +83,25 @@ private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric(
 
     public Command getAutoPath(String pathName) {
         return new PathPlannerAuto(pathName);
+    }
+
+    public void actuallyDrive(SwerveRequest request,CommandXboxController xboxController) {
+        if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
+        {
+            Vision vision = Robot.m_robotContainer.m_Vision;
+            PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(Constants.Vision.tallThingFiscal, vision.getCurrentTargets());
+            if (wantedTarget != null) {
+                double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget));
+                double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
+                System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
+                
+                this.setControl(Robot.m_robotContainer.drive.withRotationalRate(angleSpeed*10));
+                return;
+            }
+
+        }
+
+        this.setControl(request);
     }
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {

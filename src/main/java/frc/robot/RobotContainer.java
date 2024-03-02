@@ -39,7 +39,7 @@ public class RobotContainer {
   public final CommandSwerveDrivetrain m_DriveSubSystem = TunerConstants.DriveTrain;
   public final Vision m_Vision = new Vision();
 
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+  public final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop

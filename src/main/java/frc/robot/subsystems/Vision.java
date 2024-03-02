@@ -108,6 +108,11 @@ public class Vision {
     }
 
     public PhotonTrackedTarget getFiscalIDTarget(int id, List<PhotonTrackedTarget> visibleTargets) {
+        if (visibleTargets == null){
+            return null;
+        }
+        if (visibleTargets.isEmpty())
+            return null;
         for (PhotonTrackedTarget targ : visibleTargets) {
             if (targ.getFiducialId() == id)
                 return targ;

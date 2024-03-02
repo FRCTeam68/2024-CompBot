@@ -105,8 +105,8 @@ public final class Constants {
     }
 
     public static final class Vision {
-        public static final String camLName = ""; //TODO: change names!
-        public static final String camRName = "";
+        public static final String camLName = "Arducam_OV9782_1"; //TODO: change names!
+        public static final String camRName = "Arducam_OV9782_2";
 
         public static final String aprilTagLayoutPath = ""; // Not needed to be used unless custom
 
@@ -116,7 +116,7 @@ public final class Constants {
         // Back Camera Constants... Faces through shooter
         public static final Transform3d backCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(14.5)), new Rotation3d(0, Units.degreesToRadians(5), 0)); // TODO: Fix these values
     
-        // Field Constants...
+        // Field Constants...P
         public static final int tallThingFiscal = 8;
         public static final double tallThingHeight = Units.inchesToMeters(57);
     }
