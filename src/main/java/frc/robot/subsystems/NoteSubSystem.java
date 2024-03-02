@@ -59,9 +59,7 @@ public class NoteSubSystem extends SubsystemBase {
     private RollerSubSystem m_Feeder2;
     private ShooterSubSystem m_Shooter;
     private AngleSubSystem m_Angle;
-    private Timer m_shootSpinUpTime;
     private Timer m_shootStopTime;
-    private Timer m_timeout;
     private double m_angle_setpoint;
     private double m_shooter_setpoint;
     private double m_shooterRight_setpoint;
@@ -87,9 +85,7 @@ public class NoteSubSystem extends SubsystemBase {
         Shuffleboard.getTab("ShooterSubystem").add(m_Shooter);
         Shuffleboard.getTab("AngleSubsystem").add(m_Angle);
         
-        m_shootSpinUpTime = new Timer();
         m_shootStopTime = new Timer();
-        m_timeout = new Timer();
 
         resetSetpoints();
 
@@ -209,9 +205,19 @@ public class NoteSubSystem extends SubsystemBase {
         switch(m_wantedAction){
             default:
             case IDLE:
-                m_shootSpinUpTime.reset();
-                m_timeout.reset();
+
+                if (m_shootStopTime.hasElapsed(.3)){
+                    // shoot has started and timer elasped
+                    // account for BEAM3 action was missed that would have set back to empty
+                    m_shootStopTime.stop();
+                    Logger.recordOutput("Note/Comment",  "shoot timer elapsed");
+                    if (m_presentState == State.HAVE_NOTE1){  
+                        m_Feeder2.setSpeed(0);
+                        setState(State.EMPTY);
+                    }
+                }
                 break;
+
             case STOP:
                 m_Intake.setSpeed(0);
                 m_Feeder1.setSpeed(0);
@@ -220,37 +226,32 @@ public class NoteSubSystem extends SubsystemBase {
                 // m_Angle.setState(AngleSubSystem.State.BRAKE);
                 setAction(ActionRequest.IDLE);
 
-                switch (m_presentState){
-                    case INTAKING_NOTE1:
-                        setState(State.EMPTY);
-                        break;
-                    case INTAKING_NOTE2:
-                        setState(State.HAVE_NOTE1);
-                        break;
-                    case SHOOTING:
-                        setState(State.HAVE_NOTE1);
-                        break;
-                }
+                setState(State.EMPTY);
+                m_shootStopTime.stop();
+                // switch (m_presentState){
+                //     case INTAKING_NOTE1:
+                //         setState(State.EMPTY);
+                //         break;
+                //     case INTAKING_NOTE2:
+                //         setState(State.HAVE_NOTE1);
+                //         break;
+                //     case SHOOTING:
+                //         setState(State.HAVE_NOTE1);
+                //         break;
+                // }
                 break;
             case INTAKENOTE:
                 if (m_presentState != State.HAVE_NOTE1){
                     setTarget(Target.INTAKE);   //incase user did not press X button
-
-                    // m_timeout.restart();
-                    // if ((m_Angle.atAngle()) || 
-                    //     (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
-
-                        // System.out.println("  start intake");
-                        if (m_Angle.atAngle()){
-                            Logger.recordOutput("Note/Comment",  "start intake");
-                            m_Intake.setSpeed(m_intake_setpoint);
-                            m_Feeder1.setSpeed(m_feeder1_setpoint);
-                            m_Feeder2.setSpeed(m_feeder2_setpoint);
-                            setState(State.INTAKING_NOTE1);
-                            setAction(ActionRequest.IDLE);
+                    if (m_Angle.atAngle()){
+                        Logger.recordOutput("Note/Comment",  "start intake");
+                        m_Intake.setSpeed(m_intake_setpoint);
+                        m_Feeder1.setSpeed(m_feeder1_setpoint);
+                        m_Feeder2.setSpeed(m_feeder2_setpoint);
+                        setState(State.INTAKING_NOTE1);
+                        setAction(ActionRequest.IDLE);
                      }
                 }
-
                 break;
             case BEAM3:
                 if (m_presentState == State.INTAKING_NOTE1){
@@ -264,6 +265,7 @@ public class NoteSubSystem extends SubsystemBase {
                 }
                 else if(m_presentState == State.SHOOTING){
                     //backside of note coming through
+                    m_Feeder2.setSpeed(0);
                     setState(State.EMPTY);
                     setAction(ActionRequest.IDLE);
                 }
@@ -294,6 +296,7 @@ public class NoteSubSystem extends SubsystemBase {
                     Logger.recordOutput("Note/Comment",  "feed shooter");
                     m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
                     setState(State.SHOOTING);
+                    m_shootStopTime.restart();
                     setAction(ActionRequest.IDLE);
                  }
                 // if ((m_presentState == State.SHOOTING) && 
