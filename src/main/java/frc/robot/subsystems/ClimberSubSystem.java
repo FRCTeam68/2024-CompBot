@@ -46,7 +46,7 @@ public class ClimberSubSystem extends SubsystemBase {
     private double m_setPoint_Right_Voltage;
     private double m_leftPosition;
     private double m_rightPosition;
-    private boolean m_resetMode;
+    private boolean m_pitMode;
 
     public ClimberSubSystem(){
         m_presentState = State.IDLE;
@@ -55,14 +55,14 @@ public class ClimberSubSystem extends SubsystemBase {
         m_setPoint_Right_Speed = 0;
         m_leftPosition = 0;
         m_rightPosition = 0;
-        m_resetMode = false;
+        m_pitMode = false;
 
         climberMotorsInit();
     }
 
     private void climberMotorsInit(){
-        m_climberLeftMotor = new TalonFX(Constants.CLIMBER.LEFT_CANID);
-        m_climberRightMotor = new TalonFX(Constants.CLIMBER.RIGHT_CANID);
+        m_climberLeftMotor = new TalonFX(Constants.CLIMBER.LEFT_CANID, Constants.CLIMBER.CANBUS);
+        m_climberRightMotor = new TalonFX(Constants.CLIMBER.RIGHT_CANID, Constants.CLIMBER.CANBUS);
 
         m_climberLeftMotor.setInverted(true);
         m_climberRightMotor.setInverted(false);  // pick CW versus CCW
@@ -147,7 +147,7 @@ public class ClimberSubSystem extends SubsystemBase {
                 //    resetMode active needs negative values to respool climber in the pits
                 //    because when you turn robot on position will be zero.
                 //    So do not limit at zero.
-                if (!m_resetMode){
+                if (!m_pitMode){
                     System.out.println("left climber start height 0 reached");
                     m_setPoint_Left_Voltage = 0;
                 } 
@@ -157,9 +157,10 @@ public class ClimberSubSystem extends SubsystemBase {
             }
 
             System.out.println("left climber setSpeedVout: " + m_setPoint_Left_Voltage);
+            System.out.println("left climber pos: " + m_leftPosition);
             Logger.recordOutput("Climber/LeftPos", m_leftPosition );
             Logger.recordOutput("Climber/LeftVolt", m_setPoint_Left_Voltage );
-            m_climberLeftMotor.setControl(m_voltageOut.withOutput(m_setPoint_Left_Voltage));
+            // m_climberLeftMotor.setControl(m_voltageOut.withOutput(m_setPoint_Left_Voltage));
         }
     }
 
@@ -184,7 +185,7 @@ public class ClimberSubSystem extends SubsystemBase {
                 //    resetMode active needs negative values to respool climber in the pits
                 //    because when you turn robot on position will be zero.
                 //    So do not limit at zero.
-                if (!m_resetMode){
+                if (!m_pitMode){
                     System.out.println("right climber start height 0 reached");
                     m_setPoint_Right_Voltage = 0;
                 }
@@ -194,14 +195,21 @@ public class ClimberSubSystem extends SubsystemBase {
             }
 
             System.out.println("right climber setSpeedVout: " + m_setPoint_Right_Voltage);
+            System.out.println("right climber pos: " + m_rightPosition);
             Logger.recordOutput("Climber/RightPos", m_rightPosition );
             Logger.recordOutput("Climber/RightVolt", m_setPoint_Right_Voltage );
-            m_climberRightMotor.setControl(m_voltageOut.withOutput(m_setPoint_Right_Voltage));
+            // m_climberRightMotor.setControl(m_voltageOut.withOutput(m_setPoint_Right_Voltage));
         }
     }
 
-    public void setResetMode(boolean resetMode){
-        m_resetMode = resetMode;
+    public void togglePitMode(){
+        m_pitMode = !m_pitMode;
+        System.out.println("climber pitmode: " + m_pitMode);
+        Logger.recordOutput("Climber/PitMode", m_pitMode );
+    }
+
+    public boolean getPitMode(){
+        return m_pitMode;
     }
 
     // public void setSpeed(double desiredRotationsPerSecond){
