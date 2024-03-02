@@ -262,6 +262,11 @@ public class NoteSubSystem extends SubsystemBase {
                     setState(State.HAVE_NOTE1);
                     setAction(ActionRequest.IDLE);
                 }
+                else if(m_presentState == State.SHOOTING){
+                    //backside of note coming through
+                    setState(State.EMPTY);
+                    setAction(ActionRequest.IDLE);
+                }
                 break;
             case BEAM1:
                 
@@ -285,12 +290,11 @@ public class NoteSubSystem extends SubsystemBase {
                     // if ((m_Angle.atAngle() && m_Shooter.atSpeed()) || 
                         // (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
                         // System.out.println("  feed shooter");
-                        if (m_Angle.atAngle()){
-                            Logger.recordOutput("Note/Comment",  "feed shooter");
-                            m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
-                    // m_shootStopTime.restart();
-                            setState(State.SHOOTING);
-                            setAction(ActionRequest.IDLE);
+                if (m_Angle.atAngle()){
+                    Logger.recordOutput("Note/Comment",  "feed shooter");
+                    m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
+                    setState(State.SHOOTING);
+                    setAction(ActionRequest.IDLE);
                  }
                 // if ((m_presentState == State.SHOOTING) && 
                 //     ( m_shootStopTime.hasElapsed(Constants.SHOOTER.STOP_TIME))) {
