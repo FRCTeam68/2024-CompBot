@@ -18,7 +18,7 @@ public class TunerConstants {
     private static final Slot0Configs steerGains = new Slot0Configs()
         //.withKP(100).withKI(0).withKD(0.2)  //swerve wizard
         //.withKS(0).withKV(1.5).withKA(0);   //swerve wizard
-        .withKP(40).withKI(0).withKD(0)   //50,0.0  //16,0,0
+        .withKP(10).withKI(0).withKD(0)   //50,0.0  //16,0,0
         .withKS(0).withKV(0).withKA(0);
 
     // When using closed-loop control, the drive motor uses the control
