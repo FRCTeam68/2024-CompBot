@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.subsystems.ClimberSubSystem;
 import frc.robot.subsystems.NoteSubSystem;
-import frc.robot.subsystems.ClimberSubSystem.State;
 import frc.robot.subsystems.NoteSubSystem.ActionRequest;
 import frc.robot.subsystems.NoteSubSystem.Target;
 
@@ -74,7 +73,7 @@ public class RobotContainer {
   DigitalInput m_angleZeroLimitSwitch = new DigitalInput(2);
   Trigger m_angleZeroLimitSwitchTrigger = new Trigger(m_angleZeroLimitSwitch::get);
 
-  boolean m_climbActive = false;
+  private boolean m_climbActive = false;
   
   // Dashboard inputs
   private double m_autoWaitTimeSelected = 0;
@@ -130,6 +129,7 @@ public class RobotContainer {
     SmartDashboard.putBoolean("NoteSensor2", false);
     SmartDashboard.putBoolean("NoteSensor3", false);
     SmartDashboard.putBoolean("AngleLimitLowSwitch", false);
+    SmartDashboard.putBoolean("ClimberPitMode", false);
 
     m_autoWaitTimeChooser.setDefaultOption("none", "0");
     m_autoWaitTimeChooser.addOption("one", "1");
@@ -200,11 +200,12 @@ public class RobotContainer {
 
     m_ps4Controller.share().onTrue(Commands.runOnce(()->m_NoteSubSystem.resetSetpoints()));
 
-    m_ps4Controller.options().onTrue(Commands.runOnce(()->m_climbActive=true));
+    m_ps4Controller.options().onTrue(Commands.runOnce(()->m_climbActive=!m_climbActive)
+                                              .andThen(()->m_Climber.setPitMode(m_climbActive))
+                                              .andThen(()->SmartDashboard.putBoolean("ClimberPitMode", m_climbActive)));
 
-    //***************************
-    m_Climber.setDefaultCommand(Commands.run( () ->
-                m_Climber.setSpeedVout(-m_ps4Controller.getLeftY() * 12, -m_ps4Controller.getRightY() * 12), m_Climber));
+    m_Climber.setDefaultCommand(Commands.run( ()->m_Climber.setSpeedVout(-m_ps4Controller.getLeftY() * 12, 
+                                                                          m_ps4Controller.getRightY() * 12), m_Climber));
 
     // m_NoteSensorTrigger1.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", false)));
