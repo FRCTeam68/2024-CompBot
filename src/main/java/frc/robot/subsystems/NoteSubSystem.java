@@ -23,12 +23,11 @@ import frc.robot.Constants;
 public class NoteSubSystem extends SubsystemBase {
 
     public enum State{
-        EMPTY,
+         IDLE,
         INTAKING_NOTE1,
-        HAVE_NOTE1,
-        INTAKING_NOTE2,
-        HAVE_NOTE2,
-        SHOOTING, SHOOT_SPINNING
+        SHOOTING, 
+        SHOOT_SPINNING, 
+        SPITTING_NOTE
     }
 
     public enum Target{
@@ -37,7 +36,8 @@ public class NoteSubSystem extends SubsystemBase {
         TRAP,
         INTAKE,
         FEEDSTATION,
-        SPEAKER_PODIUM, SPEAKER_1M
+        SPEAKER_PODIUM, 
+        SPEAKER_1M
     }
 
     public enum ActionRequest{
@@ -45,22 +45,24 @@ public class NoteSubSystem extends SubsystemBase {
         STOP,
         INTAKENOTE,
         BEAM3,
-        BEAM1,
-        BEAM2,
+        // BEAM1,
+        // BEAM2,
         SPIT_NOTE2,
-        SHOOT, SHOOT_SPINUP
+        SHOOT, 
+        SHOOT_SPINUP
     }
 
     private State m_presentState;
     private ActionRequest m_wantedAction;
     private Target m_target;
+    private boolean m_haveNote1;
+    private boolean m_spunShooterUp;
     private RollerSubSystem m_Intake;
     private RollerSubSystem m_Feeder1;
     private RollerSubSystem m_Feeder2;
     private ShooterSubSystem m_Shooter;
     private AngleSubSystem m_Angle;
     private Timer m_shootStopTime;
-    private double m_angle_setpoint;
     private double m_shooter_setpoint;
     private double m_shooterRight_setpoint;
     private double m_shooterfeeder2_setpoint;
@@ -69,9 +71,11 @@ public class NoteSubSystem extends SubsystemBase {
     private double m_intake_setpoint;
 
     public NoteSubSystem(){
-        m_presentState = State.EMPTY;
+        m_presentState = State.IDLE;
         m_target = Target.SPEAKER;
         m_wantedAction = ActionRequest.IDLE;
+        setHaveNote1(false);
+        setShooterSpunUp(false);
 
         m_Intake = new RollerSubSystem("Intake", Constants.INTAKE.CANID, Constants.INTAKE.CANBUS, true);
         m_Feeder1 = new RollerSubSystem("Feeder1", Constants.FEEDER1.CANID, Constants.FEEDER1.CANBUS, false);
@@ -97,8 +101,23 @@ public class NoteSubSystem extends SubsystemBase {
     }
 
     public void resetSetpoints(){
-        // m_angle_setpoint=0;
-        m_shooter_setpoint = Constants.SHOOTER.SHOOT_SPEED;
+        
+        switch(m_target){
+            default:
+            case SPEAKER, SPEAKER_1M, SPEAKER_PODIUM:
+                m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                break;
+            case AMP:
+                m_shooter_setpoint = Constants.SHOOTER.AMP_SHOOT_SPEED;
+                break;
+            case TRAP:
+                m_shooter_setpoint = Constants.SHOOTER.TRAP_SHOOT_SPEED;
+                break;
+            // case FEEDSTATION:
+            //    not implemented yet
+            //     break;
+        }
+        
         m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;
         m_shooterfeeder2_setpoint = Constants.FEEDER2.SHOOT_SPEED;
 
@@ -119,6 +138,8 @@ public class NoteSubSystem extends SubsystemBase {
         builder.addDoubleProperty("setpoint/feeder2", this::getFeeder2SetpointSpeed,this::setFeeder2SetpointSpeed);
         builder.addDoubleProperty("setpoint/feeder1", this::getFeeder1SetpointSpeed,this::setFeeder1SetpointSpeed);
         builder.addDoubleProperty("setpoint/intake", this::getIntakeSetpointSpeed,this::setIntakeSetpointSpeed);
+        builder.addBooleanProperty("HaveNote1", this::getHaveNote1,null);
+        builder.addBooleanProperty("ShooterSpunUp", this::getShooterSpunUp,null);
     }
 
     
@@ -161,41 +182,53 @@ public class NoteSubSystem extends SubsystemBase {
     }
 
     public void setTarget(Target wantedTarget) {
-		m_target = wantedTarget;
-        // System.out.println("set note target: " + m_target.toString());
-        Logger.recordOutput("Note/Target",  m_target);
-        
 
-        switch(m_target){
-            default:
-            case SPEAKER:
-                m_Angle.setState(AngleSubSystem.State.SPEAKER);
-                break;
-            case SPEAKER_1M:
-                m_Angle.setState(AngleSubSystem.State.SPEAKER_1M);
-                break;
-            case AMP:
-                m_Angle.setState(AngleSubSystem.State.AMP);
-                break;
-            case TRAP:
-                m_Angle.setState(AngleSubSystem.State.TRAP);
-                break;
-            case INTAKE:
-                m_Angle.setState(AngleSubSystem.State.INTAKE);
-                break;
-            case FEEDSTATION:
-                m_Angle.setState(AngleSubSystem.State.FEEDSTATION);
-                break;
-            case SPEAKER_PODIUM:
-                m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
-                break;
+        if (wantedTarget != m_target){
+            m_target = wantedTarget;
+            Logger.recordOutput("Note/Comment",  "target change");
+            Logger.recordOutput("Note/Target",  m_target);
+            switch(m_target){
+                default:
+                case SPEAKER:
+                    m_Angle.setState(AngleSubSystem.State.SPEAKER);
+                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    break;
+                case SPEAKER_1M:
+                    m_Angle.setState(AngleSubSystem.State.SPEAKER_1M);
+                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    break;
+                case AMP:
+                    m_Angle.setState(AngleSubSystem.State.AMP);
+                    m_shooter_setpoint = Constants.SHOOTER.AMP_SHOOT_SPEED;
+                    break;
+                case TRAP:
+                    m_Angle.setState(AngleSubSystem.State.TRAP);
+                    m_shooter_setpoint = Constants.SHOOTER.TRAP_SHOOT_SPEED;
+                    break;
+                case INTAKE:
+                    m_Angle.setState(AngleSubSystem.State.INTAKE);
+                    break;
+                // case FEEDSTATION:
+                //   not implemented yet
+                //     m_Angle.setState(AngleSubSystem.State.FEEDSTATION);
+                //     break;
+                case SPEAKER_PODIUM:
+                    m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
+                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    break;
+            }
+
+            if (m_spunShooterUp){
+                m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
+                m_Shooter.setSpeed(m_shooter_setpoint);
+            }
         }
+
 
     }
 
     public void setAction(ActionRequest wantedAction) {
 		m_wantedAction = wantedAction;
-        // System.out.println("set note action request: " + m_wantedAction.toString());
         Logger.recordOutput("Note/Action",  m_wantedAction);
     }
 
@@ -207,42 +240,35 @@ public class NoteSubSystem extends SubsystemBase {
             case IDLE:
 
                 if (m_shootStopTime.hasElapsed(.3)){
-                    // shoot has started and timer elasped
-                    // account for BEAM3 action was missed that would have set back to empty
+                    // shooting  has started and timer elasped
+                    // account for BEAM3 action was missed that would have set back no NOTE1
                     m_shootStopTime.stop();
+                    m_shootStopTime.reset();
                     Logger.recordOutput("Note/Comment",  "shoot timer elapsed");
-                    if (m_presentState == State.HAVE_NOTE1){  
-                        m_Feeder2.setSpeed(0);
-                        setState(State.EMPTY);
+                    if (m_haveNote1){
+                        // we can leave it running  m_Feeder2.setSpeed(0);  
+                        setHaveNote1(false);
+                        setState(State.IDLE);
                     }
                 }
                 break;
-
             case STOP:
+                Logger.recordOutput("Note/Comment",  "stop all");
                 m_Intake.setSpeed(0);
                 m_Feeder1.setSpeed(0);
                 m_Feeder2.setSpeed(0);
                 m_Shooter.setSpeed(0);
-                // m_Angle.setState(AngleSubSystem.State.BRAKE);
-                setAction(ActionRequest.IDLE);
-
-                setState(State.EMPTY);
                 m_shootStopTime.stop();
-                // switch (m_presentState){
-                //     case INTAKING_NOTE1:
-                //         setState(State.EMPTY);
-                //         break;
-                //     case INTAKING_NOTE2:
-                //         setState(State.HAVE_NOTE1);
-                //         break;
-                //     case SHOOTING:
-                //         setState(State.HAVE_NOTE1);
-                //         break;
-                // }
+                m_shootStopTime.reset();
+                setShooterSpunUp(false);
+                setState(State.IDLE);
+                setAction(ActionRequest.IDLE);
                 break;
             case INTAKENOTE:
-                if (m_presentState != State.HAVE_NOTE1){
-                    setTarget(Target.INTAKE);   //incase user did not press X button
+                if (!m_haveNote1){
+                    if (m_target != Target.INTAKE){
+                        setTarget(Target.INTAKE);
+                    }
                     if (m_Angle.atAngle()){
                         Logger.recordOutput("Note/Comment",  "start intake");
                         m_Intake.setSpeed(m_intake_setpoint);
@@ -252,46 +278,55 @@ public class NoteSubSystem extends SubsystemBase {
                         setAction(ActionRequest.IDLE);
                      }
                 }
+                else{
+                    //we have a note.  do not intake
+                    setAction(ActionRequest.IDLE);
+                }
                 break;
             case BEAM3:
                 if (m_presentState == State.INTAKING_NOTE1){
-                    // System.out.println("  Beam3 - HAVE_NOTE1 - stop intake");
                     Logger.recordOutput("Note/Comment",  "stop intake");
                     m_Feeder2.setSpeed(0);
                     m_Feeder1.setSpeed(0);
                     m_Intake.setSpeed(0);
-                    setState(State.HAVE_NOTE1);
+                    m_shootStopTime.stop();
+                    m_shootStopTime.reset();
+                    setHaveNote1(true);
+                    setState(State.IDLE);
                     setAction(ActionRequest.IDLE);
                 }
                 else if(m_presentState == State.SHOOTING){
+                    Logger.recordOutput("Note/Comment",  "note shot");
                     //backside of note coming through
-                    m_Feeder2.setSpeed(0);
-                    setState(State.EMPTY);
+                    // it can keep running -- m_Feeder2.setSpeed(0);
+                    m_shootStopTime.stop();
+                    m_shootStopTime.reset();
+                    setHaveNote1(false);
+                    setState(State.IDLE);
                     setAction(ActionRequest.IDLE);
                 }
                 break;
-            case BEAM1:
-                
-                break;
-            case BEAM2:
-                
-                break;
             case SPIT_NOTE2:
-
+                setTarget(Target.INTAKE);
+                if (m_Angle.atAngle()){
+                    Logger.recordOutput("Note/Comment",  "spit note");
+                    m_Intake.setSpeed(-m_intake_setpoint);
+                    m_Feeder1.setSpeed(-m_feeder1_setpoint);
+                    setState(State.SPITTING_NOTE);
+                    setAction(ActionRequest.IDLE);
+                    }
                 break;
             case SHOOT_SPINUP:
                     Logger.recordOutput("Note/Comment",  "spinup shooter");
                     m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
                     m_Shooter.setSpeed(m_shooter_setpoint);
-                    // m_shootSpinUpTime.restart();
-                    setState(State.SHOOT_SPINNING);
+                    setShooterSpunUp(true);
                     setAction(ActionRequest.IDLE);
                 break;
             case SHOOT:
-                // if (m_shootSpinUpTime.hasElapsed(Constants.SHOOTER.ATSPEED_TIMEOUT)){
-                    // if ((m_Angle.atAngle() && m_Shooter.atSpeed()) || 
-                        // (m_timeout.hasElapsed(Constants.ANGLE.ATANGLE_TIMEOUT))) {
-                        // System.out.println("  feed shooter");
+
+                //  if (m_Shooter.atSpeed()) -- not implemented yet
+
                 if (m_Angle.atAngle()){
                     Logger.recordOutput("Note/Comment",  "feed shooter");
                     m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
@@ -299,22 +334,28 @@ public class NoteSubSystem extends SubsystemBase {
                     m_shootStopTime.restart();
                     setAction(ActionRequest.IDLE);
                  }
-                // if ((m_presentState == State.SHOOTING) && 
-                //     ( m_shootStopTime.hasElapsed(Constants.SHOOTER.STOP_TIME))) {
-                //     // System.out.println("  coast out shooter");
-                //     Logger.recordOutput("Note/Comment",  "coastout shooter");
-                //     m_Shooter.setSpeed(0);
-                //     m_Feeder2.setSpeed(0);
-                //     setState(State.EMPTY);
-                //     setAction(ActionRequest.IDLE);
-                // }
                 break;
         }
     }
 
+    public void setHaveNote1(boolean haveNote1){
+        m_haveNote1 = haveNote1;
+        Logger.recordOutput("Note/HaveNote1",  m_haveNote1);
+    }
+    public boolean getHaveNote1(){
+        return this.m_haveNote1;
+    }
+
+    public void setShooterSpunUp(boolean spunUp){
+        m_spunShooterUp = spunUp;
+        Logger.recordOutput("Note/shooterSpunUp",  m_spunShooterUp);
+    }
+    public boolean getShooterSpunUp(){
+        return this.m_spunShooterUp;
+    }
+
     private void setState(State desiredStation){
         m_presentState = desiredStation;
-        // System.out.println("  set note state: " + m_presentState.toString());
         Logger.recordOutput("Note/State",  m_presentState);
     }
     public State getState(){
