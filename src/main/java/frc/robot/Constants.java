@@ -41,7 +41,7 @@ public final class Constants {
     public static final class INTAKE {
         public static final int CANID = 20;
         public static final String CANBUS = "DRIVEbus";
-        public static final double TAKE_NOTE_SPEED = 40;
+        public static final double TAKE_NOTE_SPEED = 20;
         public static final double SPIT_NOTE_SPEED = 30;
         public static final double BUMP_VALUE = 0.2;  // 50 counts / second = 10rps
     }
