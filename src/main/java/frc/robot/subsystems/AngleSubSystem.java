@@ -191,7 +191,7 @@ public class AngleSubSystem extends SubsystemBase {
 
     public void setPosition(double desiredPosition){
 
-        System.out.println("  set angle desired position: " + desiredPosition);
+        // System.out.println("  set angle desired position: " + desiredPosition);
         if (desiredPosition < Constants.ANGLE.MIN_POSITION){
             m_setPoint_Position = Constants.ANGLE.MIN_POSITION;
             System.out.println("  trimmed to min position: " + Constants.ANGLE.MIN_POSITION);
@@ -230,6 +230,7 @@ public class AngleSubSystem extends SubsystemBase {
 
     public boolean atAngle(){
         boolean conditionMet =  Math.abs(m_setPoint_Position-m_filteredPosition) < 1.0;
+        //conditionMet = true;  //for simulation since position always comes back 0
         return conditionMet;
     }
 
@@ -284,7 +285,7 @@ public class AngleSubSystem extends SubsystemBase {
 
         double desiredPosition = 0;
 
-        System.out.println("set angle state: " + m_presentState.toString());
+        // System.out.println("set angle state: " + m_presentState.toString());
         Logger.recordOutput("Angle/State",  m_presentState);
 
         switch(m_presentState){

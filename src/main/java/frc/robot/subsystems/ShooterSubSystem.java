@@ -171,8 +171,8 @@ public class ShooterSubSystem extends SubsystemBase {
             m_setPoint_Right_Speed = 0;
             m_shooterLeftMotor.setControl(m_coast);
             m_shooterRightMotor.setControl(m_coast);
-            Logger.recordOutput("Shooter/setLeftSpeed", 0);
-            Logger.recordOutput("Shooter/setRightSpeed", 0);
+            Logger.recordOutput("Shooter/setLeftSpeed", m_setPoint_Left_Speed);
+            Logger.recordOutput("Shooter/setRightSpeed", m_setPoint_Right_Speed);
         }
         else {
             if (desiredRotationsPerSecond > Constants.SHOOTER.MAX_SPEED){

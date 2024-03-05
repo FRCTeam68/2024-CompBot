@@ -65,7 +65,9 @@ public final class Constants {
         public static final int RIGHT_CANID = 31;
         public static final String CANBUS = "rio";
         public static final double MAX_SPEED = 100;  // rps
-        public static final double SHOOT_SPEED = 80;
+        public static final double SPEAKER_SHOOT_SPEED = 80;
+        public static final double TRAP_SHOOT_SPEED = 40; 
+        public static final double AMP_SHOOT_SPEED = 20;  
         public static final double RIGHT_OFFSET = 0;
         public static final double BUMP_VALUE = 1;   // rps
         public static final double SPINUP_TIME = 2;  // seconds
@@ -84,9 +86,9 @@ public final class Constants {
         // so AMP and TRAP are also 0
         //motor rotations
         public static final double MIN_POSITION = 0;  
-        public static final double MAX_POSITION = 28;
-        public static final double AMP = 0; 
-        public static final double TRAP = 0;
+        public static final double MAX_POSITION = 50;
+        public static final double AMP = 2;
+        public static final double TRAP = 0;   //distance 1.57M
         public static final double SPEAKER = 0;
         public static final double SPEAKER_1M = 20;
         public static final double SPEAKER_PODIUM = 22; //24
