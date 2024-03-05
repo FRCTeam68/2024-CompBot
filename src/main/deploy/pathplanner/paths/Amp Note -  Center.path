@@ -4,79 +4,52 @@
     {
       "anchor": {
         "x": 2.59,
-        "y": 6.91
+        "y": 6.86
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.594360977624694,
-        "y": 6.918720072215529
+        "y": 6.868720072215529
       },
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.4399011268331336,
-        "y": 6.50308873064302
+        "x": 2.147408380327451,
+        "y": 6.054599852667639
       },
       "prevControl": {
-        "x": 2.38555690347144,
-        "y": 6.776943461656666
+        "x": 2.176657654978019,
+        "y": 6.42509066490817
       },
       "nextControl": {
-        "x": 2.494245350194827,
-        "y": 6.229233999629374
+        "x": 2.1197795167007083,
+        "y": 5.704634246728899
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.82,
-        "y": 5.84
+        "x": 2.59,
+        "y": 5.586611458258547
       },
       "prevControl": {
-        "x": 2.7693155854047458,
-        "y": 5.73865305591807
-      },
-      "nextControl": {
-        "x": 2.870684414595254,
-        "y": 5.941346944081929
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.4399011268331336,
-        "y": 5.459864601439417
-      },
-      "prevControl": {
-        "x": 2.43014968441596,
-        "y": 5.440365927196783
+        "x": 2.5802485575828262,
+        "y": 5.567112784015913
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0,
-      "rotationDegrees": -82.23022866609632,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 2,
-      "rotationDegrees": -69.99566492080041,
-      "rotateFast": false
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Start Intake",
-      "waypointRelativePos": 0.75,
+      "waypointRelativePos": 0.1,
       "command": {
         "type": "parallel",
         "data": {
@@ -100,7 +73,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 1.3639275316027455,
+    "rotation": 1.0230301886678932,
     "rotateFast": false
   },
   "reversed": false,
