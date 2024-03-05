@@ -12,6 +12,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 
     /**
@@ -88,7 +89,7 @@ public class Vision {
      */
     public double aimWithYawAtTarget(PhotonTrackedTarget target) {
         // Ori, what are you doing!?
-        return TunerConstants.steerPID.calculate(target.getYaw(), 0);
+        return TunerConstants.steerPID.calculate(Math.toRadians(target.getYaw()), Math.toRadians(Robot.m_robotContainer.m_DriveSubSystem.getPigeon2().getYaw().getValue()));
     }
 
     //Slightly less useful one

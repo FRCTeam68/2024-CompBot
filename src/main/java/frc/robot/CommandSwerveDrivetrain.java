@@ -72,7 +72,7 @@ private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric(
             this); // Subsystem for requirements
     }
 
-    public Command drive(Supplier<SwerveRequest> requestSupplier, CommandXboxController xboxController) { 
+    public Command drive(Supplier<SwerveRequest.FieldCentric> requestSupplier, CommandXboxController xboxController) { 
         return run(() -> this.actuallyDrive(requestSupplier.get(), xboxController));
     }
 
@@ -85,23 +85,26 @@ private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric(
         return new PathPlannerAuto(pathName);
     }
 
-    public void actuallyDrive(SwerveRequest request,CommandXboxController xboxController) {
+    public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
         if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
         {
             Vision vision = Robot.m_robotContainer.m_Vision;
             PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(Constants.Vision.tallThingFiscal, vision.getCurrentTargets());
             if (wantedTarget != null) {
+                
                 double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget));
                 double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
                 System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
                 
-                this.setControl(Robot.m_robotContainer.drive.withRotationalRate(angleSpeed*10));
+                this.setControl(Robot.m_robotContainer.drive.withRotationalRate(angleSpeed));
                 return;
             }
 
         }
+        
+        ChassisSpeeds speeds = ChassisSpeeds.discretize(request.VelocityX, request.VelocityY, request.RotationalRate, 0.02);
 
-        this.setControl(request);
+        this.setControl(request.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond));
     }
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {

@@ -15,6 +15,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -106,7 +107,8 @@ public class RobotContainer {
         m_DriveSubSystem.drive(() -> drive.withVelocityX(-m_xboxController.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-m_xboxController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-m_xboxController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            .withRotationalRate(-m_xboxController.getRightX() * MaxAngularRate)
+           // Drive counterclockwise with negative X (left)
         , m_xboxController).ignoringDisable(true));
 
     m_xboxController.a().whileTrue(m_DriveSubSystem.applyRequest(() -> brake));
