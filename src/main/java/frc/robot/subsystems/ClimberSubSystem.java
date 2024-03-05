@@ -77,6 +77,7 @@ public class ClimberSubSystem extends SubsystemBase {
 
         configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         /* Retry config apply up to 5 times, report if failure */
         StatusCode status = StatusCode.StatusCodeNotInitialized;
         for (int i = 0; i < 5; ++i) {
@@ -119,12 +120,12 @@ public class ClimberSubSystem extends SubsystemBase {
             // System.out.println("set left zero");
             m_setPoint_Left_Voltage = 0;
         }
-        else if ((desiredVoltage > 1) && (m_leftPosition > Constants.CLIMBER.MAX_HEIGHT)){
+        else if ((desiredVoltage < -1) && (m_leftPosition < -Constants.CLIMBER.MAX_HEIGHT)){
             //asking to travel up, but already at max height
             System.out.println("left climber max height reached");
             m_setPoint_Left_Voltage = 0;
         } 
-        else if ((desiredVoltage < -1) && (m_leftPosition <= 0)){
+        else if ((desiredVoltage > 1) && (m_leftPosition >=0)){
             //asking to travel down, but already at min height
             //    resetMode active needs negative values to respool climber in the pits
             //    because when you turn robot on position will be zero.
@@ -158,12 +159,12 @@ public class ClimberSubSystem extends SubsystemBase {
             // System.out.println("set left zero");
             m_setPoint_Right_Voltage = 0;
         }
-        else if ((desiredVoltage < -1) && (m_rightPosition > Constants.CLIMBER.MAX_HEIGHT)){
+        else if ((desiredVoltage > 1) && (m_rightPosition > Constants.CLIMBER.MAX_HEIGHT)){
             //asking to travel up, but already at max height
             System.out.println("right climber max height reached");
             m_setPoint_Right_Voltage = 0;
         } 
-        else if ((desiredVoltage > 1) && (m_rightPosition <= 0)){
+        else if ((desiredVoltage < -1) && (m_rightPosition <= 0)){
             //asking to travel down, but already at min height
             //    resetMode active needs negative values to respool climber in the pits
             //    because when you turn robot on position will be zero.

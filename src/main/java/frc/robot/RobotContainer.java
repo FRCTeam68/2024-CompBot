@@ -204,8 +204,8 @@ public class RobotContainer {
                                               .andThen(()->m_Climber.setPitMode(m_climbActive))
                                               .andThen(()->SmartDashboard.putBoolean("ClimberPitMode", m_climbActive)));
 
-    m_Climber.setDefaultCommand(Commands.run( ()->m_Climber.setSpeedVout(-m_ps4Controller.getLeftY() * 12, 
-                                                                          m_ps4Controller.getRightY() * 12), m_Climber));
+    m_Climber.setDefaultCommand(Commands.run( ()->m_Climber.setSpeedVout(m_ps4Controller.getLeftY() * 12, 
+                                                                          -m_ps4Controller.getRightY() * 12), m_Climber));
 
     // m_NoteSensorTrigger1.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", false)));
