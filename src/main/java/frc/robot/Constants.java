@@ -102,6 +102,6 @@ public final class Constants {
         public static final int LEFT_CANID = 40;
         public static final int RIGHT_CANID = 41;
         public static final String CANBUS = "DRIVEbus";
-        public static final double MAX_HEIGHT = 9;   //inches
+        public static final double MAX_HEIGHT = 100;   //100 rotates is about 9in
     }
 }
