@@ -2,8 +2,6 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
@@ -33,7 +31,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric().withDeadband(0.1).withRotationalDeadband(0.1);
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
@@ -88,26 +85,29 @@ private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric(
     public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
          Vision vision = Robot.m_robotContainer.m_Vision;
          double stageD = vision.distanceToStage();
-         System.out.println(stageD);
+
         if (stageD > 1.5 && stageD < 1.7) {
-            System.out.println("Shootable!");
+           
         }
+        /*
         if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
         {
            
-            PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(Constants.Vision.tallThingFiscal, vision.getCurrentTargets());
+            PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(15, vision.getCurrentTargets());
             if (wantedTarget != null) {
-                System.out.println("Shooter Angle: " + vision.shooterSpeedFromDist(wantedTarget));
-                double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget));
+                System.out.println("Robot Angle: " + vision.getYawToTarget(wantedTarget));
+                double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget))*0.1;
                 double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
                 System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
                 
-                this.setControl(Robot.m_robotContainer.drive.withRotationalRate(angleSpeed));
+                this.setControl(Robot.m_robotContainer.drive.withRotationalRate(1));
                 return;
             }
 
         }
-        
+        */
+
+        // Test driving with this in and see how it feels.
         ChassisSpeeds speeds = ChassisSpeeds.discretize(request.VelocityX, request.VelocityY, request.RotationalRate, 0.02);
 
         this.setControl(request.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond));

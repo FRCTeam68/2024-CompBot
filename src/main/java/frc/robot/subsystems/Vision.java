@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
@@ -75,7 +74,7 @@ public class Vision {
         fPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.frontCameraLocation);
         bPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.backCameraLocation);
         */
-        stageTags = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Constants.BLUE_TAGS.stage : Constants.RED_TAGS.stage;
+        // stageTags = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Constants.BLUE_TAGS.stage : Constants.RED_TAGS.stage;
         stageTags = Constants.BLUE_TAGS.stage;
         cameraInUse = camF;
         currentCamTrans = Constants.Vision.frontCameraLocation;
@@ -116,6 +115,10 @@ public class Vision {
         return 0;
     }
 
+    public double getYawToTarget(PhotonTrackedTarget target) {
+        return target.getYaw();
+    }
+
     // Probably the most useful one
     /**
      * @apiNote Probably best to refresh the target every cycle for ACCURACY! (Sein would do it)
@@ -124,7 +127,7 @@ public class Vision {
      */
     public double aimWithYawAtTarget(PhotonTrackedTarget target) {
         // Ori, what are you doing!?
-        return TunerConstants.steerPID.calculate(Math.toRadians(target.getYaw()), Math.toRadians(Robot.m_robotContainer.m_DriveSubSystem.getPigeon2().getYaw().getValue()));
+        return TunerConstants.steerPID.calculate(Math.toRadians(target.getYaw()), Math.toRadians(Robot.m_robotContainer.m_DriveSubSystem.getPigeon2().getYaw().getValue())+7.92);
     }
 
     //Slightly less useful one

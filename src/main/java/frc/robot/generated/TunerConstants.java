@@ -26,7 +26,7 @@ public class TunerConstants {
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     public static final Slot0Configs driveGains = new Slot0Configs()
         //.withKP(3).withKI(0).withKD(0)      //swerve wizard
-        .withKP(4).withKI(0).withKD(0)    //4,0,0
+        .withKP(28).withKI(0).withKD(0)    //4,0,0
         .withKS(0).withKV(0).withKA(0);
 
 
