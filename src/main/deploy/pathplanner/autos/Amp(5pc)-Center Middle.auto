@@ -136,6 +136,36 @@
           "data": {
             "name": "shoot"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Note - Middle 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle C - Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "target_speaker_1m"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
         }
       ]
     }
