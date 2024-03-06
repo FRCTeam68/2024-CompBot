@@ -162,7 +162,7 @@ public class RobotContainer {
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-m_xboxController.getLeftY(), -m_xboxController.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
-    m_xboxController.leftBumper().onTrue(m_DriveSubSystem.runOnce(() -> m_DriveSubSystem.seedFieldRelative()));
+    m_xboxController.back().onTrue(m_DriveSubSystem.runOnce(() -> m_DriveSubSystem.seedFieldRelative()));
 
     if (Utils.isSimulation()) {
       m_DriveSubSystem.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
@@ -175,16 +175,28 @@ public class RobotContainer {
     m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
 
 
-    m_ps4Controller.triangle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
+    m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
+    m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
+    m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+
+    m_xboxController.leftTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
+    m_xboxController.rightTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
+    m_xboxController.leftBumper().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SPIT_NOTE2)));
+    m_xboxController.rightBumper().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP)));
+    m_xboxController.start().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
+
+    m_ps4Controller.triangle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_ps4Controller.circle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
     m_ps4Controller.square().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
-    m_ps4Controller.cross().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
+    m_ps4Controller.cross().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
 
-    m_ps4Controller.L2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
-    m_ps4Controller.R2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
-    m_ps4Controller.L1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SPIT_NOTE2)));
-    m_ps4Controller.R1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP)));
-    m_ps4Controller.touchpad().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
+    // m_ps4Controller.L2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
+    // m_ps4Controller.R2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
+    // m_ps4Controller.L1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SPIT_NOTE2)));
+    // m_ps4Controller.R1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP)));
+    // m_ps4Controller.touchpad().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
+
     m_ps4Controller.options().onTrue(Commands.runOnce(()->m_NoteSubSystem.setHaveNote1(false)));
 
     m_ps4Controller.povLeft().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpShooterSpeed((-Constants.SHOOTER.BUMP_VALUE))));

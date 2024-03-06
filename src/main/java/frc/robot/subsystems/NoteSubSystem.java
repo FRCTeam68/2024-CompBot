@@ -192,18 +192,22 @@ public class NoteSubSystem extends SubsystemBase {
                 case SPEAKER:
                     m_Angle.setState(AngleSubSystem.State.SPEAKER);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    if (!m_spunShooterUp){spinUp();}
                     break;
                 case SPEAKER_1M:
                     m_Angle.setState(AngleSubSystem.State.SPEAKER_1M);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    if (!m_spunShooterUp){spinUp();}
                     break;
                 case AMP:
                     m_Angle.setState(AngleSubSystem.State.AMP);
                     m_shooter_setpoint = Constants.SHOOTER.AMP_SHOOT_SPEED;
+                    if (!m_spunShooterUp){spinUp();}
                     break;
                 case TRAP:
                     m_Angle.setState(AngleSubSystem.State.TRAP);
                     m_shooter_setpoint = Constants.SHOOTER.TRAP_SHOOT_SPEED;
+                    if (!m_spunShooterUp){spinUp();}
                     break;
                 case INTAKE:
                     m_Angle.setState(AngleSubSystem.State.INTAKE);
@@ -265,10 +269,10 @@ public class NoteSubSystem extends SubsystemBase {
                 setAction(ActionRequest.IDLE);
                 break;
             case INTAKENOTE:
+                if (m_target != Target.INTAKE){
+                    setTarget(Target.INTAKE);
+                }
                 if (!m_haveNote1){
-                    if (m_target != Target.INTAKE){
-                        setTarget(Target.INTAKE);
-                    }
                     if (m_Angle.atAngle()){
                         Logger.recordOutput("Note/Comment",  "start intake");
                         m_Intake.setSpeed(m_intake_setpoint);
@@ -312,15 +316,14 @@ public class NoteSubSystem extends SubsystemBase {
                     Logger.recordOutput("Note/Comment",  "spit note");
                     m_Intake.setSpeed(-m_intake_setpoint);
                     m_Feeder1.setSpeed(-m_feeder1_setpoint);
+                    m_Feeder2.setSpeed(-m_feeder2_setpoint);
                     setState(State.SPITTING_NOTE);
                     setAction(ActionRequest.IDLE);
                     }
                 break;
             case SHOOT_SPINUP:
                     Logger.recordOutput("Note/Comment",  "spinup shooter");
-                    m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
-                    m_Shooter.setSpeed(m_shooter_setpoint);
-                    setShooterSpunUp(true);
+                    spinUp();
                     setAction(ActionRequest.IDLE);
                 break;
             case SHOOT:
@@ -336,6 +339,12 @@ public class NoteSubSystem extends SubsystemBase {
                  }
                 break;
         }
+    }
+
+    private void spinUp(){
+        m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
+        m_Shooter.setSpeed(m_shooter_setpoint);
+        setShooterSpunUp(true);
     }
 
     public void setHaveNote1(boolean haveNote1){
