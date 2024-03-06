@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
@@ -56,6 +57,8 @@ public class Vision {
     private PhotonCamera camF;
     private PhotonCamera camB;
 
+    private int[] stageTags;
+
     // {Distance, Shooter angle} -> Linear InterORIation
     private double[][] distanceAngles = {{1.74, 0}, {2.69, 12}, {3.69, 28}, {4.65, 32}, {5.65, 38}, {6.70, 40}};
 
@@ -72,10 +75,30 @@ public class Vision {
         fPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.frontCameraLocation);
         bPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.backCameraLocation);
         */
+        stageTags = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Constants.BLUE_TAGS.stage : Constants.RED_TAGS.stage;
+        stageTags = Constants.BLUE_TAGS.stage;
         cameraInUse = camF;
         currentCamTrans = Constants.Vision.frontCameraLocation;
     }
 
+
+    // Getting more specific
+   
+    public double distanceToStage() {
+        if (!resultsInUse.hasTargets()) 
+            return 0;
+        if (resultsInUse.getTargets().size() != 1)
+            return 0;
+        PhotonTrackedTarget target = resultsInUse.getBestTarget();
+        for (int tagID : stageTags) {
+            
+            if (target.getFiducialId() == tagID) {
+                return target.getBestCameraToTarget().getX();
+            } 
+        }
+        
+        return 0;
+    }
 
     public Pose3d getRobotLocation(PhotonTrackedTarget target){
         
@@ -126,6 +149,8 @@ public class Vision {
         return speakerMap.get(Math.sqrt(Math.pow(target.getBestCameraToTarget().getX(),2) + Math.pow(target.getBestCameraToTarget().getY(), 2)));
     }
 
+    // Target stuff /////////////////////////////////////////////////
+
     public PhotonTrackedTarget getFiscalIDTarget(int id, List<PhotonTrackedTarget> visibleTargets) {
         if (visibleTargets == null){
             return null;
@@ -151,6 +176,11 @@ public class Vision {
             return null;
         return resultsInUse.getBestTarget();
     }
+
+
+
+    // Just a bunch of Camera stuff because it needs to be there
+
     /**
      * Call once every loop?
      */

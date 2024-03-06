@@ -86,12 +86,18 @@ private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric(
     }
 
     public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
+         Vision vision = Robot.m_robotContainer.m_Vision;
+         double stageD = vision.distanceToStage();
+         System.out.println(stageD);
+        if (stageD > 1.5 && stageD < 1.7) {
+            System.out.println("Shootable!");
+        }
         if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
         {
-            Vision vision = Robot.m_robotContainer.m_Vision;
+           
             PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(Constants.Vision.tallThingFiscal, vision.getCurrentTargets());
             if (wantedTarget != null) {
-                
+                System.out.println("Shooter Angle: " + vision.shooterSpeedFromDist(wantedTarget));
                 double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget));
                 double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
                 System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));

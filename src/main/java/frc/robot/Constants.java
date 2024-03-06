@@ -120,4 +120,12 @@ public final class Constants {
         public static final int tallThingFiscal = 8;
         public static final double tallThingHeight = Units.inchesToMeters(57);
     }
+
+    public static final class RED_TAGS {
+        public static final int[] stage = {11,12,13};
+    }
+
+    public static final class BLUE_TAGS {
+        public static final int[] stage = {14,15,16};
+    }
 }
