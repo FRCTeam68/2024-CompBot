@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -8,6 +10,7 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +20,7 @@ public class AngleSubSystem extends SubsystemBase {
 
     public enum State{
         SPEAKER,
+        SPEAKER_1M,
         AMP,
         TRAP,
         INTAKE,
@@ -37,6 +41,8 @@ public class AngleSubSystem extends SubsystemBase {
     private double m_setPoint_Position;
     private double m_setPoint_Adjust;
     private double m_speaker_position;
+    private double m_speaker_1m_position;
+    private double m_speaker_podium_position;
     private double m_amp_position;
     private double m_trap_position;
     private double m_intake_position;
@@ -47,11 +53,15 @@ public class AngleSubSystem extends SubsystemBase {
     private NeutralOut m_brake;
     private Timer m_bumpTimer;
     private double m_bumpCount;
+    private LinearFilter m_atAngleFilter;
+    private double m_filteredPosition;
 
     public AngleSubSystem(){
         m_presentState = State.SPEAKER;
         m_presentMode = Mode.MMV;
         m_speaker_position = Constants.ANGLE.SPEAKER;
+        m_speaker_1m_position = Constants.ANGLE.SPEAKER_1M;
+        m_speaker_podium_position = Constants.ANGLE.SPEAKER_PODIUM;
         m_amp_position = Constants.ANGLE.AMP;
         m_trap_position = Constants.ANGLE.TRAP;
         m_intake_position = Constants.ANGLE.INTAKE;
@@ -60,16 +70,19 @@ public class AngleSubSystem extends SubsystemBase {
         m_bumpTimer = new Timer();
         m_bumpTimer.start();
         m_bumpCount = 0;
+        m_atAngleFilter = LinearFilter.movingAverage(5);
+        m_filteredPosition = 0;
 
         angleMotorInit();
 
         System.out.println("Angle subsystem created.    mode: " + m_presentMode.toString());
+        Logger.recordOutput("Angle/Comment",  "Angle subsystem created");
     }
 
     private void angleMotorInit(){
         m_angleLeftMotor = new TalonFX(Constants.ANGLE.LEFT_CANID, "rio");
         m_angleRightMotor = new TalonFX(Constants.ANGLE.RIGHT_CANID, "rio");
-        m_angleRightMotor.setControl(new Follower(Constants.ANGLE.LEFT_CANID, true));
+        //m_angleRightMotor.setControl(new Follower(Constants.ANGLE.LEFT_CANID, true));
 
         m_angleMotorMMV = new MotionMagicVoltage(Constants.ANGLE.SPEAKER);  
 
@@ -78,17 +91,17 @@ public class AngleSubSystem extends SubsystemBase {
 
         TalonFXConfiguration cfg = new TalonFXConfiguration();
         /* Configure current limits */
-        cfg.MotionMagic.MotionMagicCruiseVelocity = 80; //106; // 5 rotations per second cruise
-        cfg.MotionMagic.MotionMagicAcceleration = 100; // Take approximately 0.5 seconds to reach max vel
-        cfg.MotionMagic.MotionMagicJerk = 700;   
+        cfg.MotionMagic.MotionMagicCruiseVelocity = 20; //80; //106; // 5 rotations per second cruise
+        cfg.MotionMagic.MotionMagicAcceleration = 40; //100; // Take approximately 0.5 seconds to reach max vel
+        cfg.MotionMagic.MotionMagicJerk = 400;  //700;   
 
         cfg.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 		// m_angleLeftMotor.setInverted(true);
         
-        cfg.Slot0.kP = 55.0F;
+        cfg.Slot0.kP = 4.8F; //55.0F;
         cfg.Slot0.kI = 0.0F;
         cfg.Slot0.kD = 0.0F;
-        cfg.Slot0.kV = 0.0F;
+        cfg.Slot0.kV = 0.1; //0.0F;
         cfg.Slot0.kS = 0.25F; // Approximately 0.25V to get the mechanism moving
 
         cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -100,63 +113,92 @@ public class AngleSubSystem extends SubsystemBase {
           if (status.isOK()) break;
         }
         if (!status.isOK()) {
-          System.out.println("Could not configure rotate motor. Error: " + status.toString());
+          System.out.println("Could not configure left angle motor. Error: " + status.toString());
         }
 
+        //------------------------------------------
+        TalonFXConfiguration cfgRight = new TalonFXConfiguration();
+        /* Configure current limits */
+        cfgRight.MotionMagic.MotionMagicCruiseVelocity = 80; //106; // 5 rotations per second cruise
+        cfgRight.MotionMagic.MotionMagicAcceleration = 100; // Take approximately 0.5 seconds to reach max vel
+        
+        cfgRight.Slot0.kP = 55.0F;
+        cfgRight.Slot0.kI = 0.0F;
+        cfgRight.Slot0.kD = 0.0F;
+        cfgRight.Slot0.kV = 0.0F;
+        cfgRight.Slot0.kS = 0.25F; // Approximately 0.25V to get the mechanism moving
+
+        cfgRight.CurrentLimits.SupplyCurrentLimitEnable = true;
+        cfgRight.CurrentLimits.SupplyCurrentLimit = 30.0;
+
+        status = StatusCode.StatusCodeNotInitialized;
+        for(int i = 0; i < 5; ++i) {
+          status = m_angleRightMotor.getConfigurator().apply(cfgRight);
+          if (status.isOK()) break;
+        }
+        if (!status.isOK()) {
+          System.out.println("Could not configure right angle motor. Error: " + status.toString());
+        }
+
+        m_angleRightMotor.setControl(new Follower(Constants.ANGLE.LEFT_CANID, true));
+
         m_angleMotorMMV.OverrideBrakeDurNeutral = true;
-        m_angleLeftMotor.setVoltage(0);
+        
         // m_angleMotor.setSafetyEnabled(false);
 
         zeroAngleSensor(); 
     }
 
     public void zeroAngleSensor(){
-        // m_rotateMotor.setRotorPosition(0);  no setRotorPosition anymore.  does setPosition do the same thing???
+        m_angleLeftMotor.setVoltage(0);
+        // m_angleLeftMotor.setControl(m_brake);
         m_angleLeftMotor.setPosition(0);
-        //move arm to speaker '0' position
-        //  No need to zero.   absolute CAN coder position will be used.
-        //  so if it starts off zero, it will go to zero upon going to Nuetral state 
-        //NOPE, magnet offset did not work.   go back to set rotor to zero.
+        // m_angleRightMotor.setPosition(0);
+        m_setPoint_Position=Constants.ANGLE.MIN_POSITION;   //0
+        System.out.println("zeroAngleSensor");
     }
 
-    public void setPositionJoy(double desiredAjustPosition){
-        m_bumpCount = m_bumpCount + 1;
-        if ((Math.abs(desiredAjustPosition)>0.5) && (m_bumpTimer.hasElapsed(1))) {
-            m_bumpTimer.restart();
+    // public void setPositionJoy(double desiredAjustPosition){
+    //     m_bumpCount = m_bumpCount + 1;
+    //     if ((Math.abs(desiredAjustPosition)>0.5) && (m_bumpTimer.hasElapsed(1))) {
+    //         m_bumpTimer.restart();
             
-            m_setPoint_Adjust = m_setPoint_Adjust + desiredAjustPosition*Constants.ANGLE.BUMP_VALUE;
-            System.out.println("desired: " + desiredAjustPosition
-                               + "setpoint: " + m_setPoint_Position 
-                               + ", plus: " + m_setPoint_Adjust
-                               + ", count: " + m_bumpCount);
-            setPosition(m_setPoint_Position + m_setPoint_Adjust);
-        }
-    }
+    //         m_setPoint_Adjust = m_setPoint_Adjust + desiredAjustPosition*Constants.ANGLE.BUMP_VALUE;
+    //         System.out.println("desired: " + desiredAjustPosition
+    //                            + "setpoint: " + m_setPoint_Position 
+    //                            + ", plus: " + m_setPoint_Adjust
+    //                            + ", count: " + m_bumpCount);
+    //         setPosition(m_setPoint_Position + m_setPoint_Adjust);
+    //     }
+    // }
 
     public void bumpPosition(double bumpAmount){
         double new_value = m_setPoint_Position + bumpAmount;
-        if (Math.abs(new_value) < 1){
-            new_value = bumpAmount < 0? -1 : 1;
-        }
+        // if (Math.abs(new_value) < 1){
+        //     new_value = bumpAmount < 0? -1 : 1;
+        // }
         setPosition(new_value);
     }
 
     public void setPosition(double desiredPosition){
 
-        System.out.println("  set angle desired position: " + desiredPosition);
+        // System.out.println("  set angle desired position: " + desiredPosition);
         if (desiredPosition < Constants.ANGLE.MIN_POSITION){
             m_setPoint_Position = Constants.ANGLE.MIN_POSITION;
             System.out.println("  trimmed to min position: " + Constants.ANGLE.MIN_POSITION);
+            Logger.recordOutput("Angle/Comment",  "trimmed to min position: " + Constants.ANGLE.MIN_POSITION);
         }
         else if (desiredPosition > Constants.ANGLE.MAX_POSITION){
             m_setPoint_Position = Constants.ANGLE.MAX_POSITION;
             System.out.println("  trimmed to max position: " + Constants.ANGLE.MAX_POSITION);
+            Logger.recordOutput("Angle/Comment",  "trimmed to max position: " + Constants.ANGLE.MAX_POSITION);
         }
         else{
             m_setPoint_Position = desiredPosition;
         }
+        Logger.recordOutput("Angle/setPosition",  desiredPosition);
 
-        switch(m_presentMode){
+                switch(m_presentMode){
             default:
             case MMV:
                 m_angleLeftMotor.setControl(m_angleMotorMMV.withPosition(m_setPoint_Position));
@@ -168,11 +210,18 @@ public class AngleSubSystem extends SubsystemBase {
         }
     }
 
-    public boolean atAngle(){
+    // this is the state machine of the notesubsystem
+    @Override
+    public void periodic() {
         double motorPosition = m_angleLeftMotor.getPosition().getValueAsDouble();
-        System.out.println("  angle setpoint position:" + m_setPoint_Position + ", motor position: " + motorPosition );
-        boolean conditionMet =  Math.abs(m_setPoint_Position-motorPosition) < 1.0;
-        conditionMet = true;  //bypass for simulation
+        m_filteredPosition = m_atAngleFilter.calculate(motorPosition);
+        Logger.recordOutput("Angle/AtAngle", motorPosition );
+        Logger.recordOutput("Angle/AtAngleF", m_filteredPosition );
+    }
+
+    public boolean atAngle(){
+        boolean conditionMet =  Math.abs(m_setPoint_Position-m_filteredPosition) < 1.0;
+        //conditionMet = true;  //for simulation since position always comes back 0
         return conditionMet;
     }
 
@@ -227,12 +276,19 @@ public class AngleSubSystem extends SubsystemBase {
 
         double desiredPosition = 0;
 
-        System.out.println("set angle state: " + wantedState.toString());
+        // System.out.println("set angle state: " + m_presentState.toString());
+        Logger.recordOutput("Angle/State",  m_presentState);
 
-        switch(wantedState){
+        switch(m_presentState){
             default:
             case SPEAKER:
                 desiredPosition = m_speaker_position;
+                break;
+            case SPEAKER_1M:
+                desiredPosition = m_speaker_1m_position;
+                break;
+            case SPEAKER_PODIUM:
+                desiredPosition = m_speaker_podium_position;
                 break;
             case AMP:
                 desiredPosition = m_amp_position;;
@@ -244,7 +300,6 @@ public class AngleSubSystem extends SubsystemBase {
                 desiredPosition = m_intake_position;
                 break;
             case FEEDSTATION:
-            case SPEAKER_PODIUM:
             case BRAKE:
                 // m_angleLeftMotor.setControl(m_brake);
                 m_angleLeftMotor.setVoltage(0);

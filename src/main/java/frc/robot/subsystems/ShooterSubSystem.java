@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -137,8 +139,10 @@ public class ShooterSubSystem extends SubsystemBase {
                 m_setPoint_Left_Voltage = desiredVoltage;
                 m_setPoint_Right_Voltage = -desiredVoltage + m_rightOffset_Voltage;
             }
-            System.out.println("  shooter setSpeedVout, L: " + m_setPoint_Left_Voltage 
-                                                 + " , R: " + m_setPoint_Right_Voltage);
+            // System.out.println("  shooter setSpeedVout, L: " + m_setPoint_Left_Voltage 
+            //                                      + " , R: " + m_setPoint_Right_Voltage);
+            Logger.recordOutput("Shooter/setLeftVoltage", m_setPoint_Left_Voltage);
+            Logger.recordOutput("Shooter/setRightVoltage", m_setPoint_Right_Voltage);
             m_shooterLeftMotor.setControl(m_voltageOut.withOutput(m_setPoint_Left_Voltage));
             m_shooterRightMotor.setControl(m_voltageOut.withOutput(m_setPoint_Right_Voltage));
         }
@@ -154,7 +158,8 @@ public class ShooterSubSystem extends SubsystemBase {
 
     public void setSpeed(double desiredRotationsPerSecond){
 
-        System.out.println("  set Shooter desired speed: " + desiredRotationsPerSecond);
+        // System.out.println("  set Shooter desired speed: " + desiredRotationsPerSecond);
+        Logger.recordOutput("Shooter/setDesiredSpeed", desiredRotationsPerSecond);
 
         if (Math.abs(desiredRotationsPerSecond) < 1) { // Joystick deadzone
             desiredRotationsPerSecond = 0;
@@ -162,23 +167,29 @@ public class ShooterSubSystem extends SubsystemBase {
             m_setPoint_Right_Speed = 0;
             m_shooterLeftMotor.setControl(m_coast);
             m_shooterRightMotor.setControl(m_coast);
+            Logger.recordOutput("Shooter/setLeftSpeed", m_setPoint_Left_Speed);
+            Logger.recordOutput("Shooter/setRightSpeed", m_setPoint_Right_Speed);
         }
         else {
             if (desiredRotationsPerSecond > Constants.SHOOTER.MAX_SPEED){
                 m_setPoint_Left_Speed = Constants.SHOOTER.MAX_SPEED;
                 m_setPoint_Right_Speed = -Constants.SHOOTER.MAX_SPEED;
-                System.out.println("  trimmed to max speed: " + Constants.SHOOTER.MAX_SPEED);
+                // System.out.println("  trimmed to max speed: " + Constants.SHOOTER.MAX_SPEED);
+                Logger.recordOutput("Shooter/Comment",  "trimmed to max speed: " + Constants.SHOOTER.MAX_SPEED);
             }
             else{
                 m_setPoint_Left_Speed = desiredRotationsPerSecond;
                 m_setPoint_Right_Speed = -desiredRotationsPerSecond + m_rightOffset_Speed;
             }
-           switch(m_presentMode){
+
+            Logger.recordOutput("Shooter/setLeftSpeed",  m_setPoint_Left_Speed);
+            Logger.recordOutput("Shooter/setRightSpeed",  m_setPoint_Right_Speed);
+            switch(m_presentMode){
                 case VOLTAGE_OUT:
                     m_setPoint_Left_Voltage = (m_setPoint_Left_Speed/Constants.SHOOTER.MAX_SPEED)*Constants.ROLLER.MAX_VOLTAGE;
                     m_setPoint_Right_Voltage = (m_setPoint_Right_Speed/Constants.SHOOTER.MAX_SPEED)*Constants.ROLLER.MAX_VOLTAGE;
-                    System.out.println("         desired Voltage, L: " + m_setPoint_Left_Voltage 
-                                                            + " , R: " + m_setPoint_Right_Voltage);
+                    // System.out.println("         desired Voltage, L: " + m_setPoint_Left_Voltage 
+                    //                                         + " , R: " + m_setPoint_Right_Voltage);
                     m_shooterLeftMotor.setControl(m_voltageOut.withOutput(m_setPoint_Left_Voltage));
                     m_shooterRightMotor.setControl(m_voltageOut.withOutput(m_setPoint_Right_Voltage));
                     break;
@@ -201,7 +212,7 @@ public class ShooterSubSystem extends SubsystemBase {
 
     public boolean atSpeed(){
         double motorSpeed = m_shooterLeftMotor.getVelocity().getValueAsDouble();
-        System.out.println("  left shooter setpoint speed:" + m_setPoint_Left_Speed + ", motor speed: " + motorSpeed );
+        // System.out.println("  left shooter setpoint speed:" + m_setPoint_Left_Speed + ", motor speed: " + motorSpeed );
         boolean conditionMet =  Math.abs(m_setPoint_Left_Speed-motorSpeed) < 5.0;
         conditionMet = true;  //bypass for simulation
         return conditionMet;
@@ -243,11 +254,12 @@ public class ShooterSubSystem extends SubsystemBase {
 
 
     public void setState(State wantedState) {
-		m_presentState = wantedState;
+		// m_presentState = wantedState;
 
         double desiredSpeed = 0;
 
-        System.out.println("set shooter state: " + wantedState.toString());
+        // System.out.println("set shooter state: " + wantedState.toString());
+        Logger.recordOutput("Shooter/setState",  wantedState);
 
         switch(wantedState){
 

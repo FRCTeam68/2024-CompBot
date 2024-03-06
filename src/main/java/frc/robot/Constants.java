@@ -49,7 +49,7 @@ public final class Constants {
     public static final class INTAKE {
         public static final int CANID = 20;
         public static final String CANBUS = "DRIVEbus";
-        public static final double TAKE_NOTE_SPEED = 40;
+        public static final double TAKE_NOTE_SPEED = 20;
         public static final double SPIT_NOTE_SPEED = 30;
         public static final double BUMP_VALUE = 0.2;  // 50 counts / second = 10rps
     }
@@ -73,7 +73,9 @@ public final class Constants {
         public static final int RIGHT_CANID = 31;
         public static final String CANBUS = "rio";
         public static final double MAX_SPEED = 100;  // rps
-        public static final double SHOOT_SPEED = 80;
+        public static final double SPEAKER_SHOOT_SPEED = 80;
+        public static final double TRAP_SHOOT_SPEED = 40; 
+        public static final double AMP_SHOOT_SPEED = 20;  
         public static final double RIGHT_OFFSET = 0;
         public static final double BUMP_VALUE = 1;   // rps
         public static final double SPINUP_TIME = 2;  // seconds
@@ -85,23 +87,30 @@ public final class Constants {
         public static final int LEFT_CANID = 32;
         public static final int RIGHT_CANID = 33;
         public static final String CANBUS = "rio";
-        //positive value makes shooter side go up
-        //negative value makes shooter side go down
-        public static final double MIN_POSITION = -12;   //in intake position, -12 will put steepest angel
-        public static final double MAX_POSITION = 12;   //motor rotatiions, in intake position, 12 is a low we need to shoot
-        public static final double AMP = 0; // -6;
-        public static final double TRAP = 0; //-4;
-        public static final double SPEAKER = 0; //-2;
-        public static final double INTAKE = 0;
-        public static final double BUMP_VALUE = .25;    //rotations
+
+        //increasing value makes shooter side go down
+        //decreasing value makes shooter side go up
+        // as of Feb 22nd we cannot go steeper than speaker position of 0
+        // so AMP and TRAP are also 0
+        //motor rotations
+        public static final double MIN_POSITION = 0;  
+        public static final double MAX_POSITION = 50;
+        public static final double AMP = 2;
+        public static final double TRAP = 0;   //distance 1.57M
+        public static final double SPEAKER = 0;
+        public static final double SPEAKER_1M = 20;
+        public static final double SPEAKER_PODIUM = 22; //24
+        public static final double INTAKE = 12;   //14
+        public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
+        
     }
 
     public static final class CLIMBER {
         public static final int LEFT_CANID = 40;
         public static final int RIGHT_CANID = 41;
         public static final String CANBUS = "DRIVEbus";
-        public static final double MAX_HEIGHT = 9;   //inches
+        public static final double MAX_HEIGHT = 100;   //100 rotates is about 9in
     }
 
     public static final class Vision {

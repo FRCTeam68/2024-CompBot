@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -35,7 +37,7 @@ public class RollerSubSystem extends SubsystemBase {
 
     public RollerSubSystem(String name, int canID, String canbus, boolean inverted){
         m_name = name;
-        m_presentMode = Mode.VOLTAGE_OUT;
+        m_presentMode = Mode.CURRENTTORQUE_FOC;
         m_setPoint_Speed = 0;
 
         m_rollerMotor = new TalonFX(canID, canbus);
@@ -55,15 +57,15 @@ public class RollerSubSystem extends SubsystemBase {
         configs.MotorOutput.Inverted = inverted ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
 
         /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
-        // configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 2V output
-        // configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
-        // configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
-        // configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+        configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 2V output
+        configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
+        configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
+        configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
         
-        configs.Slot0.kP = .2;
-        configs.Slot0.kI = 0; 
-        configs.Slot0.kD = 0; 
-        configs.Slot0.kV = 0;
+        // configs.Slot0.kP = .2;
+        // configs.Slot0.kI = 0; 
+        // configs.Slot0.kD = 0; 
+        // configs.Slot0.kV = 0;
         
         // Peak output of 8 volts
         configs.Voltage.PeakForwardVoltage = 12;
@@ -90,6 +92,8 @@ public class RollerSubSystem extends SubsystemBase {
         }
 
         m_rollerMotor.setControl(m_voltageOut.withOutput(0));
+
+        Logger.recordOutput(m_name+"/Comment",  m_name+" subsystem created");
     }
 
     public void setSpeedVout(double desiredVoltage){
@@ -101,6 +105,7 @@ public class RollerSubSystem extends SubsystemBase {
                 m_setPoint_Voltage = desiredVoltage;
             }
             System.out.println("              desired voltage: " + m_setPoint_Voltage);
+            Logger.recordOutput(m_name+"/setVoltage",  m_setPoint_Voltage);
             m_rollerMotor.setControl(m_voltageOut.withOutput(m_setPoint_Voltage));
         }
     }
@@ -127,14 +132,18 @@ public class RollerSubSystem extends SubsystemBase {
             if (desiredRotationsPerSecond > Constants.ROLLER.MAX_SPEED){
                 m_setPoint_Speed = Constants.ROLLER.MAX_SPEED;
                 System.out.println("  trimmed to max speed: " + m_setPoint_Speed);
+                Logger.recordOutput(m_name+"/Comment",  "  trimmed to max speed: " + m_setPoint_Speed);
             }
             else if (desiredRotationsPerSecond < -Constants.ROLLER.MAX_SPEED){
                 m_setPoint_Speed = -Constants.ROLLER.MAX_SPEED;
                 System.out.println("  trimmed to max speed: " + m_setPoint_Speed);
+                Logger.recordOutput(m_name+"/Comment",  "  trimmed to min speed: " + m_setPoint_Speed);
             }
             else{
                 m_setPoint_Speed = desiredRotationsPerSecond;
             }
+
+            Logger.recordOutput(m_name+"/setSpeed",  m_setPoint_Speed);
 
             switch(m_presentMode){
                 case VOLTAGE_OUT:
@@ -143,7 +152,6 @@ public class RollerSubSystem extends SubsystemBase {
                 default:
                 case VOLTAGE_FOC:
                     /* Use voltage velocity */
-                    //m_intakeMotor.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
                     m_rollerMotor.setControl(m_voltageVelocity.withVelocity(m_setPoint_Speed));
 
                     break;
@@ -151,7 +159,6 @@ public class RollerSubSystem extends SubsystemBase {
                 case CURRENTTORQUE_FOC:
                     double friction_torque = (desiredRotationsPerSecond > 0) ? 1 : -1; // To account for friction, we add this to the arbitrary feed forward
                     /* Use torque velocity */
-                    //m_intakeMotor.setControl(m_torqueVelocity.withVelocity(desiredRotationsPerSecond).withFeedForward(friction_torque));
                     m_rollerMotor.setControl(m_torqueVelocity.withVelocity(m_setPoint_Speed).withFeedForward(friction_torque));
                     break;
             }

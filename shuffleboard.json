@@ -1,0 +1,396 @@
+{
+  "tabPane": [
+    {
+      "title": "SmartDashboard",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "6,1": {
+            "size": [
+              3,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto Choices",
+              "_title": "Auto Choices",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "0,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/shoot",
+              "_title": "shoot",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "1,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/shoot2",
+              "_title": "shoot2",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "2,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/shoot3",
+              "_title": "shoot3",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "3,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/wait2s",
+              "_title": "wait2s",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "4,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/intake",
+              "_title": "intake",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "5,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/NoteSensor2",
+              "_title": "NoteSensor2",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "6,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/NoteSensor3",
+              "_title": "NoteSensor3",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "7,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto DelayStart (s)",
+              "_title": "Auto DelayStart (s)",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "8,0": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/AngleLimitLowSwitch",
+              "_title": "AngleLimitLowSwitch",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "LiveWindow",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "LiveWindow/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {}
+      }
+    },
+    {
+      "title": "main",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 32.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "titleType": 0,
+        "tiles": {
+          "4,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/feeder1",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/feeder1",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "7,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/feeder2",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/feeder2",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "13,3": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/shooter",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/shooter",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "10,3": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/shooterFD2",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/shooterFD2",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "13,5": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/shooterR",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/shooterR",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "18,2": {
+            "size": [
+              7,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/Action",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/Action",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "18,0": {
+            "size": [
+              7,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/State",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/State",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "18,4": {
+            "size": [
+              7,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/Target",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/Target",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "10,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/NoteSensor3",
+              "_title": "SmartDashboard/NoteSensor3",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "1,3": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/AngleSubsystem/AngleSubSystem/State",
+              "_title": "Shuffleboard/AngleSubsystem/AngleSubSystem/State",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,5": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/AngleSubsystem/AngleSubSystem/setpoint position",
+              "_title": "Shuffleboard/AngleSubsystem/AngleSubSystem/setpoint position",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,0": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/intake",
+              "_title": "Shuffleboard/NoteSubsystem/NoteSubSystem/setpoint/intake",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "1,7": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/AngleLimitLowSwitch",
+              "_title": "SmartDashboard/AngleLimitLowSwitch",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "10,7": {
+            "size": [
+              6,
+              2
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto Choices",
+              "_title": "SmartDashboard/Auto Choices",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "17,7": {
+            "size": [
+              5,
+              2
+            ],
+            "content": {
+              "_type": "ComboBox Chooser",
+              "_source0": "network_table:///SmartDashboard/Auto DelayStart (s)",
+              "_title": "SmartDashboard/Auto DelayStart (s)",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          }
+        }
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": 50.400001525878906,
+    "y": 12.0,
+    "width": 1255.199951171875,
+    "height": 639.2000122070312
+  }
+}
