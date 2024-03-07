@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7531929553170285,
-      "y": 4.397140955802102
+      "x": 1.4,
+      "y": 5.52811290895741
     },
-    "rotation": -61.78264414527071
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,19 +14,25 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot_spinup"
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "wait2s"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source - Middle Note 5"
+            "pathName": "Center;Center source"
           }
         },
         {
-          "type": "path",
+          "type": "wait",
           "data": {
-            "pathName": "Middle Note 5 - ShootM"
+            "waitTime": 5.0
           }
         },
         {
@@ -38,7 +44,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source - Middle 4"
+            "pathName": "Center Source - Amp Source"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]
