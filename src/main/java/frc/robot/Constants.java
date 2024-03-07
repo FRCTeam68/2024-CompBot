@@ -79,6 +79,7 @@ public final class Constants {
         public static final double SPINUP_TIME = 2;  // seconds
         public static final double STOP_TIME = 2; 
         public static final double ATSPEED_TIMEOUT = 1;  //seconds
+        public static final double DISLODGE_SHOOT_SPEED = -60;
     }
 
     public static final class ANGLE {

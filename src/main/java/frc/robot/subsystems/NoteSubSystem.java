@@ -39,7 +39,9 @@ public class NoteSubSystem extends SubsystemBase {
         // BEAM2,
         SPIT_NOTE2,
         SHOOT, 
-        SHOOT_SPINUP
+        SHOOT_SPINUP,
+        //FEEDSTATION_SPIN,
+        DISLODGE_WITH_SHOOTER
     }
 
     private State m_presentState;
@@ -318,6 +320,14 @@ public class NoteSubSystem extends SubsystemBase {
                     setAction(ActionRequest.IDLE);
                     }
                 break;
+            case DISLODGE_WITH_SHOOTER:
+                Logger.recordOutput("Note/Comment",  "reverse spin shooter");
+                m_Shooter.setRightOffsetSpeed(0);
+                m_Feeder2.setSpeed(-m_shooterfeeder2_setpoint);
+                m_Shooter.setSpeed(Constants.SHOOTER.DISLODGE_SHOOT_SPEED);
+                setShooterSpunUp(false);
+                setAction(ActionRequest.IDLE);
+                break;
             case SHOOT_SPINUP:
                     Logger.recordOutput("Note/Comment",  "spinup shooter");
                     spinUp();
@@ -402,9 +412,9 @@ public class NoteSubSystem extends SubsystemBase {
         m_Shooter.bumpSpeed(bumpAmount);
         m_shooter_setpoint=m_Shooter.getSpeed();
 
-        m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
-        m_Feeder2.bumpSpeed(bumpAmount);
-        m_shooterfeeder2_setpoint=m_Feeder2.getSpeed();
+        // m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
+        // m_Feeder2.bumpSpeed(bumpAmount);
+        // m_shooterfeeder2_setpoint=m_Feeder2.getSpeed();
     }
 
     public void bumpAnglePosition(double bumpAmount){
