@@ -12,6 +12,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "shoot_spinup"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Source - Middle Note 5"
@@ -20,7 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle Note 5 - Shoot"
+            "pathName": "Middle Note 5 - ShootM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         },
         {
