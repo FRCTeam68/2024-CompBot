@@ -211,6 +211,8 @@ public class NoteSubSystem extends SubsystemBase {
                     break;
                 case INTAKE:
                     m_Angle.setState(AngleSubSystem.State.INTAKE);
+                    // for when we want to shoot with this angle.
+                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
                     break;
                 // case FEEDSTATION:
                 //   not implemented yet
@@ -239,6 +241,9 @@ public class NoteSubSystem extends SubsystemBase {
     // this is the state machine of the notesubsystem
     @Override
     public void periodic() {
+
+        boolean isAtAngle = false;
+
         switch(m_wantedAction){
             default:
             case IDLE:
@@ -283,6 +288,8 @@ public class NoteSubSystem extends SubsystemBase {
                      }
                 }
                 else{
+                    Logger.recordOutput("Note/Comment",  "no intake, have note");
+                    spinUp();
                     //we have a note.  do not intake
                     setAction(ActionRequest.IDLE);
                 }
@@ -339,6 +346,13 @@ public class NoteSubSystem extends SubsystemBase {
                  }
                 break;
         }
+
+        isAtAngle = m_Angle.atAngle();
+        SmartDashboard.putBoolean("AtAngle AMP", (m_target == Target.AMP)&&(isAtAngle));
+        SmartDashboard.putBoolean("AtAngle TRAP", (m_target == Target.TRAP)&&(isAtAngle));
+        SmartDashboard.putBoolean("AtAngle Podium", (m_target == Target.SPEAKER_PODIUM)&&(isAtAngle));
+        SmartDashboard.putBoolean("AtAngle Intake", (m_target == Target.INTAKE)&&(isAtAngle));
+        SmartDashboard.putBoolean("AtAngle Speaker", (m_target == Target.SPEAKER)&&(isAtAngle));
     }
 
     private void spinUp(){
