@@ -97,8 +97,8 @@ public final class Constants {
         public static final double AMP = 2;
         public static final double TRAP = 0;   //distance 1.57M
         public static final double SPEAKER = 0;
-        public static final double SPEAKER_1M = 20;
-        public static final double SPEAKER_PODIUM = 22; //24
+        public static final double SPEAKER_1M = 18; //20
+        public static final double SPEAKER_PODIUM = 20; //22 //24
         public static final double INTAKE = 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
