@@ -32,6 +32,22 @@
     },
     {
       "anchor": {
+        "x": 4.510951329594969,
+        "y": 4.943338348215159
+      },
+      "prevControl": {
+        "x": 4.12709473610981,
+        "y": 5.341859715329152
+      },
+      "nextControl": {
+        "x": 4.894807923080127,
+        "y": 4.544816981101166
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
         "x": 5.72556964591364,
         "y": 3.9681515942604335
       },
@@ -65,7 +81,7 @@
   "eventMarkers": [
     {
       "name": "Start Intake",
-      "waypointRelativePos": 1.4,
+      "waypointRelativePos": 1.05,
       "command": {
         "type": "parallel",
         "data": {
