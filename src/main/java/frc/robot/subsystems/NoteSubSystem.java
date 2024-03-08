@@ -345,7 +345,7 @@ public class NoteSubSystem extends SubsystemBase {
                     setAction(ActionRequest.IDLE);
                  }
                 break;
-        }
+                    }
 
         isAtAngle = m_Angle.atAngle();
         SmartDashboard.putBoolean("AtAngle AMP", (m_target == Target.AMP)&&(isAtAngle));
@@ -415,6 +415,14 @@ public class NoteSubSystem extends SubsystemBase {
         // m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
         // m_Feeder2.bumpSpeed(bumpAmount);
         // m_shooterfeeder2_setpoint=m_Feeder2.getSpeed();
+    }
+
+    public void setPassSpeed(double speed){
+        setTarget(Target.INTAKE);
+        m_shooter_setpoint = speed;
+        m_Shooter.setSpeed(m_shooter_setpoint);
+        // setAction(ActionRequest.SHOOT);   cannot do this unless AtSpeed works
+        // so use user delay for spinup to happen.
     }
 
     public void bumpAnglePosition(double bumpAmount){

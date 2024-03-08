@@ -72,14 +72,16 @@ public final class Constants {
         public static final String CANBUS = "rio";
         public static final double MAX_SPEED = 100;  // rps
         public static final double SPEAKER_SHOOT_SPEED = 80;
-        public static final double TRAP_SHOOT_SPEED = 40; 
-        public static final double AMP_SHOOT_SPEED = 20;  
+        public static final double TRAP_SHOOT_SPEED = 43; 
+        public static final double AMP_SHOOT_SPEED = 23;  
         public static final double RIGHT_OFFSET = 0;
         public static final double BUMP_VALUE = 1;   // rps
         public static final double SPINUP_TIME = 2;  // seconds
         public static final double STOP_TIME = 2; 
         public static final double ATSPEED_TIMEOUT = 1;  //seconds
         public static final double DISLODGE_SHOOT_SPEED = -60;
+        public static final double PASS1_SPEED = 60;
+        public static final double PASS2_SPEED = 40;
     }
 
     public static final class ANGLE {
@@ -97,8 +99,8 @@ public final class Constants {
         public static final double AMP = 2;
         public static final double TRAP = 0;   //distance 1.57M
         public static final double SPEAKER = 0;
-        public static final double SPEAKER_1M = 18; //20
-        public static final double SPEAKER_PODIUM = 20; //22 //24
+        public static final double SPEAKER_1M = 15; //20
+        public static final double SPEAKER_PODIUM = 16; //22 //24
         public static final double INTAKE = 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds

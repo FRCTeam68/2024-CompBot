@@ -3,37 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.20200823299509,
-        "y": 0.7702308991316326
+        "x": 1.87,
+        "y": 3.52
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.812284116159683,
-        "y": 0.8774588968655394
+        "x": 2.546176514060398,
+        "y": 3.0309042538701627
+      },
+      "isLocked": false,
+      "linkedName": "ShootStage"
+    },
+    {
+      "anchor": {
+        "x": 4.13635905656325,
+        "y": 1.8232047865472372
+      },
+      "prevControl": {
+        "x": 2.7943173905441006,
+        "y": 2.2307878110419415
+      },
+      "nextControl": {
+        "x": 5.4525764158388235,
+        "y": 1.4234646996561373
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8666106562982372,
-        "y": 3.5224985834587055
+        "x": 8.319591254567126,
+        "y": 2.466735702702175
       },
       "prevControl": {
-        "x": 2.6465913136467254,
-        "y": 2.8302657500619235
+        "x": 7.5493603554354936,
+        "y": 1.8427511768233842
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Middle 4"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Set Angle",
-      "waypointRelativePos": 0.25,
+      "name": "Start Intake",
+      "waypointRelativePos": 0.7,
       "command": {
         "type": "sequential",
         "data": {
@@ -41,7 +57,7 @@
             {
               "type": "named",
               "data": {
-                "name": "target_speaker_podium"
+                "name": "intake"
               }
             }
           ]
@@ -57,13 +73,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -50.47736872882879,
+    "rotation": 15.780753309515498,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -59.291089496093385,
     "velocity": 0
   },
   "useDefaultConstraints": true

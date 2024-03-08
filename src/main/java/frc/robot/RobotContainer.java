@@ -186,6 +186,8 @@ public class RobotContainer {
 
     //m_ps4Controller.L1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.FEEDSTATION_SPIN)));
     m_ps4Controller.L2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.DISLODGE_WITH_SHOOTER)));
+    m_ps4Controller.R1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setPassSpeed(Constants.SHOOTER.PASS1_SPEED)));
+    m_ps4Controller.R2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setPassSpeed(Constants.SHOOTER.PASS2_SPEED)));
 
     // m_ps4Controller.L2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
     // m_ps4Controller.R2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
