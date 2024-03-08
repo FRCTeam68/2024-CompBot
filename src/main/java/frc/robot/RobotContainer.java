@@ -104,6 +104,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("target_speaker_1m", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M)));
     NamedCommands.registerCommand("target_speaker_podium", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
+    NamedCommands.registerCommand("target_speaker_podium_source", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM_SOURCE)));
 
     NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 

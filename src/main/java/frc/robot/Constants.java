@@ -99,11 +99,12 @@ public final class Constants {
         public static final double AMP = 2;
         public static final double TRAP = 0;   //distance 1.57M
         public static final double SPEAKER = 0;
-        public static final double SPEAKER_1M = 15; //20
+        public static final double SPEAKER_1M = 17; //15 //20
         public static final double SPEAKER_PODIUM = 24; //16 //22 //24
         public static final double INTAKE = 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
+        public static final double SPEAKER_PODIUM_SOURCE = 16;
         
     }
 

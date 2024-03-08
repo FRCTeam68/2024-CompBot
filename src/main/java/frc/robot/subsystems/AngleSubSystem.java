@@ -26,7 +26,8 @@ public class AngleSubSystem extends SubsystemBase {
         INTAKE,
         FEEDSTATION,
         SPEAKER_PODIUM,
-        BRAKE
+        BRAKE, 
+        SPEAKER_PODIUM_SOURCE
     }
 
     public enum Mode{
@@ -289,6 +290,9 @@ public class AngleSubSystem extends SubsystemBase {
                 break;
             case SPEAKER_PODIUM:
                 desiredPosition = m_speaker_podium_position;
+                break;
+            case SPEAKER_PODIUM_SOURCE:
+                desiredPosition = Constants.ANGLE.SPEAKER_PODIUM_SOURCE;
                 break;
             case AMP:
                 desiredPosition = m_amp_position;;

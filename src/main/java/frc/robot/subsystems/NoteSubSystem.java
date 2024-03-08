@@ -27,7 +27,8 @@ public class NoteSubSystem extends SubsystemBase {
         INTAKE,
         FEEDSTATION,
         SPEAKER_PODIUM, 
-        SPEAKER_1M
+        SPEAKER_1M, 
+        SPEAKER_PODIUM_SOURCE
     }
 
     public enum ActionRequest{
@@ -212,6 +213,10 @@ public class NoteSubSystem extends SubsystemBase {
                 //     break;
                 case SPEAKER_PODIUM:
                     m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
+                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    break;
+                case SPEAKER_PODIUM_SOURCE:
+                    m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM_SOURCE);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
                     break;
             }
