@@ -34,6 +34,7 @@ public class NoteSubSystem extends SubsystemBase {
     public enum ActionRequest{
         IDLE,
         STOP,
+        STOP_ALL,
         INTAKENOTE,
         BEAM3,
         // BEAM1,
@@ -259,6 +260,18 @@ public class NoteSubSystem extends SubsystemBase {
                 }
                 break;
             case STOP:
+                Logger.recordOutput("Note/Comment",  "stop 40");
+                m_Intake.setSpeed(0);
+                m_Feeder1.setSpeed(0);
+                m_Feeder2.setSpeed(0);
+                m_Shooter.setSpeed(40);
+                m_shootStopTime.stop();
+                m_shootStopTime.reset();
+                setShooterSpunUp(true);
+                setState(State.IDLE);
+                setAction(ActionRequest.IDLE);
+                break;
+            case STOP_ALL:
                 Logger.recordOutput("Note/Comment",  "stop all");
                 m_Intake.setSpeed(0);
                 m_Feeder1.setSpeed(0);
