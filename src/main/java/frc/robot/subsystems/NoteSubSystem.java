@@ -264,7 +264,8 @@ public class NoteSubSystem extends SubsystemBase {
                 m_Intake.setSpeed(0);
                 m_Feeder1.setSpeed(0);
                 m_Feeder2.setSpeed(0);
-                m_Shooter.setSpeed(40);
+                m_shooter_setpoint = 40;
+                spinUp();
                 m_shootStopTime.stop();
                 m_shootStopTime.reset();
                 setShooterSpunUp(true);
