@@ -3,41 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.83,
-        "y": 5.51
+        "x": 8.78,
+        "y": 4.14
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.832267860304073,
-        "y": 5.514534741364933
+        "x": 7.717707743107796,
+        "y": 4.055313495242375
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.3106230827846286,
-        "y": 4.745999491998984
+        "x": 6.010726636837891,
+        "y": 4.14
       },
       "prevControl": {
-        "x": 2.4290263965143337,
-        "y": 5.1702780328637585
+        "x": 7.342254747208739,
+        "y": 3.7860550587804753
       },
       "nextControl": {
-        "x": 2.1706570002406846,
-        "y": 4.244454362883188
+        "x": 4.658955471757099,
+        "y": 4.499325921728767
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.83,
-        "y": 3.996111838377523
+        "x": 3.642660362243803,
+        "y": 5.347883003458315
       },
       "prevControl": {
-        "x": 2.3366528594595652,
-        "y": 4.3315878939450165
+        "x": 4.376322613472363,
+        "y": 5.156492850963908
+      },
+      "nextControl": {
+        "x": 3.1887809929466027,
+        "y": 5.466286317188019
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.4127312870010371,
+        "y": 5.545221859674489
+      },
+      "prevControl": {
+        "x": 2.4388933393251415,
+        "y": 5.30841523221508
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,16 +64,16 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0.3,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.5499999999999999,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "intake"
+                "name": "target_speaker"
               }
             }
           ]
@@ -73,7 +89,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.98688624496411,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
