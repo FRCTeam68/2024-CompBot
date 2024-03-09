@@ -163,11 +163,11 @@ public class RobotContainer {
     }
     m_DriveSubSystem.registerTelemetry(logger::telemeterize);
 
-    m_xboxController.pov(0).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0.2 * MaxSpeed).withVelocityY(0)));
-    m_xboxController.pov(180).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(-0.2 * MaxSpeed).withVelocityY(0)));
-    m_xboxController.pov(90).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(-0.2 * MaxSpeed)));
-    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
-
+    // m_xboxController.pov(0).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0.2 * MaxSpeed).withVelocityY(0)));
+    // m_xboxController.pov(180).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(-0.2 * MaxSpeed).withVelocityY(0)));
+    // m_xboxController.pov(90).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(-0.2 * MaxSpeed)));
+    // m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
+    m_xboxController.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
 
     m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
@@ -198,11 +198,10 @@ public class RobotContainer {
 
     m_ps4Controller.options().onTrue(Commands.runOnce(()->m_NoteSubSystem.setHaveNote1(false)));
 
-    // m_ps4Controller.povLeft().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpShooterSpeed((-Constants.SHOOTER.BUMP_VALUE))));
-    // m_ps4Controller.povRight().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpShooterSpeed((Constants.SHOOTER.BUMP_VALUE))));
-    // m_ps4Controller.povUp().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((-Constants.ANGLE.BUMP_VALUE))));
-    // m_ps4Controller.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((Constants.ANGLE.BUMP_VALUE))));
-    m_ps4Controller.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
+    m_ps4Controller.povLeft().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpShooterSpeed((-Constants.SHOOTER.BUMP_VALUE))));
+    m_ps4Controller.povRight().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpShooterSpeed((Constants.SHOOTER.BUMP_VALUE))));
+    m_ps4Controller.povUp().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((-Constants.ANGLE.BUMP_VALUE))));
+    m_ps4Controller.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.bumpAnglePosition((Constants.ANGLE.BUMP_VALUE))));
 
     // //Left Joystick Y
     // m_ps4Controller.axisGreaterThan(1,0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake1Speed((-Constants.INTAKE.BUMP_VALUE))));
