@@ -6,6 +6,12 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
+
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants.  This class should not be used for any other purpose.  All constants should be
@@ -66,13 +72,16 @@ public final class Constants {
         public static final String CANBUS = "rio";
         public static final double MAX_SPEED = 100;  // rps
         public static final double SPEAKER_SHOOT_SPEED = 80;
-        public static final double TRAP_SHOOT_SPEED = 40; 
-        public static final double AMP_SHOOT_SPEED = 20;  
+        public static final double TRAP_SHOOT_SPEED = 43; 
+        public static final double AMP_SHOOT_SPEED = 23;  
         public static final double RIGHT_OFFSET = 0;
         public static final double BUMP_VALUE = 1;   // rps
         public static final double SPINUP_TIME = 2;  // seconds
         public static final double STOP_TIME = 2; 
         public static final double ATSPEED_TIMEOUT = 1;  //seconds
+        public static final double DISLODGE_SHOOT_SPEED = -60;
+        public static final double PASS1_SPEED = 60;
+        public static final double PASS2_SPEED = 40;
     }
 
     public static final class ANGLE {
@@ -90,11 +99,12 @@ public final class Constants {
         public static final double AMP = 2;
         public static final double TRAP = 0;   //distance 1.57M
         public static final double SPEAKER = 0;
-        public static final double SPEAKER_1M = 20;
-        public static final double SPEAKER_PODIUM = 22; //24
+        public static final double SPEAKER_1M = 21; //18 ; //16 //15 //20
+        public static final double SPEAKER_PODIUM = 26; //24; //16 //22 //24
         public static final double INTAKE = 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
+        public static final double SPEAKER_PODIUM_SOURCE = 16;
         
     }
 
@@ -102,6 +112,31 @@ public final class Constants {
         public static final int LEFT_CANID = 40;
         public static final int RIGHT_CANID = 41;
         public static final String CANBUS = "DRIVEbus";
-        public static final double MAX_HEIGHT = 100;   //100 rotates is about 9in
+        public static final double MAX_HEIGHT = 115;   //100 rotates is about 9in
+    }
+
+    public static final class Vision {
+        public static final String camLName = "Arducam_OV9782_1"; //TODO: change names!
+        public static final String camRName = "Arducam_OV9782_2";
+
+        public static final String aprilTagLayoutPath = ""; // Not needed to be used unless custom
+
+        // Front camera constants... Faces past intake
+        public static final Transform3d frontCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(9.5)), new Rotation3d(0, 0, 0)); // TODO: Fix these values
+
+        // Back Camera Constants... Faces through shooter
+        public static final Transform3d backCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(14.5)), new Rotation3d(0, Units.degreesToRadians(5), 0)); // TODO: Fix these values
+    
+        // Field Constants...P
+        public static final int tallThingFiscal = 8;
+        public static final double tallThingHeight = Units.inchesToMeters(57);
+    }
+
+    public static final class RED_TAGS {
+        public static final int[] stage = {11,12,13};
+    }
+
+    public static final class BLUE_TAGS {
+        public static final int[] stage = {14,15,16};
     }
 }

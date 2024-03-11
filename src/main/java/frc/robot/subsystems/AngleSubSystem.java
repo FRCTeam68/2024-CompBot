@@ -5,23 +5,14 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-// import edu.wpi.first.wpilibj2.command.Command;
-// import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -35,7 +26,8 @@ public class AngleSubSystem extends SubsystemBase {
         INTAKE,
         FEEDSTATION,
         SPEAKER_PODIUM,
-        BRAKE
+        BRAKE, 
+        SPEAKER_PODIUM_SOURCE
     }
 
     public enum Mode{
@@ -298,6 +290,9 @@ public class AngleSubSystem extends SubsystemBase {
                 break;
             case SPEAKER_PODIUM:
                 desiredPosition = m_speaker_podium_position;
+                break;
+            case SPEAKER_PODIUM_SOURCE:
+                desiredPosition = Constants.ANGLE.SPEAKER_PODIUM_SOURCE;
                 break;
             case AMP:
                 desiredPosition = m_amp_position;;

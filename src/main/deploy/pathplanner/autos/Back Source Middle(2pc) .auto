@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7336934388833163,
-      "y": 4.348392164717821
+      "x": 0.6628436333795761,
+      "y": 3.7001035540532623
     },
-    "rotation": -59.03624346792651
+    "rotation": -69.90476880809517
   },
   "command": {
     "type": "sequential",
@@ -32,13 +32,25 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source - Source Note"
+            "pathName": "Copy of Source - Middle Note 5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Note 5 - ShootM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         },
         {
@@ -48,15 +60,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "target_speaker_podium_source"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
+            "pathName": "ShootA - Middle 4"
           }
         }
       ]

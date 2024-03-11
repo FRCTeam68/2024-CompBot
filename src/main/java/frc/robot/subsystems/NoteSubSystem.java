@@ -1,23 +1,13 @@
 package frc.robot.subsystems;
 
 
-import java.util.Optional;
-
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.subsystems.RollerSubSystem;
-import frc.robot.subsystems.AngleSubSystem;
-import frc.robot.subsystems.ShooterSubSystem;
-// import frc.robot.subsystems.LEDSubsystem;
-
 import frc.robot.Constants;
 
 public class NoteSubSystem extends SubsystemBase {
@@ -37,19 +27,23 @@ public class NoteSubSystem extends SubsystemBase {
         INTAKE,
         FEEDSTATION,
         SPEAKER_PODIUM, 
-        SPEAKER_1M
+        SPEAKER_1M, 
+        SPEAKER_PODIUM_SOURCE
     }
 
     public enum ActionRequest{
         IDLE,
         STOP,
+        STOP_ALL,
         INTAKENOTE,
         BEAM3,
         // BEAM1,
         // BEAM2,
         SPIT_NOTE2,
         SHOOT, 
-        SHOOT_SPINUP
+        SHOOT_SPINUP,
+        //FEEDSTATION_SPIN,
+        DISLODGE_WITH_SHOOTER
     }
 
     private State m_presentState;
@@ -222,6 +216,10 @@ public class NoteSubSystem extends SubsystemBase {
                     m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
                     break;
+                case SPEAKER_PODIUM_SOURCE:
+                    m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM_SOURCE);
+                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    break;
             }
 
             if (m_spunShooterUp){
@@ -262,6 +260,19 @@ public class NoteSubSystem extends SubsystemBase {
                 }
                 break;
             case STOP:
+                Logger.recordOutput("Note/Comment",  "stop 40");
+                m_Intake.setSpeed(0);
+                m_Feeder1.setSpeed(0);
+                m_Feeder2.setSpeed(0);
+                m_shooter_setpoint = 40;
+                spinUp();
+                m_shootStopTime.stop();
+                m_shootStopTime.reset();
+                setShooterSpunUp(true);
+                setState(State.IDLE);
+                setAction(ActionRequest.IDLE);
+                break;
+            case STOP_ALL:
                 Logger.recordOutput("Note/Comment",  "stop all");
                 m_Intake.setSpeed(0);
                 m_Feeder1.setSpeed(0);
@@ -328,6 +339,14 @@ public class NoteSubSystem extends SubsystemBase {
                     setAction(ActionRequest.IDLE);
                     }
                 break;
+            case DISLODGE_WITH_SHOOTER:
+                Logger.recordOutput("Note/Comment",  "reverse spin shooter");
+                m_Shooter.setRightOffsetSpeed(0);
+                m_Feeder2.setSpeed(-m_shooterfeeder2_setpoint);
+                m_Shooter.setSpeed(Constants.SHOOTER.DISLODGE_SHOOT_SPEED);
+                setShooterSpunUp(false);
+                setAction(ActionRequest.IDLE);
+                break;
             case SHOOT_SPINUP:
                     Logger.recordOutput("Note/Comment",  "spinup shooter");
                     spinUp();
@@ -345,7 +364,7 @@ public class NoteSubSystem extends SubsystemBase {
                     setAction(ActionRequest.IDLE);
                  }
                 break;
-        }
+                    }
 
         isAtAngle = m_Angle.atAngle();
         SmartDashboard.putBoolean("AtAngle AMP", (m_target == Target.AMP)&&(isAtAngle));
@@ -412,9 +431,17 @@ public class NoteSubSystem extends SubsystemBase {
         m_Shooter.bumpSpeed(bumpAmount);
         m_shooter_setpoint=m_Shooter.getSpeed();
 
-        m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
-        m_Feeder2.bumpSpeed(bumpAmount);
-        m_shooterfeeder2_setpoint=m_Feeder2.getSpeed();
+        // m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
+        // m_Feeder2.bumpSpeed(bumpAmount);
+        // m_shooterfeeder2_setpoint=m_Feeder2.getSpeed();
+    }
+
+    public void setPassSpeed(double speed){
+        setTarget(Target.INTAKE);
+        m_shooter_setpoint = speed;
+        m_Shooter.setSpeed(m_shooter_setpoint);
+        // setAction(ActionRequest.SHOOT);   cannot do this unless AtSpeed works
+        // so use user delay for spinup to happen.
     }
 
     public void bumpAnglePosition(double bumpAmount){

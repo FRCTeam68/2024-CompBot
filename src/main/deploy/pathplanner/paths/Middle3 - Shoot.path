@@ -3,41 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.59,
-        "y": 6.86
+        "x": 8.78,
+        "y": 4.14
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.594360977624694,
-        "y": 6.868720072215529
-      },
-      "isLocked": true,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.147408380327451,
-        "y": 6.054599852667639
-      },
-      "prevControl": {
-        "x": 2.176657654978019,
-        "y": 6.42509066490817
-      },
-      "nextControl": {
-        "x": 2.1197795167007083,
-        "y": 5.704634246728899
+        "x": 7.717707743107796,
+        "y": 4.055313495242375
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.922373537054768,
-        "y": 5.505754088431254
+        "x": 6.010726636837891,
+        "y": 4.14
       },
       "prevControl": {
-        "x": 2.9126220946375945,
-        "y": 5.48625541418862
+        "x": 7.342254747208739,
+        "y": 3.7860550587804753
+      },
+      "nextControl": {
+        "x": 4.658955471757099,
+        "y": 4.499325921728767
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.642660362243803,
+        "y": 5.347883003458315
+      },
+      "prevControl": {
+        "x": 4.376322613472363,
+        "y": 5.156492850963908
+      },
+      "nextControl": {
+        "x": 3.1887809929466027,
+        "y": 5.466286317188019
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.4127312870010371,
+        "y": 5.545221859674489
+      },
+      "prevControl": {
+        "x": 2.4388933393251415,
+        "y": 5.30841523221508
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,16 +64,16 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Start Intake",
-      "waypointRelativePos": 0.1,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.5499999999999999,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "intake"
+                "name": "target_speaker"
               }
             }
           ]
@@ -73,13 +89,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -6.631895292682662,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 60.37625124882618,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true
