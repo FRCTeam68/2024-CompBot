@@ -72,6 +72,11 @@ public class ClimberSubSystem extends SubsystemBase {
         configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        configs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        configs.CurrentLimits.SupplyCurrentLimit = 30.0;
+        // configs.CurrentLimits.SupplyTimeThreshold = 0.01;
+
         /* Retry config apply up to 5 times, report if failure */
         StatusCode status = StatusCode.StatusCodeNotInitialized;
         for (int i = 0; i < 5; ++i) {
