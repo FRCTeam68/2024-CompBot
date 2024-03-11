@@ -18,12 +18,17 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.ctre.phoenix6.SignalLogger;
 
+import frc.robot.subsystems.LED;
+
+
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   public static RobotContainer m_robotContainer;
 
   private final boolean UseLimelight = false;
+
+  public LED myLED = new LED();
 
   @Override
   public void robotInit() {
@@ -69,6 +74,8 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     m_robotContainer.m_DriveSubSystem.getDaqThread().setThreadPriority(99);
+
+    myLED.candleRainbow();
   }
 
   @Override
@@ -90,7 +97,7 @@ public class Robot extends LoggedRobot {
         m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
     }
-  }
+      }
 
   /** This function is called once when the robot is disabled. */
   @Override
