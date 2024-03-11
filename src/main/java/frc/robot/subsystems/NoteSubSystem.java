@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -64,6 +65,8 @@ public class NoteSubSystem extends SubsystemBase {
     private double m_feeder1_setpoint;
     private double m_intake_setpoint;
 
+    public Counter Beam3;
+
     public NoteSubSystem(){
         m_presentState = State.IDLE;
         m_target = Target.SPEAKER;
@@ -76,6 +79,9 @@ public class NoteSubSystem extends SubsystemBase {
         m_Feeder2 = new RollerSubSystem("Feeder2", Constants.FEEDER2.CANID, Constants.FEEDER2.CANBUS, true);
         m_Shooter = new ShooterSubSystem();
         m_Angle = new AngleSubSystem();
+        Beam3 = new Counter(Counter.Mode.kSemiperiod);
+        Beam3.setUpSource(1);
+        Beam3.setSemiPeriodMode(true);
 
         Shuffleboard.getTab("IntakeSubsystem").add(m_Intake);
         Shuffleboard.getTab("Feeder1Subsystem").add(m_Feeder1);
@@ -372,6 +378,9 @@ public class NoteSubSystem extends SubsystemBase {
         SmartDashboard.putBoolean("AtAngle Podium", (m_target == Target.SPEAKER_PODIUM)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle Intake", (m_target == Target.INTAKE)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle Speaker", (m_target == Target.SPEAKER)&&(isAtAngle));
+
+        SmartDashboard.putNumber("NoteSensor3 Period", Beam3.getPeriod());
+        SmartDashboard.putNumber("NoteSensor3 Count", Beam3.get());
     }
 
     private void spinUp(){
