@@ -75,7 +75,11 @@ public class Robot extends LoggedRobot {
 
     m_robotContainer.m_DriveSubSystem.getDaqThread().setThreadPriority(99);
 
-    myLED.candleRainbow();
+    // myLED.candleRainbow();
+    //myLED.candlePurple();
+    //myLED.candleGold();
+    myLED.candleOrange();
+    myLED.candleBlue();
   }
 
   @Override
