@@ -69,13 +69,21 @@ public class LED extends SubsystemBase {
         //set brightness
         candle1.configBrightnessScalar(1);
         //set color
-        candle1.setLEDs(237, 125, 49, 0, 1, 40);
+        candle1.setLEDs(255, 24, 0, 0, 48, 10);
+        candle1.setLEDs(255, 24, 0, 0, 58, 10);
+        candle1.setLEDs(255, 24, 0, 0, 68, 10);
+        candle1.setLEDs(255, 24, 0, 0, 78, 10);
+        //237,125,49 - robbie
+        //230,126,34
     }
     public void candleBlue(){
         //set brightness
         candle1.configBrightnessScalar(1);
         //set color
-        candle1.setLEDs(39, 59, 140, 0, 41, 40);
+        candle1.setLEDs(0, 0, 255, 0, 0, 8);
+        candle1.setLEDs(0, 0, 255, 0, 8, 40);
+        // 39,59,140 - robbie
+        //0,0,255
     }
 
     public void candleRainbow(){
