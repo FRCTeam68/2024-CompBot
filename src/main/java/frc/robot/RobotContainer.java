@@ -221,9 +221,8 @@ public class RobotContainer {
 
     // m_NoteSensorTrigger1.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", false)));
-    // m_NoteSensorTrigger2.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
-    //                                     .andThen(()->SmartDashboard.putBoolean("NoteSensor2", true)))
-    //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor2", false)));
+    m_NoteSensorTrigger2.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor2", true)))
+                       .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor2", false)));
     // m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
     //                                     .andThen(()->SmartDashboard.putBoolean("NoteSensor3", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));

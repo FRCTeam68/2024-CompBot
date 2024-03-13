@@ -79,12 +79,11 @@ public class NoteSubSystem extends SubsystemBase {
         m_Feeder2 = new RollerSubSystem("Feeder2", Constants.FEEDER2.CANID, Constants.FEEDER2.CANBUS, true);
         m_Shooter = new ShooterSubSystem();
         m_Angle = new AngleSubSystem();
+
         Beam3 = new Counter(Counter.Mode.kPulseLength);
         Beam3.setUpSource(1);
-
         // Set the decoding type to 2X
         Beam3.setUpSourceEdge(true, true);
-
         // Set the counter to count down if the pulses are longer than .05 seconds
         Beam3.setPulseLengthMode(.02);
 
@@ -217,7 +216,8 @@ public class NoteSubSystem extends SubsystemBase {
                 case INTAKE:
                     m_Angle.setState(AngleSubSystem.State.INTAKE);
                     // for when we want to shoot with this angle.
-                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    // 3/13/2024 - not going to shoot from intake angle now
+                    //m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
                     break;
                 // case FEEDSTATION:
                 //   not implemented yet
@@ -252,6 +252,50 @@ public class NoteSubSystem extends SubsystemBase {
     public void periodic() {
 
         boolean isAtAngle = false;
+        boolean beam3Tripped = false;
+
+        double beam3count = Beam3.get();
+        if (beam3count > 0){
+            beam3Tripped = true;
+            Logger.recordOutput("Note/beam3count", beam3count);
+            Logger.recordOutput("Note/beam3tripped", true);
+            
+            if (m_presentState == State.INTAKING_NOTE1){
+                //front side of note coming through
+                Logger.recordOutput("Note/Comment",  "stop intake");
+                m_Feeder2.setSpeed(0);
+                m_Feeder1.setSpeed(0);
+                m_Intake.setSpeed(0);
+                m_shootStopTime.stop();
+                m_shootStopTime.reset();
+                setHaveNote1(true);
+                setState(State.IDLE);
+                setAction(ActionRequest.IDLE);
+            }
+            else if(m_presentState == State.SHOOTING){
+                //backside of note coming through
+                Logger.recordOutput("Note/Comment",  "note shot");
+                m_Feeder2.setSpeed(0);
+                m_shootStopTime.stop();
+                m_shootStopTime.reset();
+                setHaveNote1(false);
+                setState(State.IDLE);
+                setAction(ActionRequest.IDLE);
+            }
+            else if(m_presentState == State.SPITTING_NOTE){
+                Logger.recordOutput("Note/Comment",  "note spit out");
+                m_shootStopTime.stop();
+                m_shootStopTime.reset();
+                //just need to reflect no longer have a note
+                //not sure why we would spit out a note we have; maybe wrong button hit?
+                setHaveNote1(false);
+                //don't stop rollers has note is not out yet, just show we don't have it anymore
+            }
+                
+        }
+        SmartDashboard.putNumber("beam3 count", beam3count);
+        SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
+        
 
         switch(m_wantedAction){
             default:
@@ -264,7 +308,7 @@ public class NoteSubSystem extends SubsystemBase {
                     m_shootStopTime.reset();
                     Logger.recordOutput("Note/Comment",  "shoot timer elapsed");
                     if (m_haveNote1){
-                        // we can leave it running  m_Feeder2.setSpeed(0);  
+                        m_Feeder2.setSpeed(0);  
                         setHaveNote1(false);
                         setState(State.IDLE);
                     }
@@ -309,36 +353,37 @@ public class NoteSubSystem extends SubsystemBase {
                         setAction(ActionRequest.IDLE);
                      }
                 }
-                else{
-                    Logger.recordOutput("Note/Comment",  "no intake, have note");
-                    spinUp();
-                    //we have a note.  do not intake
-                    setAction(ActionRequest.IDLE);
-                }
+                // 3/13/2024  not going to shoot from intake position now
+                // else{
+                //     Logger.recordOutput("Note/Comment",  "no intake, have note");
+                //     spinUp();
+                //     //we have a note.  do not intake
+                //     setAction(ActionRequest.IDLE);
+                // }
                 break;
-            case BEAM3:
-                if (m_presentState == State.INTAKING_NOTE1){
-                    Logger.recordOutput("Note/Comment",  "stop intake");
-                    m_Feeder2.setSpeed(0);
-                    m_Feeder1.setSpeed(0);
-                    m_Intake.setSpeed(0);
-                    m_shootStopTime.stop();
-                    m_shootStopTime.reset();
-                    setHaveNote1(true);
-                    setState(State.IDLE);
-                    setAction(ActionRequest.IDLE);
-                }
-                else if(m_presentState == State.SHOOTING){
-                    Logger.recordOutput("Note/Comment",  "note shot");
-                    //backside of note coming through
-                    // it can keep running -- m_Feeder2.setSpeed(0);
-                    m_shootStopTime.stop();
-                    m_shootStopTime.reset();
-                    setHaveNote1(false);
-                    setState(State.IDLE);
-                    setAction(ActionRequest.IDLE);
-                }
-                break;
+            // case BEAM3:
+            //     if (m_presentState == State.INTAKING_NOTE1){
+            //         Logger.recordOutput("Note/Comment",  "stop intake");
+            //         m_Feeder2.setSpeed(0);
+            //         m_Feeder1.setSpeed(0);
+            //         m_Intake.setSpeed(0);
+            //         m_shootStopTime.stop();
+            //         m_shootStopTime.reset();
+            //         setHaveNote1(true);
+            //         setState(State.IDLE);
+            //         setAction(ActionRequest.IDLE);
+            //     }
+            //     else if(m_presentState == State.SHOOTING){
+            //         Logger.recordOutput("Note/Comment",  "note shot");
+            //         //backside of note coming through
+            //         // it can keep running -- m_Feeder2.setSpeed(0);
+            //         m_shootStopTime.stop();
+            //         m_shootStopTime.reset();
+            //         setHaveNote1(false);
+            //         setState(State.IDLE);
+            //         setAction(ActionRequest.IDLE);
+            //     }
+            //     break;
             case SPIT_NOTE2:
                 setTarget(Target.INTAKE);
                 if (m_Angle.atAngle()){
@@ -359,9 +404,9 @@ public class NoteSubSystem extends SubsystemBase {
                 setAction(ActionRequest.IDLE);
                 break;
             case SHOOT_SPINUP:
-                    Logger.recordOutput("Note/Comment",  "spinup shooter");
-                    spinUp();
-                    setAction(ActionRequest.IDLE);
+                Logger.recordOutput("Note/Comment",  "spinup shooter");
+                spinUp();
+                setAction(ActionRequest.IDLE);
                 break;
             case SHOOT:
 
@@ -384,8 +429,8 @@ public class NoteSubSystem extends SubsystemBase {
         SmartDashboard.putBoolean("AtAngle Intake", (m_target == Target.INTAKE)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle Speaker", (m_target == Target.SPEAKER)&&(isAtAngle));
 
-        SmartDashboard.putNumber("NoteSensor3 Period", Beam3.getPeriod());
-        SmartDashboard.putNumber("NoteSensor3 Count", Beam3.get());
+        SmartDashboard.putNumber("beam3 Period", Beam3.getPeriod());
+        SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
     }
 
     private void spinUp(){
