@@ -257,6 +257,7 @@ public class NoteSubSystem extends SubsystemBase {
         double beam3count = Beam3.get();
         if (beam3count > 0){
             beam3Tripped = true;
+            Beam3.reset();
             Logger.recordOutput("Note/beam3count", beam3count);
             Logger.recordOutput("Note/beam3tripped", true);
             
