@@ -31,7 +31,8 @@ public class LightsSubsystem extends SubsystemBase {
     // Indicator colors
     public static final Color white = new Color(255, 230, 220);
     public static final Color green = new Color(56, 209, 0);
-    public static final Color blue = new Color(8, 32, 255);
+    // public static final Color blue = new Color(8, 32, 255);
+    public static final Color blue = new Color(0, 0, 255);
     public static final Color red = new Color(255, 0, 0);
 
     public LightsSubsystem() {
@@ -54,11 +55,17 @@ public class LightsSubsystem extends SubsystemBase {
         return runOnce(() -> {
             LEDSegment.BatteryIndicator.fullClear();
             LEDSegment.PressureIndicator.fullClear();
-            LEDSegment.MastEncoderIndicator.fullClear();
-            LEDSegment.BoomEncoderIndicator.fullClear();
-            LEDSegment.WristEncoderIndicator.fullClear();
+            // LEDSegment.MastEncoderIndicator.fullClear();
+            // LEDSegment.BoomEncoderIndicator.fullClear();
+            // LEDSegment.WristEncoderIndicator.fullClear();
 
-            LEDSegment.MainStrip.setColor(orange);
+            LEDSegment.side1.setColor(orange);
+            LEDSegment.side1heading.setColor(orange);
+            LEDSegment.side1distance.setColor(orange);
+            LEDSegment.side1target.setColor(orange);
+            LEDSegment.side2.setColor(blue);
+            LEDSegment.side3.setColor(orange);
+            LEDSegment.side4.setColor(blue);
         });
     }
 
@@ -72,11 +79,18 @@ public class LightsSubsystem extends SubsystemBase {
     public static enum LEDSegment {
         BatteryIndicator(0, 2, 0),
         PressureIndicator(2, 2, 1),
-        MastEncoderIndicator(4, 1, -1),
-        BoomEncoderIndicator(5, 1, -1),
-        WristEncoderIndicator(6, 1, -1),
-        DriverStationIndicator(7, 1, -1),
-        MainStrip(8, 300, 2);
+        // MastEncoderIndicator(4, 1, -1),
+        // BoomEncoderIndicator(5, 1, -1),
+        // WristEncoderIndicator(6, 1, -1),
+        // DriverStationIndicator(7, 1, -1),
+        
+        side1(8, 7, 2),
+        side1heading(15,1,3),
+        side1distance(16,1,4),
+        side1target(17,1,-1),
+        side2(18, 7, 2),
+        side3(28, 7, 2),
+        side4(38, 7, 2);
 
         public final int startIndex;
         public final int segmentSize;
@@ -122,7 +136,7 @@ public class LightsSubsystem extends SubsystemBase {
 
         public void setBandAnimation(Color color, double speed) {
             setAnimation(new LarsonAnimation(
-                    color.red, color.green, color.blue, 0, speed, segmentSize, BounceMode.Front, 3, startIndex));
+                    color.red, color.green, color.blue, 0, speed, segmentSize, BounceMode.Front, 2, startIndex));
         }
 
         public void setStrobeAnimation(Color color, double speed) {

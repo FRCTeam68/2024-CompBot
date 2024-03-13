@@ -1,26 +1,33 @@
 package frc.robot.subsystems;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
-import com.ctre.phoenix.led.LarsonAnimation;
-import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
-import frc.robot.subsystems.NoteSubSystem.Target;;
+
+import edu.wpi.first.wpilibj.PowerDistribution;
 
 
 public class LEDSubSystem extends SubsystemBase {
+    //CANdle stuff
+    //purple = 80, 45, 127
+    //gold = 255, 200, 46
+    //define candle
     CANdle candle1 = new CANdle(60);
     //create a rainbow anim.
     RainbowAnimation rainbowAnimation = new RainbowAnimation(1, 1, 40);
 
-    // LarsonAnimation manualModeSegment1 = new LarsonAnimation(0,0,0,0,1,10,0,3,8);
-    //int r, int g, int b, int w, double speed, int numLed, BounceMode mode, int size, int ledOffset)
+    // private PowerDistribution pDH;
 
    
     public LEDSubSystem() {
+        // pDH = new PowerDistribution();
+        // addChild("PDH",pDH);
+
         candle1.configLEDType(LEDStripType.RGB);
         candle1.clearAnimation(0);
-        candle1.configBrightnessScalar(1);
+ 
     }
 
     @Override
@@ -35,72 +42,12 @@ public class LEDSubSystem extends SubsystemBase {
 
     }
 
-    public void setEmpty(){
-        //all solid orange
-        candle1.setLEDs(255, 24, 0, 0, 0, 48);
-    }
+    // Put methods for controlling this subsystem
+    // here. Call these from Commands.
 
-    public void setIntaking(){
-        //orange rolling
-    }
-
-    public void setHaveNote(){
-        //solid blue
-        candle1.setLEDs(0, 0, 255, 0, 0, 48);
-    }
-
-    public void setPrepareToShoot(Target mytarget, boolean isVisionMode){
-        //blue rolling
-        // for manual mode, this is when: waiting for angle to be at its setpoint
-        //                                or for shooter to be up to speed
-        // for vision mode, this also when: target not found yet,
-        //                                  or outside distance we can shoot 
-        //                                  or heading is still not correct
-
-        //use the top LED to indicate manual mode target
-        //red = speaker at the subwoofer
-        //red blinking = speaker at podium
-        //yellow = amp
-        //orange = trap
-        //white = other
-
-        //top 3 LED lite means vision mode active
-        // red = speaker,  
-        // yellow = amp
-        // orange = trap
-        // all 3 top blink if target not found
-        //                 target found, top is solid
-        //                 within distance, 2nd is solid
-        //                 heading locked on, 3rd solid  (and remaining solid green)
-
-
-
-    }
-
-    public void setReadyToShoot(Target mytarget, boolean isVisionMode){
-        //green solid
-        //this is at the setpoint angle and speed when shooting manually
-        //    or in the case of vision, also within distance and the heading is correct
-
-        //use the top LED to indicate manual mode target
-        //red = speaker at the subwoofer
-        //green = speaker at podium
-        //yellow = amp
-        //orange = trap
-        //white = other
-
-        //top 3 LED lite means vision mode
-        // red = speaker
-        // yellow = amp
-        // orange = trap
-
-        
-
-
-    }
-
-
-
+    //CANdle
+    //purple = 80, 45, 127
+    //gold = 255, 200, 46
 
     public void candlePurple(){
         //set brightness
@@ -116,6 +63,7 @@ public class LEDSubSystem extends SubsystemBase {
         //set color
         candle1.setLEDs(255, 200, 46);
     }
+
     
     public void candleOrange(){
         //set brightness
@@ -128,7 +76,6 @@ public class LEDSubSystem extends SubsystemBase {
         //237,125,49 - robbie
         //230,126,34
     }
-
     public void candleBlue(){
         //set brightness
         candle1.configBrightnessScalar(1);

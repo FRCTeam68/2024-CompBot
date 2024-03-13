@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.LightsSubsystem;
+import frc.robot.subsystems.LightsSubsystem.LEDSegment;
 
 public class NoteSubSystem extends SubsystemBase {
 
@@ -63,6 +65,7 @@ public class NoteSubSystem extends SubsystemBase {
     private double m_feeder2_setpoint;
     private double m_feeder1_setpoint;
     private double m_intake_setpoint;
+    private boolean m_actionChanged;
 
     public NoteSubSystem(){
         m_presentState = State.IDLE;
@@ -70,6 +73,7 @@ public class NoteSubSystem extends SubsystemBase {
         m_wantedAction = ActionRequest.IDLE;
         setHaveNote1(false);
         setShooterSpunUp(false);
+        m_actionChanged = true;
 
         m_Intake = new RollerSubSystem("Intake", Constants.INTAKE.CANID, Constants.INTAKE.CANBUS, true);
         m_Feeder1 = new RollerSubSystem("Feeder1", Constants.FEEDER1.CANID, Constants.FEEDER1.CANBUS, false);
@@ -92,6 +96,8 @@ public class NoteSubSystem extends SubsystemBase {
         Logger.recordOutput("Note/State",  m_presentState);
         Logger.recordOutput("Note/Target",  m_target);
         Logger.recordOutput("Note/Action",  m_wantedAction);
+
+        LEDSegment.side1.setColor(LightsSubsystem.orange);
     }
 
     public void resetSetpoints(){
@@ -186,27 +192,32 @@ public class NoteSubSystem extends SubsystemBase {
                 case SPEAKER:
                     m_Angle.setState(AngleSubSystem.State.SPEAKER);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    LEDSegment.side1target.setColor(LightsSubsystem.red);
                     if (!m_spunShooterUp){spinUp();}
                     break;
                 case SPEAKER_1M:
                     m_Angle.setState(AngleSubSystem.State.SPEAKER_1M);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    LEDSegment.side1target.setColor(LightsSubsystem.orange);
                     if (!m_spunShooterUp){spinUp();}
                     break;
                 case AMP:
                     m_Angle.setState(AngleSubSystem.State.AMP);
                     m_shooter_setpoint = Constants.SHOOTER.AMP_SHOOT_SPEED;
+                    LEDSegment.side1target.setColor(LightsSubsystem.yellow);
                     if (!m_spunShooterUp){spinUp();}
                     break;
                 case TRAP:
                     m_Angle.setState(AngleSubSystem.State.TRAP);
                     m_shooter_setpoint = Constants.SHOOTER.TRAP_SHOOT_SPEED;
+                    LEDSegment.side1target.setColor(LightsSubsystem.purple);
                     if (!m_spunShooterUp){spinUp();}
                     break;
                 case INTAKE:
                     m_Angle.setState(AngleSubSystem.State.INTAKE);
                     // for when we want to shoot with this angle.
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    LEDSegment.side1target.setColor(LightsSubsystem.blue);
                     break;
                 // case FEEDSTATION:
                 //   not implemented yet
@@ -215,10 +226,12 @@ public class NoteSubSystem extends SubsystemBase {
                 case SPEAKER_PODIUM:
                     m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    LEDSegment.side1target.setColor(LightsSubsystem.orange);
                     break;
                 case SPEAKER_PODIUM_SOURCE:
                     m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM_SOURCE);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    LEDSegment.side1target.setColor(LightsSubsystem.orange);
                     break;
             }
 
@@ -232,6 +245,9 @@ public class NoteSubSystem extends SubsystemBase {
     }
 
     public void setAction(ActionRequest wantedAction) {
+
+        m_actionChanged = (wantedAction == m_wantedAction) ? false : true;
+
 		m_wantedAction = wantedAction;
         Logger.recordOutput("Note/Action",  m_wantedAction);
     }
@@ -255,6 +271,7 @@ public class NoteSubSystem extends SubsystemBase {
                     if (m_haveNote1){
                         // we can leave it running  m_Feeder2.setSpeed(0);  
                         setHaveNote1(false);
+                        LEDSegment.side1.setColor(LightsSubsystem.orange);
                         setState(State.IDLE);
                     }
                 }
@@ -270,6 +287,7 @@ public class NoteSubSystem extends SubsystemBase {
                 m_shootStopTime.reset();
                 setShooterSpunUp(true);
                 setState(State.IDLE);
+                LEDSegment.side1.setColor(LightsSubsystem.orange);
                 setAction(ActionRequest.IDLE);
                 break;
             case STOP_ALL:
@@ -282,9 +300,16 @@ public class NoteSubSystem extends SubsystemBase {
                 m_shootStopTime.reset();
                 setShooterSpunUp(false);
                 setState(State.IDLE);
+                LEDSegment.side1.setColor(LightsSubsystem.orange);
                 setAction(ActionRequest.IDLE);
                 break;
             case INTAKENOTE:
+                if (m_actionChanged){
+                    //do just once, when action commanded
+                    //rapid pulse until at angle
+                    LEDSegment.side1.setBandAnimation(LightsSubsystem.orange,3);
+                    m_actionChanged=false;
+                }
                 if (m_target != Target.INTAKE){
                     setTarget(Target.INTAKE);
                 }
@@ -294,16 +319,17 @@ public class NoteSubSystem extends SubsystemBase {
                         m_Intake.setSpeed(m_intake_setpoint);
                         m_Feeder1.setSpeed(m_feeder1_setpoint);
                         m_Feeder2.setSpeed(m_feeder2_setpoint);
+                        LEDSegment.side1.setBandAnimation(LightsSubsystem.orange,.5);
                         setState(State.INTAKING_NOTE1);
                         setAction(ActionRequest.IDLE);
                      }
                 }
-                else{
-                    Logger.recordOutput("Note/Comment",  "no intake, have note");
-                    spinUp();
-                    //we have a note.  do not intake
-                    setAction(ActionRequest.IDLE);
-                }
+                // else{
+                //     Logger.recordOutput("Note/Comment",  "no intake, have note");
+                //     spinUp();
+                //     //we have a note.  do not intake
+                //     setAction(ActionRequest.IDLE);
+                // }
                 break;
             case BEAM3:
                 if (m_presentState == State.INTAKING_NOTE1){
@@ -314,6 +340,7 @@ public class NoteSubSystem extends SubsystemBase {
                     m_shootStopTime.stop();
                     m_shootStopTime.reset();
                     setHaveNote1(true);
+                    LEDSegment.side1.setColor(LightsSubsystem.blue);
                     setState(State.IDLE);
                     setAction(ActionRequest.IDLE);
                 }
@@ -324,11 +351,17 @@ public class NoteSubSystem extends SubsystemBase {
                     m_shootStopTime.stop();
                     m_shootStopTime.reset();
                     setHaveNote1(false);
+                    LEDSegment.side1.setColor(LightsSubsystem.orange);
                     setState(State.IDLE);
                     setAction(ActionRequest.IDLE);
                 }
                 break;
             case SPIT_NOTE2:
+                if (m_actionChanged){
+                    //do just once, when action commanded
+                    LEDSegment.side1.setBandAnimation(LightsSubsystem.green,.5);
+                    m_actionChanged=false;
+                }
                 setTarget(Target.INTAKE);
                 if (m_Angle.atAngle()){
                     Logger.recordOutput("Note/Comment",  "spit note");
@@ -340,6 +373,8 @@ public class NoteSubSystem extends SubsystemBase {
                     }
                 break;
             case DISLODGE_WITH_SHOOTER:
+                LEDSegment.side1.setFadeAnimation(LightsSubsystem.red,.5);
+                    
                 Logger.recordOutput("Note/Comment",  "reverse spin shooter");
                 m_Shooter.setRightOffsetSpeed(0);
                 m_Feeder2.setSpeed(-m_shooterfeeder2_setpoint);
@@ -353,18 +388,23 @@ public class NoteSubSystem extends SubsystemBase {
                     setAction(ActionRequest.IDLE);
                 break;
             case SHOOT:
-
+                if (m_actionChanged){
+                    //do just once, when action commanded
+                    LEDSegment.side1.setStrobeAnimation(LightsSubsystem.red, 3);
+                    m_actionChanged=false;
+                }
                 //  if (m_Shooter.atSpeed()) -- not implemented yet
 
                 if (m_Angle.atAngle()){
                     Logger.recordOutput("Note/Comment",  "feed shooter");
                     m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
                     setState(State.SHOOTING);
+                    LEDSegment.side1.setColor(LightsSubsystem.red);
                     m_shootStopTime.restart();
                     setAction(ActionRequest.IDLE);
                  }
                 break;
-                    }
+        }
 
         isAtAngle = m_Angle.atAngle();
         SmartDashboard.putBoolean("AtAngle AMP", (m_target == Target.AMP)&&(isAtAngle));
