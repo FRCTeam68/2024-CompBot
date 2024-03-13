@@ -18,7 +18,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.ctre.phoenix6.SignalLogger;
 
-import frc.robot.subsystems.LED;
+import frc.robot.subsystems.LEDSubSystem;
 
 
 public class Robot extends LoggedRobot {
@@ -27,8 +27,6 @@ public class Robot extends LoggedRobot {
   public static RobotContainer m_robotContainer;
 
   private final boolean UseLimelight = false;
-
-  public LED myLED = new LED();
 
   @Override
   public void robotInit() {
@@ -58,9 +56,6 @@ public class Robot extends LoggedRobot {
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
-
-
-
     SignalLogger.setPath("//media/sda1/");
     SignalLogger.start();
     
@@ -75,11 +70,6 @@ public class Robot extends LoggedRobot {
 
     m_robotContainer.m_DriveSubSystem.getDaqThread().setThreadPriority(99);
 
-    // myLED.candleRainbow();
-    //myLED.candlePurple();
-    //myLED.candleGold();
-    myLED.candleOrange();
-    myLED.candleBlue();
   }
 
   @Override
