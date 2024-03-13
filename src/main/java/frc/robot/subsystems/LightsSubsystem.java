@@ -84,13 +84,21 @@ public class LightsSubsystem extends SubsystemBase {
         // WristEncoderIndicator(6, 1, -1),
         // DriverStationIndicator(7, 1, -1),
         
-        side1(8, 7, 2),
-        side1heading(15,1,3),
-        side1distance(16,1,4),
-        side1target(17,1,-1),
-        side2(18, 7, 2),
-        side3(28, 7, 2),
-        side4(38, 7, 2);
+        // side1(8, 7, 2),
+        // side1heading(15,1,3),
+        // side1distance(16,1,4),
+        // side1target(17,1,-1),
+        // side2(18, 7, 2),
+        // side3(28, 7, 2),
+        // side4(38, 7, 2);
+
+        side1(8, 4, 2),
+        side1heading(4,1,3),
+        side1distance(5,1,4),
+        side1target(6,1,-1),
+        side2(15, 4, 2),
+        side3(22, 4, 2),
+        side4(29, 4, 2);
 
         public final int startIndex;
         public final int segmentSize;

@@ -9,7 +9,7 @@ import com.ctre.phoenix.led.CANdle.LEDStripType;
 import edu.wpi.first.wpilibj.PowerDistribution;
 
 
-public class LEDSubSystem extends SubsystemBase {
+public class LEDSubsystem extends SubsystemBase {
     //CANdle stuff
     //purple = 80, 45, 127
     //gold = 255, 200, 46
@@ -21,7 +21,7 @@ public class LEDSubSystem extends SubsystemBase {
     // private PowerDistribution pDH;
 
    
-    public LEDSubSystem() {
+    public LEDSubsystem() {
         // pDH = new PowerDistribution();
         // addChild("PDH",pDH);
 
