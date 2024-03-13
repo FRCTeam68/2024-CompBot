@@ -79,9 +79,14 @@ public class NoteSubSystem extends SubsystemBase {
         m_Feeder2 = new RollerSubSystem("Feeder2", Constants.FEEDER2.CANID, Constants.FEEDER2.CANBUS, true);
         m_Shooter = new ShooterSubSystem();
         m_Angle = new AngleSubSystem();
-        Beam3 = new Counter(Counter.Mode.kSemiperiod);
+        Beam3 = new Counter(Counter.Mode.kPulseLength);
         Beam3.setUpSource(1);
-        Beam3.setSemiPeriodMode(true);
+
+        // Set the decoding type to 2X
+        Beam3.setUpSourceEdge(true, true);
+
+        // Set the counter to count down if the pulses are longer than .05 seconds
+        Beam3.setPulseLengthMode(.02);
 
         Shuffleboard.getTab("IntakeSubsystem").add(m_Intake);
         Shuffleboard.getTab("Feeder1Subsystem").add(m_Feeder1);
