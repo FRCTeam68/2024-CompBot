@@ -153,8 +153,8 @@ public class TunerConstants {
     public static final CommandSwerveDrivetrain DriveTrain = new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft,
             FrontRight, BackLeft, BackRight);
 
-public static CurrentLimitsConfigs driveLimit = new CurrentLimitsConfigs().withSupplyCurrentLimit(30);
-public static CurrentLimitsConfigs steerLimit = new CurrentLimitsConfigs().withSupplyCurrentLimit(30);
+public static CurrentLimitsConfigs driveLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(80);
+public static CurrentLimitsConfigs steerLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(60);
 public static TalonFXConfiguration driveConfig = new TalonFXConfiguration().withCurrentLimits(driveLimit);
 public static TalonFXConfiguration steerConfig = new TalonFXConfiguration().withCurrentLimits(steerLimit);
 }

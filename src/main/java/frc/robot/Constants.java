@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -23,6 +25,9 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
     private static RobotType robotType = RobotType.DEVBOT;
+
+    public static CurrentLimitsConfigs limit80 = new CurrentLimitsConfigs().withStatorCurrentLimit(80);
+    public static CurrentLimitsConfigs limit60 = new CurrentLimitsConfigs().withStatorCurrentLimit(60);
 
     public enum RobotType {
         CHASSISBOT,

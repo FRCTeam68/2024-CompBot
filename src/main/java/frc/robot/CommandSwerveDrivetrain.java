@@ -142,14 +142,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void setCurrentLimits(){
         this.getModule(0).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(1).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
         this.getModule(2).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
-        this.getModule(4).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
-        this.getModule(6).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(3).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
 
+        this.getModule(0).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
         this.getModule(1).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+        this.getModule(2).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
         this.getModule(3).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
-        this.getModule(5).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
-        this.getModule(7).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
     
         
     }
