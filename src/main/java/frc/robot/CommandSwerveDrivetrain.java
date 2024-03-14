@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.Utils;
+
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
@@ -38,19 +39,20 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
-        super(driveTrainConstants, OdometryUpdateFrequency, modules);
-        configurePathPlanner();
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-    }
+    // public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
+    //     super(driveTrainConstants, OdometryUpdateFrequency, modules);
+    //     configurePathPlanner();
+    //     if (Utils.isSimulation()) {
+    //         startSimThread();
+    //     }
+    // }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
     }
 
     private void configurePathPlanner() {
@@ -136,6 +138,20 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+    }
+
+    public void setCurrentLimits(){
+        this.getModule(0).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(2).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(4).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(6).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+
+        this.getModule(1).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+        this.getModule(3).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+        this.getModule(5).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+        this.getModule(7).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+    
+        
     }
 
     private void startSimThread() {
