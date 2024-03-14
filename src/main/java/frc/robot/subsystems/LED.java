@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 
@@ -25,9 +26,11 @@ public class LED extends SubsystemBase {
         // pDH = new PowerDistribution();
         // addChild("PDH",pDH);
 
+        candle1.configFactoryDefault();
+        candle1.configVBatOutput(VBatOutputMode.On);
         candle1.configLEDType(LEDStripType.RGB);
         candle1.clearAnimation(0);
- 
+    
     }
 
     @Override
@@ -69,7 +72,7 @@ public class LED extends SubsystemBase {
         //set brightness
         candle1.configBrightnessScalar(1);
         //set color
-        candle1.setLEDs(255, 24, 0, 0, 0, 22);
+        candle1.setLEDs(255, 24, 0, 0, 22, 14);
         // candle1.setLEDs(255, 24, 0, 0, 58, 10);
         // candle1.setLEDs(255, 24, 0, 0, 68, 10);
         // candle1.setLEDs(255, 24, 0, 0, 78, 10);
@@ -80,7 +83,7 @@ public class LED extends SubsystemBase {
         //set brightness
         candle1.configBrightnessScalar(1);
         //set color
-        candle1.setLEDs(0, 0, 255, 0, 22, 14);
+        candle1.setLEDs(0, 0, 255, 0, 0, 22);
         // candle1.setLEDs(0, 0, 255, 0, 8, 40);
         // 39,59,140 - robbie
         //0,0,255
