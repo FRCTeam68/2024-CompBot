@@ -97,6 +97,9 @@ public class NoteSubSystem extends SubsystemBase {
         Logger.recordOutput("Note/Target",  m_target);
         Logger.recordOutput("Note/Action",  m_wantedAction);
 
+        
+        LEDSegment.Do1to4.setBandAnimation(LightsSubsystem.blue, 2);
+        LEDSegment.Do5to8.setColor(LightsSubsystem.orange);
         LEDSegment.side1.setColor(LightsSubsystem.orange);
     }
 
