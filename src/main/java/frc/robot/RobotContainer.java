@@ -7,6 +7,7 @@ package frc.robot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -108,7 +109,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 
+     m_DriveSubSystem.setCurrentLimits();
+
     configureBindings();
+
+    
+    
 
     // Put subsystems to dashboard.
     Shuffleboard.getTab("NoteSubsystem").add(m_NoteSubSystem);
