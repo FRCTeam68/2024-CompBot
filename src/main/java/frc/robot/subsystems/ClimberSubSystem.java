@@ -70,11 +70,14 @@ public class ClimberSubSystem extends SubsystemBase {
         // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
 
         configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        configs.withCurrentLimits(Constants.limit60);
+
 
         configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-        configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        configs.CurrentLimits.SupplyCurrentLimit = 30.0;
+        // configs.CurrentLimits.SupplyCurrentLimitEnable = true;
+        // configs.CurrentLimits.SupplyCurrentLimit = 30.0;
+        
         // configs.CurrentLimits.SupplyTimeThreshold = 0.01;
 
         /* Retry config apply up to 5 times, report if failure */
