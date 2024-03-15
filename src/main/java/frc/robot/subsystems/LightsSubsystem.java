@@ -37,13 +37,22 @@ public class LightsSubsystem extends SubsystemBase {
 
     public LightsSubsystem() {
         candle.configFactoryDefault();
-        CANdleConfiguration candleConfiguration = new CANdleConfiguration();
-        // candleConfiguration.statusLedOffWhenActive = false; //true;
-        // candleConfiguration.disableWhenLOS = false;
-        candleConfiguration.stripType = LEDStripType.RGB;
-        candleConfiguration.brightnessScalar = 1.0;
-        // candleConfiguration.vBatOutputMode = VBatOutputMode.On; //VBatOutputMode.Modulated
-        candle.configAllSettings(candleConfiguration, 100);
+        candle.configVBatOutput(VBatOutputMode.On);
+        candle.configLEDType(LEDStripType.RGB);
+        candle.clearAnimation(0);
+        candle.clearAnimation(1);
+        candle.clearAnimation(2);
+        candle.clearAnimation(3);
+        candle.clearAnimation(4);
+        candle.configBrightnessScalar(1);
+
+        // CANdleConfiguration candleConfiguration = new CANdleConfiguration();
+        // // candleConfiguration.statusLedOffWhenActive = false; //true;
+        // // candleConfiguration.disableWhenLOS = false;
+        // candleConfiguration.stripType = LEDStripType.RGB;
+        // candleConfiguration.brightnessScalar = 1.0;
+        // // candleConfiguration.vBatOutputMode = VBatOutputMode.On; //VBatOutputMode.Modulated
+        // candle.configAllSettings(candleConfiguration, 100);
 
         // setDefaultCommand(defaultCommand());
     }
@@ -95,13 +104,18 @@ public class LightsSubsystem extends SubsystemBase {
         // side3(28, 7, 2),
         // side4(38, 7, 2);
 
-        side1(8, 4, 2),
-        side1heading(12,1,3),
-        side1distance(13,1,4),
-        side1target(14,1,-1);
-        // side2(15, 4, 2),
-        // side3(22, 4, 2),
-        // side4(29, 4, 2);
+        // side1(8, 4, 2),
+        // side1heading(12,1,3),
+        // side1distance(13,1,4),
+        // side1target(14,1,-1),
+        // side2(15, 4, 5),
+        // side3(22, 4, 6),
+        // side4(29, 4, 7);
+
+        side1(8, 28, 2),
+        side1heading(33,1,3),
+        side1distance(34,1,4),
+        side1target(35,1,-1);
 
         public final int startIndex;
         public final int segmentSize;

@@ -100,7 +100,21 @@ public class NoteSubSystem extends SubsystemBase {
         
         LEDSegment.Do1to4.setBandAnimation(LightsSubsystem.blue, 2);
         LEDSegment.Do5to8.setColor(LightsSubsystem.orange);
-        LEDSegment.side1.setColor(LightsSubsystem.orange);
+        // LEDSegment.side1.setBandAnimation(LightsSubsystem.green, 4);
+        // LEDSegment.side2.setBandAnimation(LightsSubsystem.yellow,2);
+        // LEDSegment.side3.setBandAnimation(LightsSubsystem.purple,1);
+        // LEDSegment.side4.setBandAnimation(LightsSubsystem.red, .5);
+
+        // LEDSegment.side1.setStrobeAnimation(LightsSubsystem.green, 4);
+        // LEDSegment.side2.setStrobeAnimation(LightsSubsystem.yellow,2);
+        // LEDSegment.side3.setStrobeAnimation(LightsSubsystem.purple,1);
+        // LEDSegment.side4.setStrobeAnimation(LightsSubsystem.red, .5);
+
+        LEDSegment.side1.setStrobeAnimation(LightsSubsystem.blue, 0.5);
+        // LEDSegment.side1heading.setColor(LightsSubsystem.green);
+        // LEDSegment.side1distance.setColor(LightsSubsystem.purple);
+        // LEDSegment.side1target.setColor(LightsSubsystem.blue);
+        //strobe .5 looks good
     }
 
     public void resetSetpoints(){
