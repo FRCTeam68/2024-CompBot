@@ -112,10 +112,11 @@ public class LightsSubsystem extends SubsystemBase {
         // side3(22, 4, 6),
         // side4(29, 4, 7);
 
-        side1(8, 28, 2),
-        side1heading(33,1,3),
+        //there are 4 segments of 7, so 28 LEDs
+        side1(8, 25, 2),
+        side1target(33,1,3),
         side1distance(34,1,4),
-        side1target(35,1,-1);
+        side1heading(35,1,-1);
 
         public final int startIndex;
         public final int segmentSize;

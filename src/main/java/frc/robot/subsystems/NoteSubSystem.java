@@ -100,21 +100,10 @@ public class NoteSubSystem extends SubsystemBase {
         
         LEDSegment.Do1to4.setBandAnimation(LightsSubsystem.blue, 2);
         LEDSegment.Do5to8.setColor(LightsSubsystem.orange);
-        // LEDSegment.side1.setBandAnimation(LightsSubsystem.green, 4);
-        // LEDSegment.side2.setBandAnimation(LightsSubsystem.yellow,2);
-        // LEDSegment.side3.setBandAnimation(LightsSubsystem.purple,1);
-        // LEDSegment.side4.setBandAnimation(LightsSubsystem.red, .5);
-
-        // LEDSegment.side1.setStrobeAnimation(LightsSubsystem.green, 4);
-        // LEDSegment.side2.setStrobeAnimation(LightsSubsystem.yellow,2);
-        // LEDSegment.side3.setStrobeAnimation(LightsSubsystem.purple,1);
-        // LEDSegment.side4.setStrobeAnimation(LightsSubsystem.red, .5);
-
         LEDSegment.side1.setStrobeAnimation(LightsSubsystem.blue, 0.5);
-        // LEDSegment.side1heading.setColor(LightsSubsystem.green);
-        // LEDSegment.side1distance.setColor(LightsSubsystem.purple);
-        // LEDSegment.side1target.setColor(LightsSubsystem.blue);
-        //strobe .5 looks good
+        LEDSegment.side1target.setColor(LightsSubsystem.white);
+        LEDSegment.side1heading.setColor(LightsSubsystem.white);
+        LEDSegment.side1distance.setColor(LightsSubsystem.white);
     }
 
     public void resetSetpoints(){
@@ -324,7 +313,7 @@ public class NoteSubSystem extends SubsystemBase {
                 if (m_actionChanged){
                     //do just once, when action commanded
                     //rapid pulse until at angle
-                    LEDSegment.side1.setBandAnimation(LightsSubsystem.orange,3);
+                    LEDSegment.side1.setStrobeAnimation(LightsSubsystem.orange,.5);
                     m_actionChanged=false;
                 }
                 if (m_target != Target.INTAKE){
@@ -336,7 +325,7 @@ public class NoteSubSystem extends SubsystemBase {
                         m_Intake.setSpeed(m_intake_setpoint);
                         m_Feeder1.setSpeed(m_feeder1_setpoint);
                         m_Feeder2.setSpeed(m_feeder2_setpoint);
-                        LEDSegment.side1.setBandAnimation(LightsSubsystem.orange,.5);
+                        LEDSegment.side1.setStrobeAnimation(LightsSubsystem.orange,.5);
                         setState(State.INTAKING_NOTE1);
                         setAction(ActionRequest.IDLE);
                      }
@@ -376,7 +365,7 @@ public class NoteSubSystem extends SubsystemBase {
             case SPIT_NOTE2:
                 if (m_actionChanged){
                     //do just once, when action commanded
-                    LEDSegment.side1.setBandAnimation(LightsSubsystem.green,.5);
+                    LEDSegment.side1.setStrobeAnimation(LightsSubsystem.green,.5);
                     m_actionChanged=false;
                 }
                 setTarget(Target.INTAKE);
@@ -407,7 +396,7 @@ public class NoteSubSystem extends SubsystemBase {
             case SHOOT:
                 if (m_actionChanged){
                     //do just once, when action commanded
-                    LEDSegment.side1.setStrobeAnimation(LightsSubsystem.red, 3);
+                    LEDSegment.side1.setStrobeAnimation(LightsSubsystem.red, .5);
                     m_actionChanged=false;
                 }
                 //  if (m_Shooter.atSpeed()) -- not implemented yet
