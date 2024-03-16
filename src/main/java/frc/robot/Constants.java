@@ -78,7 +78,8 @@ public final class Constants {
         public static final double MAX_SPEED = 100;  // rps
         public static final double SPEAKER_SHOOT_SPEED = 80;
         public static final double TRAP_SHOOT_SPEED = 43; 
-        public static final double AMP_SHOOT_SPEED = 23;  
+        public static final double AMP_SHOOT_SPEED = 26;  
+        public static final double AMP_RIGHT_OFFSET = 26; // it does not roll
         public static final double RIGHT_OFFSET = 0;
         public static final double BUMP_VALUE = 1;   // rps
         public static final double SPINUP_TIME = 2;  // seconds
@@ -106,7 +107,7 @@ public final class Constants {
         public static final double SPEAKER = 0;
         public static final double SPEAKER_1M = 21; //18 ; //16 //15 //20
         public static final double SPEAKER_PODIUM = 26; //24; //16 //22 //24
-        public static final double INTAKE = 12;   //14
+        public static final double INTAKE = 17; // 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
         public static final double SPEAKER_PODIUM_SOURCE = 16;

@@ -67,6 +67,7 @@ public class NoteSubSystem extends SubsystemBase {
     private double m_feeder1_setpoint;
     private double m_intake_setpoint;
     private boolean m_actionChanged;
+    private double m_beam_count;
 
     public Counter Beam3;
 
@@ -77,10 +78,11 @@ public class NoteSubSystem extends SubsystemBase {
         setHaveNote1(false);
         setShooterSpunUp(false);
         m_actionChanged = true;
+        m_beam_count = 0;
 
         m_Intake = new RollerSubSystem("Intake", Constants.INTAKE.CANID, Constants.INTAKE.CANBUS, true);
-        m_Feeder1 = new RollerSubSystem("Feeder1", Constants.FEEDER1.CANID, Constants.FEEDER1.CANBUS, false);
-        m_Feeder2 = new RollerSubSystem("Feeder2", Constants.FEEDER2.CANID, Constants.FEEDER2.CANBUS, true);
+        m_Feeder1 = new RollerSubSystem("Feeder1", Constants.FEEDER1.CANID, Constants.FEEDER1.CANBUS, true);
+        m_Feeder2 = new RollerSubSystem("Feeder2", Constants.FEEDER2.CANID, Constants.FEEDER2.CANBUS, false);
         m_Shooter = new ShooterSubSystem();
         m_Angle = new AngleSubSystem();
 
@@ -119,6 +121,7 @@ public class NoteSubSystem extends SubsystemBase {
 
     public void resetSetpoints(){
         
+        m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;  //default
         switch(m_target){
             default:
             case SPEAKER, SPEAKER_1M, SPEAKER_PODIUM:
@@ -126,6 +129,7 @@ public class NoteSubSystem extends SubsystemBase {
                 break;
             case AMP:
                 m_shooter_setpoint = Constants.SHOOTER.AMP_SHOOT_SPEED;
+                m_shooterRight_setpoint = Constants.SHOOTER.AMP_RIGHT_OFFSET;
                 break;
             case TRAP:
                 m_shooter_setpoint = Constants.SHOOTER.TRAP_SHOOT_SPEED;
@@ -135,7 +139,6 @@ public class NoteSubSystem extends SubsystemBase {
             //     break;
         }
         
-        m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;
         m_shooterfeeder2_setpoint = Constants.FEEDER2.SHOOT_SPEED;
 
         m_feeder2_setpoint = Constants.FEEDER2.TAKE_NOTE_SPEED;
@@ -204,6 +207,9 @@ public class NoteSubSystem extends SubsystemBase {
             m_target = wantedTarget;
             Logger.recordOutput("Note/Comment",  "target change");
             Logger.recordOutput("Note/Target",  m_target);
+
+            m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;   //default; override below if needed
+
             switch(m_target){
                 default:
                 case SPEAKER:
@@ -221,6 +227,7 @@ public class NoteSubSystem extends SubsystemBase {
                 case AMP:
                     m_Angle.setState(AngleSubSystem.State.AMP);
                     m_shooter_setpoint = Constants.SHOOTER.AMP_SHOOT_SPEED;
+                    m_shooterRight_setpoint = Constants.SHOOTER.AMP_RIGHT_OFFSET;
                     LEDSegment.side1target.setColor(LightsSubsystem.yellow);
                     if (!m_spunShooterUp){spinUp();}
                     break;
@@ -234,7 +241,8 @@ public class NoteSubSystem extends SubsystemBase {
                     m_Angle.setState(AngleSubSystem.State.INTAKE);
                     LEDSegment.side1target.setColor(LightsSubsystem.blue);
                     // 3/13/2024 - not going to shoot from intake angle now
-                    //m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    // m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                    // m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;
                     break;
                 // case FEEDSTATION:
                 //   not implemented yet
@@ -277,9 +285,15 @@ public class NoteSubSystem extends SubsystemBase {
         boolean beam3Tripped = false;
 
         double beam3count = Beam3.get();
-        if (beam3count > 0){
+        if (beam3count < 0){
+            //should not be counting down
+            m_beam_count -= 1;
+            Beam3.reset();
+        }
+        else if (beam3count > 0){
             beam3Tripped = true;
             Beam3.reset();
+            m_beam_count += 1;
             Logger.recordOutput("Note/beam3count", beam3count);
             Logger.recordOutput("Note/beam3tripped", true);
             
@@ -320,6 +334,7 @@ public class NoteSubSystem extends SubsystemBase {
         }
         SmartDashboard.putNumber("beam3 count", beam3count);
         SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
+        SmartDashboard.putNumber("beam counter", m_beam_count);
         
 
         switch(m_wantedAction){
@@ -416,7 +431,7 @@ public class NoteSubSystem extends SubsystemBase {
                 LEDSegment.side1.setFadeAnimation(LightsSubsystem.red,.5);
                     
                 Logger.recordOutput("Note/Comment",  "reverse spin shooter");
-                m_Shooter.setRightOffsetSpeed(0);
+                m_Shooter.setRightOffsetSpeed(0);   //top
                 m_Feeder2.setSpeed(-m_shooterfeeder2_setpoint);
                 m_Shooter.setSpeed(Constants.SHOOTER.DISLODGE_SHOOT_SPEED);
                 setShooterSpunUp(false);
@@ -522,6 +537,7 @@ public class NoteSubSystem extends SubsystemBase {
     public void setPassSpeed(double speed){
         setTarget(Target.INTAKE);
         m_shooter_setpoint = speed;
+        m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;
         m_Shooter.setSpeed(m_shooter_setpoint);
         // setAction(ActionRequest.SHOOT);   cannot do this unless AtSpeed works
         // so use user delay for spinup to happen.
