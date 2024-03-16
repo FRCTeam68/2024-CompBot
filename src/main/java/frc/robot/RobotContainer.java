@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ShooterPIDTuning;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubSystem;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.NoteSubSystem;
 import frc.robot.subsystems.NoteSubSystem.ActionRequest;
 import frc.robot.subsystems.NoteSubSystem.Target;
@@ -55,6 +56,7 @@ public class RobotContainer {
   
   CommandPS4Controller m_ps4Controller = new CommandPS4Controller(1);
   
+  private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem();
   NoteSubSystem m_NoteSubSystem = new NoteSubSystem();
   ClimberSubSystem m_Climber = new ClimberSubSystem();
   // DigitalInput m_noteSensor1 = new DigitalInput(0);   will be I2C sensor
