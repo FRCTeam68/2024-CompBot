@@ -117,6 +117,7 @@ public class LightsSubsystem extends SubsystemBase {
         side1target(33,1,3),
         side1distance(34,1,4),
         side1heading(35,1,-1);
+        // side2(36, 28, 5);
 
         public final int startIndex;
         public final int segmentSize;

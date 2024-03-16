@@ -104,6 +104,7 @@ public class NoteSubSystem extends SubsystemBase {
         LEDSegment.side1target.setColor(LightsSubsystem.white);
         LEDSegment.side1heading.setColor(LightsSubsystem.white);
         LEDSegment.side1distance.setColor(LightsSubsystem.white);
+        // LEDSegment.side2.setStrobeAnimation(LightsSubsystem.green, 0.5);
     }
 
     public void resetSetpoints(){
