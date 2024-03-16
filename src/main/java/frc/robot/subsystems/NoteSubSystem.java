@@ -55,7 +55,7 @@ public class NoteSubSystem extends SubsystemBase {
     private RollerSubSystem m_Intake;
     private RollerSubSystem m_Feeder1;
     private RollerSubSystem m_Feeder2;
-    private ShooterSubSystem m_Shooter;
+    public ShooterSubSystem m_Shooter;
     private AngleSubSystem m_Angle;
     private Timer m_shootStopTime;
     private double m_shooter_setpoint;

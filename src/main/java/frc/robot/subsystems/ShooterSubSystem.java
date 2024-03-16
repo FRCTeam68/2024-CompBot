@@ -48,6 +48,8 @@ public class ShooterSubSystem extends SubsystemBase {
     private LinearFilter m_atSpeedFilter;
     private double m_filteredLeftSpeed;
 
+    //left is bottom
+    //right is top
     public ShooterSubSystem(){
         m_presentState = State.IDLE;
         m_presentMode = Mode.CURRENTTORQUE_FOC;
@@ -122,6 +124,34 @@ public class ShooterSubSystem extends SubsystemBase {
         }
 
         System.out.println("shooter subsystem created.   "+ "mode: " + m_presentMode.toString());
+    }
+
+    public void configureVelocityPID(double kp, double ki, double kd, double kv) {
+        TalonFXConfiguration configs = new TalonFXConfiguration();
+
+        configs.Slot1.kP = kp; 
+        configs.Slot1.kI = ki; 
+        configs.Slot1.kD = kd; 
+        configs.Slot0.kV = kv;
+
+        /* Retry config apply up to 5 times, report if failure */
+        StatusCode status = StatusCode.StatusCodeNotInitialized;
+        for (int i = 0; i < 5; ++i) {
+          status = m_shooterLeftMotor.getConfigurator().apply(configs);
+          if (status.isOK()) break;
+        }
+        if(!status.isOK()) {
+          System.out.println("Could not apply configs to left shooter motor, error code: " + status.toString());
+        }
+
+        /* Retry config apply up to 5 times, report if failure */
+        for (int i = 0; i < 5; ++i) {
+          status = m_shooterRightMotor.getConfigurator().apply(configs);
+          if (status.isOK()) break;
+        }
+        if(!status.isOK()) {
+          System.out.println("Could not apply configs to right shooter motor, error code: " + status.toString());
+        }
     }
 
     public void setSpinUpSpeed(double desiredSpeed){
