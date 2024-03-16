@@ -292,6 +292,7 @@ public class NoteSubSystem extends SubsystemBase {
                 m_shootStopTime.stop();
                 m_shootStopTime.reset();
                 setHaveNote1(true);
+                LEDSegment.side1.setColor(LightsSubsystem.blue);
                 setState(State.IDLE);
                 setAction(ActionRequest.IDLE);
             }
@@ -302,6 +303,7 @@ public class NoteSubSystem extends SubsystemBase {
                 m_shootStopTime.stop();
                 m_shootStopTime.reset();
                 setHaveNote1(false);
+                LEDSegment.side1.setColor(LightsSubsystem.orange);
                 setState(State.IDLE);
                 setAction(ActionRequest.IDLE);
             }
@@ -394,54 +396,6 @@ public class NoteSubSystem extends SubsystemBase {
                 //     setAction(ActionRequest.IDLE);
                 // }
                 break;
-            case BEAM3:
-                if (m_presentState == State.INTAKING_NOTE1){
-                    Logger.recordOutput("Note/Comment",  "stop intake");
-                    m_Feeder2.setSpeed(0);
-                    m_Feeder1.setSpeed(0);
-                    m_Intake.setSpeed(0);
-                    m_shootStopTime.stop();
-                    m_shootStopTime.reset();
-                    setHaveNote1(true);
-                    LEDSegment.side1.setColor(LightsSubsystem.blue);
-                    setState(State.IDLE);
-                    setAction(ActionRequest.IDLE);
-                }
-                else if(m_presentState == State.SHOOTING){
-                    Logger.recordOutput("Note/Comment",  "note shot");
-                    //backside of note coming through
-                    // it can keep running -- m_Feeder2.setSpeed(0);
-                    m_shootStopTime.stop();
-                    m_shootStopTime.reset();
-                    setHaveNote1(false);
-                    LEDSegment.side1.setColor(LightsSubsystem.orange);
-                    setState(State.IDLE);
-                    setAction(ActionRequest.IDLE);
-                }
-                break;
-            // case BEAM3:
-            //     if (m_presentState == State.INTAKING_NOTE1){
-            //         Logger.recordOutput("Note/Comment",  "stop intake");
-            //         m_Feeder2.setSpeed(0);
-            //         m_Feeder1.setSpeed(0);
-            //         m_Intake.setSpeed(0);
-            //         m_shootStopTime.stop();
-            //         m_shootStopTime.reset();
-            //         setHaveNote1(true);
-            //         setState(State.IDLE);
-            //         setAction(ActionRequest.IDLE);
-            //     }
-            //     else if(m_presentState == State.SHOOTING){
-            //         Logger.recordOutput("Note/Comment",  "note shot");
-            //         //backside of note coming through
-            //         // it can keep running -- m_Feeder2.setSpeed(0);
-            //         m_shootStopTime.stop();
-            //         m_shootStopTime.reset();
-            //         setHaveNote1(false);
-            //         setState(State.IDLE);
-            //         setAction(ActionRequest.IDLE);
-            //     }
-            //     break;
             case SPIT_NOTE2:
                 if (m_actionChanged){
                     //do just once, when action commanded
