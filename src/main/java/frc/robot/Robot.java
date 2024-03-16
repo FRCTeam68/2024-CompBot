@@ -18,6 +18,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.ctre.phoenix6.SignalLogger;
 
+
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
@@ -53,9 +54,6 @@ public class Robot extends LoggedRobot {
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
-
-
-
     SignalLogger.setPath("//media/sda1/");
     SignalLogger.start();
     
@@ -69,6 +67,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     m_robotContainer.m_DriveSubSystem.getDaqThread().setThreadPriority(99);
+
   }
 
   @Override
@@ -90,7 +89,7 @@ public class Robot extends LoggedRobot {
         m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
     }
-  }
+      }
 
   /** This function is called once when the robot is disabled. */
   @Override

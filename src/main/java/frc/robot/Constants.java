@@ -144,4 +144,8 @@ public final class Constants {
     public static final class BLUE_TAGS {
         public static final int[] stage = {14,15,16};
     }
+
+    public static final class LightsConstants {
+        public static final int CANDLE_PORT = 60;
+    }
 }
