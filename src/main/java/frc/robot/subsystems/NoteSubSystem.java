@@ -112,7 +112,7 @@ public class NoteSubSystem extends SubsystemBase {
         
         LEDSegment.Do1to4.setBandAnimation(LightsSubsystem.blue, 2);
         LEDSegment.Do5to8.setColor(LightsSubsystem.orange);
-        LEDSegment.side1.setStrobeAnimation(LightsSubsystem.blue, 0.5);
+        LEDSegment.side1.setBandAnimation(LightsSubsystem.blue, 0.5);
         LEDSegment.side1target.setColor(LightsSubsystem.white);
         LEDSegment.side1heading.setColor(LightsSubsystem.white);
         LEDSegment.side1distance.setColor(LightsSubsystem.white);
@@ -472,7 +472,7 @@ public class NoteSubSystem extends SubsystemBase {
         SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
     }
 
-    private void spinUp(){
+    public void spinUp(){
         m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
         m_Shooter.setSpeed(m_shooter_setpoint);
         setShooterSpunUp(true);

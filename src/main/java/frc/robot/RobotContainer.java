@@ -262,7 +262,7 @@ public class RobotContainer {
   private void setupPidTuningCommandShuffleboard(){
     // First, assign a local variable the Tab that we are going to use
     // for pid tuning in Shuffleboard
-    Shuffleboard.getTab("PID Tuning").add(new ShooterPIDTuning(m_NoteSubSystem.m_Shooter));
+    Shuffleboard.getTab("PID Tuning").add(new ShooterPIDTuning(m_NoteSubSystem));
   }
 
   public void StopSubSystems(){

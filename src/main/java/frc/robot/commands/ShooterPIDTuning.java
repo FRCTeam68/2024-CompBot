@@ -9,21 +9,24 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.NoteSubSystem;
 import frc.robot.subsystems.ShooterSubSystem;
 
 public class ShooterPIDTuning extends Command {
   private double m_setpoint, m_runTime;
   private Timer cmdTimer;
 
-  private final ShooterSubSystem m_shooter;
+  private final NoteSubSystem m_noteSystem;
+  private final ShooterSubSystem m_shootSystem;
   private final ShuffleboardTab m_myTab;
   private final GenericEntry m_kpEntry, m_kiEntry, m_kdEntry, m_kfEntry, m_spEntry, m_runTimeEntry;
   /**
    * Creates a new PIDTuningCommand.
    */
   /** Creates a new ShooterPIDTuning. */
-  public ShooterPIDTuning(ShooterSubSystem shooter) {
-    m_shooter = shooter;
+  public ShooterPIDTuning(NoteSubSystem noteSystem) {
+    m_noteSystem = noteSystem;
+    m_shootSystem = m_noteSystem.m_Shooter;
 
     // This sets up all the shuffleboard components needed for testing on the PID Tuning Tab
     m_myTab = Shuffleboard.getTab("ShooterPID");
@@ -52,9 +55,9 @@ public class ShooterPIDTuning extends Command {
     m_kdEntry = m_myTab.add("kD", 0 ).withPosition(3, 0).getEntry();
     m_spEntry = m_myTab.add("Set Point", 0 ).withPosition(4, 0).getEntry();
     m_runTimeEntry = m_myTab.add("runtime", 0).withPosition(2, 1).getEntry();
-    m_myTab.addBoolean("At Setpoint", m_shooter::atSpeed);
+    m_myTab.addBoolean("At Setpoint", m_shootSystem::atSpeed);
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_shooter);
+    addRequirements(m_noteSystem, m_shootSystem);
   }
 
   // Called when the command is initially scheduled.
@@ -68,20 +71,22 @@ public class ShooterPIDTuning extends Command {
     double kf = m_kfEntry.getDouble(.0534);
     m_setpoint = m_spEntry.getDouble(0);
     m_runTime = m_runTimeEntry.getDouble(0);
-    m_shooter.configureVelocityPID(kp, ki, kd, kf);
+    m_shootSystem.configureVelocityPID(kp, ki, kd, kf);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     // Drive the shooter motors, as well as the conveyor to start the 
-    m_shooter.setSpeed(m_setpoint);
+    m_noteSystem.setShooterSetpointSpeed(m_setpoint);
+    if (!m_noteSystem.getShooterSpunUp()) m_noteSystem.spinUp();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_shooter.setSpeed(m_setpoint);
+    m_noteSystem.setShooterSetpointSpeed(0);
+    if (!m_noteSystem.getShooterSpunUp()) m_noteSystem.spinUp();
   }
 
   // Returns true when the command should end.
