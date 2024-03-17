@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.ShooterPIDTuning;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubSystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -114,6 +115,8 @@ public class RobotContainer {
      m_DriveSubSystem.setCurrentLimits();
 
     configureBindings();
+
+    setupPidTuningCommandShuffleboard();
 
     
     
@@ -253,6 +256,13 @@ public class RobotContainer {
     System.out.println("Auto wait time selected: " + m_autoWaitTimeSelected);
 
     return autoChooser.get();
+  }
+
+  @SuppressWarnings("unused")
+  private void setupPidTuningCommandShuffleboard(){
+    // First, assign a local variable the Tab that we are going to use
+    // for pid tuning in Shuffleboard
+    Shuffleboard.getTab("PID Tuning").add(new ShooterPIDTuning(m_NoteSubSystem));
   }
 
   public void StopSubSystems(){
