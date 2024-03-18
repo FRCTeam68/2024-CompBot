@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source - Middle Note 5"
+            "pathName": "Source - M5"
           }
         },
         {
@@ -63,6 +63,12 @@
           "type": "path",
           "data": {
             "pathName": "ShootA - Middle 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M4-shoot"
           }
         }
       ]

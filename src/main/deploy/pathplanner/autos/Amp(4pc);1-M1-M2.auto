@@ -54,6 +54,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.2
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -68,13 +74,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Note -  Center"
+            "pathName": "AmpNote-Middle1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle1-Shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "target_speaker_1m"
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1-M2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M2-shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
