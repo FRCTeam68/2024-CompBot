@@ -61,10 +61,10 @@ public class RobotContainer {
   ClimberSubSystem m_Climber = new ClimberSubSystem();
   // DigitalInput m_noteSensor1 = new DigitalInput(0);   will be I2C sensor
   DigitalInput m_noteSensor2 = new DigitalInput(0);
-  // DigitalInput m_noteSensor3 = new DigitalInput(1);
+  DigitalInput m_noteSensor3 = new DigitalInput(1);
   // Trigger m_NoteSensorTrigger1 = new Trigger(m_noteSensor1::get);
   Trigger m_NoteSensorTrigger2 = new Trigger(m_noteSensor2::get);
-  // Trigger m_NoteSensorTrigger3 = new Trigger(m_noteSensor3::get);
+  Trigger m_NoteSensorTrigger3 = new Trigger(m_noteSensor3::get);
 
   DigitalInput m_angleZeroLimitSwitch = new DigitalInput(2);
   Trigger m_angleZeroLimitSwitchTrigger = new Trigger(m_angleZeroLimitSwitch::get);
@@ -237,7 +237,8 @@ public class RobotContainer {
     // m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
     //                                     .andThen(()->SmartDashboard.putBoolean("NoteSensor3", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
-
+    m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", true)))
+                       .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
 
 
     // m_angleZeroLimitSwitchTrigger.onTrue(Commands.runOnce(()->m_NoteSubSystem.zeroAngleSubsystem())
