@@ -4,7 +4,10 @@ package frc.robot.subsystems;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.Counter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,7 +70,7 @@ public class NoteSubSystem extends SubsystemBase {
     private double m_feeder1_setpoint;
     private double m_intake_setpoint;
     private boolean m_actionChanged;
-    private double m_beam_count;
+    private double m_beam_count_total;
 
     public Counter Beam3;
 
@@ -78,7 +81,7 @@ public class NoteSubSystem extends SubsystemBase {
         setHaveNote1(false);
         setShooterSpunUp(false);
         m_actionChanged = true;
-        m_beam_count = 0;
+        m_beam_count_total = 0;
 
         m_Intake = new RollerSubSystem("Intake", Constants.INTAKE.CANID, Constants.INTAKE.CANBUS, true);
         m_Feeder1 = new RollerSubSystem("Feeder1", Constants.FEEDER1.CANID, Constants.FEEDER1.CANBUS, true);
@@ -86,12 +89,85 @@ public class NoteSubSystem extends SubsystemBase {
         m_Shooter = new ShooterSubSystem();
         m_Angle = new AngleSubSystem();
 
-        Beam3 = new Counter(Counter.Mode.kPulseLength);
+        //-------------------------------------------------------------------------
+        // try1 - what we used at Kettering
+        // trigger in robotContainer doing DigitalInput.get() and if true trigger BEAM3 state of Note
+        // we were missing the trigger sometimes
+
+        //-------------------------------------------------------------------------
+        // try2 - using counter pulse length.  
+        //         was working then sudden 10s to 100s of negative counts
+        //          then at the end of Saturday, March 16th, no upward counts!!!
+        //     Not convinced it not a hardware problem.  Need scope to look at signal again.
+        //
+        // Beam3 = new Counter(Counter.Mode.kPulseLength);
+        // Beam3.setUpSource(1);
+        // // Set the decoding type to 2X
+        // Beam3.setUpSourceEdge(true, true);
+        // // Set the counter to count down if the pulses are longer than .02 seconds
+        // Beam3.setPulseLengthMode(.02);
+
+        //try 2.1
+        // a pulse less that 100ms will be count up.  greater than 100ms count down
+        // Beam3.setPulseLengthMode(.1);
+
+
+        //-------------------------------------------------------------------------
+        // try3
+        // In semi-period mode, the Counter will count the duration of the pulses on a channel, 
+        // either from a rising edge to the next falling edge, or from a falling edge to the next rising edge. 
+        // Because it counts in both rising and falling edges, the period the pulse is high should be returned.
+        // To get the pulse width, call the getPeriod() method
+        //the count returned should be 2 for every pulse.
+        // Beam3 = new Counter(Counter.Mode.kSemiperiod);
+        // Beam3.setUpSource(1);
+        // Beam3.setSemiPeriodMode(true);
+
+
+        //-------------------------------------------------------------------------
+        // try4
+        // two pulse mode, but only use an up source
+        // In all modes except semi-period mode, the counter can be configured to increment either once per edge (2X decoding),
+        //  or once per pulse (1X decoding). By default, counters are set to two-pulse mode, 
+        //  though if only one channel is specified the counter will only count up.
+        Beam3 = new Counter(Counter.Mode.kTwoPulse);
         Beam3.setUpSource(1);
-        // Set the decoding type to 2X
         Beam3.setUpSourceEdge(true, true);
-        // Set the counter to count down if the pulses are longer than .05 seconds
-        Beam3.setPulseLengthMode(.02);
+        // 2X mode would be true, true ??  so counter would be 2 for each beam pulse (and getPeriod would return time pulse is high)
+        // 1X mode would be true, false ??  counter would be only 1 for each beam pulse (and getPeriod would return time since last pulse)
+
+        //-------------------------------------------------------------------------
+        // try5
+        // should be basically the same thing as try4
+        // DigitalInput m_noteSensor3 = new DigitalInput(1);
+        // Beam3 = new Counter(m_noteSensor3);
+        // Beam3.setUpSourceEdge(true, true);
+
+        //try5.1, could try just counting rising edge.  but then period is time since last rising ???
+
+        
+        //-------------------------------------------------------------------------
+        // try6
+        // Initializes an AnalogInput on port 1 and enables 2-bit averaging
+        // Using analog might have advantage that it can filter high frequency noise with averaging
+
+        // AnalogInput input = new AnalogInput(1);
+        // input.setAverageBits(2);
+
+        // // Initializes an AnalogTrigger using the above input
+        // AnalogTrigger noteTriggerAnalog = new AnalogTrigger(input);
+
+        // // Sets the trigger to enable at a voltage of 4 volts, and disable at a value of 1.5 volts
+        // noteTriggerAnalog.setLimitsVoltage(1.5, 4);
+
+        // Beam3 = new Counter(noteTriggerAnalog);
+        // // above already sets calls setUpSource counter
+
+        // Beam3.setUpSourceEdge(true, true);
+
+        //try6.1, could try just counting rising edge.  but then period is time since last rising ???
+
+        //-------------------------------------------------------------------------
 
         Shuffleboard.getTab("IntakeSubsystem").add(m_Intake);
         Shuffleboard.getTab("Feeder1Subsystem").add(m_Feeder1);
@@ -283,19 +359,23 @@ public class NoteSubSystem extends SubsystemBase {
 
         boolean isAtAngle = false;
         boolean beam3Tripped = false;
+        double beam3Period = 0;
 
         double beam3count = Beam3.get();
         if (beam3count < 0){
             //should not be counting down
-            m_beam_count -= 1;
+            m_beam_count_total -= 1;
             Beam3.reset();
         }
         else if (beam3count > 0){
             beam3Tripped = true;
+            beam3Period = Beam3.getPeriod();
             Beam3.reset();
-            m_beam_count += 1;
+            m_beam_count_total += 1;
             Logger.recordOutput("Note/beam3count", beam3count);
-            Logger.recordOutput("Note/beam3tripped", true);
+            Logger.recordOutput("Note/beam3tripped", beam3Tripped);
+            Logger.recordOutput("Note/beam3period", beam3Period);
+            Logger.recordOutput("Note/beam3countTotal", m_beam_count_total);
             
             if (m_presentState == State.INTAKING_NOTE1){
                 //front side of note coming through
@@ -334,7 +414,8 @@ public class NoteSubSystem extends SubsystemBase {
         }
         SmartDashboard.putNumber("beam3 count", beam3count);
         SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
-        SmartDashboard.putNumber("beam counter", m_beam_count);
+        SmartDashboard.putNumber("beam3 period", beam3Period);
+        SmartDashboard.putNumber("beam3 count total", m_beam_count_total);
         
 
         switch(m_wantedAction){
@@ -467,9 +548,6 @@ public class NoteSubSystem extends SubsystemBase {
         SmartDashboard.putBoolean("AtAngle Podium", (m_target == Target.SPEAKER_PODIUM)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle Intake", (m_target == Target.INTAKE)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle Speaker", (m_target == Target.SPEAKER)&&(isAtAngle));
-
-        SmartDashboard.putNumber("beam3 Period", Beam3.getPeriod());
-        SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
     }
 
     public void spinUp(){
