@@ -279,7 +279,7 @@ public class NoteSubSystem extends SubsystemBase {
 
     public void setTarget(Target wantedTarget) {
 
-        if (wantedTarget != m_target){
+        // if (wantedTarget != m_target){
             m_target = wantedTarget;
             Logger.recordOutput("Note/Comment",  "target change");
             Logger.recordOutput("Note/Target",  m_target);
@@ -328,19 +328,21 @@ public class NoteSubSystem extends SubsystemBase {
                     m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
                     LEDSegment.side1target.setColor(LightsSubsystem.orange);
+                    if (!m_spunShooterUp){spinUp();}
                     break;
                 case SPEAKER_PODIUM_SOURCE:
                     m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM_SOURCE);
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
                     LEDSegment.side1target.setColor(LightsSubsystem.orange);
+                    if (!m_spunShooterUp){spinUp();}
                     break;
             }
 
-            if (m_spunShooterUp){
-                m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
-                m_Shooter.setSpeed(m_shooter_setpoint);
-            }
-        }
+            // if (m_spunShooterUp){
+            //     m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
+            //     m_Shooter.setSpeed(m_shooter_setpoint);
+            // }
+        // }
 
 
     }
