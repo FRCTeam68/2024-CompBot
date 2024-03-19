@@ -31,7 +31,8 @@ public class NoteSubSystem extends SubsystemBase {
         FEEDSTATION,
         SPEAKER_PODIUM, 
         SPEAKER_1M, 
-        SPEAKER_PODIUM_SOURCE
+        SPEAKER_PODIUM_SOURCE, 
+        CUSTOM
     }
 
     public enum ActionRequest{
@@ -258,6 +259,9 @@ public class NoteSubSystem extends SubsystemBase {
                     m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
                     LEDSegment.side1target.setColor(LightsSubsystem.orange);
                     break;
+                case CUSTOM:
+
+                    break;
             }
 
             if (m_spunShooterUp){
@@ -267,6 +271,15 @@ public class NoteSubSystem extends SubsystemBase {
         }
 
 
+    }
+
+    public void setTargetCustom(double desiredPosition, double desiredSpeed){
+
+        m_target = Target.CUSTOM;                 
+        m_Angle.setCustomPosition(desiredPosition);
+        m_Angle.setState(AngleSubSystem.State.CUSTOM_ANGLE);
+        m_shooter_setpoint = desiredSpeed;
+        LEDSegment.side1target.setColor(LightsSubsystem.white);
     }
 
     public void setAction(ActionRequest wantedAction) {
@@ -328,7 +341,9 @@ public class NoteSubSystem extends SubsystemBase {
                 //just need to reflect no longer have a note
                 //not sure why we would spit out a note we have; maybe wrong button hit?
                 setHaveNote1(false);
-                //don't stop rollers has note is not out yet, just show we don't have it anymore
+                LEDSegment.side1.setColor(LightsSubsystem.orange);
+                //don't stop rollers here as note is not out yet, just show we don't have it anymore
+                //driver to stop rollers or start intake again
             }
                 
         }
@@ -386,7 +401,7 @@ public class NoteSubSystem extends SubsystemBase {
                 if (m_actionChanged){
                     //do just once, when action commanded
                     //rapid pulse until at angle
-                    LEDSegment.side1.setStrobeAnimation(LightsSubsystem.orange,.5);
+                    LEDSegment.side1.setBandAnimation(LightsSubsystem.orange,.5);
                     m_actionChanged=false;
                 }
                 if (m_target != Target.INTAKE){
@@ -414,15 +429,18 @@ public class NoteSubSystem extends SubsystemBase {
             case SPIT_NOTE2:
                 if (m_actionChanged){
                     //do just once, when action commanded
-                    LEDSegment.side1.setStrobeAnimation(LightsSubsystem.green,.5);
+                    LEDSegment.side1.setFlowAnimation(LightsSubsystem.yellow,.25);
                     m_actionChanged=false;
                 }
-                setTarget(Target.INTAKE);
+                if (m_target != Target.INTAKE){
+                    setTarget(Target.INTAKE);
+                }
                 if (m_Angle.atAngle()){
                     Logger.recordOutput("Note/Comment",  "spit note");
                     m_Intake.setSpeed(-m_intake_setpoint);
                     m_Feeder1.setSpeed(-m_feeder1_setpoint);
                     m_Feeder2.setSpeed(-m_feeder2_setpoint);
+                    LEDSegment.side1.setFlowAnimation(LightsSubsystem.yellow,.25);
                     setState(State.SPITTING_NOTE);
                     setAction(ActionRequest.IDLE);
                     }
@@ -462,6 +480,25 @@ public class NoteSubSystem extends SubsystemBase {
         }
 
         isAtAngle = m_Angle.atAngle();
+
+
+        if (m_haveNote1){
+            if ((isAtAngle)&&
+                (m_spunShooterUp)&&
+                (m_Shooter.atSpeed())&&
+                (m_target!=Target.INTAKE)){
+                //all ready to shoot
+                //  if at intake angle, you can shoot, but will not turn it green
+                //  the green is to indicate you have changed from intake (blue) to another angle
+                LEDSegment.side1.setColor(LightsSubsystem.green);
+            }
+            else {
+                //waiting for conditions to be ready to shoot
+                //note in manual mode, driver still has to drive to field position for selected target and point correcting direction
+                LEDSegment.side1.setBandAnimation(LightsSubsystem.green,.5);
+            }
+        }
+
         SmartDashboard.putBoolean("AtAngle AMP", (m_target == Target.AMP)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle TRAP", (m_target == Target.TRAP)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle Podium", (m_target == Target.SPEAKER_PODIUM)&&(isAtAngle));
@@ -492,6 +529,14 @@ public class NoteSubSystem extends SubsystemBase {
     }
     public boolean getShooterSpunUp(){
         return this.m_spunShooterUp;
+    }
+
+    public boolean atTargetAngle(){
+        return m_Angle.atAngle();
+    }
+
+    public boolean atTargetSpeed(){
+        return m_Shooter.atSpeed();
     }
 
     private void setState(State desiredStation){
