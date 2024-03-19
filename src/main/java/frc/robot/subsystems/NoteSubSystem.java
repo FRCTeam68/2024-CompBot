@@ -131,8 +131,8 @@ public class NoteSubSystem extends SubsystemBase {
         //  or once per pulse (1X decoding). By default, counters are set to two-pulse mode, 
         //  though if only one channel is specified the counter will only count up.
         Beam3 = new Counter(Counter.Mode.kTwoPulse);
-        Beam3.setUpSource(4);
-        Beam3.setUpSourceEdge(true, true);
+        Beam3.setUpSource(1);
+        Beam3.setUpSourceEdge(true, false);
 
         //3/18 - 5:50pm - true, true - not tripping.  no beam count up
         //       5:53pm - true, false - nothing!!
