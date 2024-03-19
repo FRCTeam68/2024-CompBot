@@ -284,74 +284,62 @@ public class NoteSubSystem extends SubsystemBase {
 
     public void setTarget(Target wantedTarget) {
 
-        // if (wantedTarget != m_target){
-            m_target = wantedTarget;
-            Logger.recordOutput("Note/Comment",  "target change");
-            Logger.recordOutput("Note/Target",  m_target);
+        m_target = wantedTarget;
+        Logger.recordOutput("Note/Comment",  "target change");
+        Logger.recordOutput("Note/Target",  m_target);
 
-            m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;   //default; override below if needed
+        m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;   //default; override below if needed
 
-            switch(m_target){
-                default:
-                case SPEAKER:
-                    m_Angle.setState(AngleSubSystem.State.SPEAKER);
-                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
-                    LEDSegment.side1target.setColor(LightsSubsystem.red);
-                    if (!m_spunShooterUp){spinUp();}
-                    break;
-                case SPEAKER_1M:
-                    m_Angle.setState(AngleSubSystem.State.SPEAKER_1M);
-                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
-                    LEDSegment.side1target.setColor(LightsSubsystem.orange);
-                    if (!m_spunShooterUp){spinUp();}
-                    break;
-                case AMP:
-                    m_Angle.setState(AngleSubSystem.State.AMP);
-                    m_shooter_setpoint = Constants.SHOOTER.AMP_SHOOT_SPEED;
-                    m_shooterRight_setpoint = Constants.SHOOTER.AMP_RIGHT_OFFSET;
-                    LEDSegment.side1target.setColor(LightsSubsystem.yellow);
-                    if (!m_spunShooterUp){spinUp();}
-                    break;
-                case TRAP:
-                    m_Angle.setState(AngleSubSystem.State.TRAP);
-                    m_shooter_setpoint = Constants.SHOOTER.TRAP_SHOOT_SPEED;
-                    LEDSegment.side1target.setColor(LightsSubsystem.purple);
-                    if (!m_spunShooterUp){spinUp();}
-                    break;
-                case INTAKE:
-                    m_Angle.setState(AngleSubSystem.State.INTAKE);
-                    LEDSegment.side1target.setColor(LightsSubsystem.blue);
-                    // 3/13/2024 - not going to shoot from intake angle now
-                    // m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
-                    // m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;
-                    break;
-                // case FEEDSTATION:
-                //   not implemented yet
-                //     m_Angle.setState(AngleSubSystem.State.FEEDSTATION);
-                //     break;
-                case SPEAKER_PODIUM:
-                    m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
-                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
-                    LEDSegment.side1target.setColor(LightsSubsystem.orange);
-                    if (!m_spunShooterUp){spinUp();}
-                    break;
-                case SPEAKER_PODIUM_SOURCE:
-                    m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM_SOURCE);
-                    m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
-                    LEDSegment.side1target.setColor(LightsSubsystem.orange);
-                    if (!m_spunShooterUp){spinUp();}
-                    break;
-                case CUSTOM:
+        switch(m_target){
+            default:
+            case SPEAKER:
+                m_Angle.setState(AngleSubSystem.State.SPEAKER);
+                m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                LEDSegment.side1target.setColor(LightsSubsystem.red);
+                break;
+            case SPEAKER_1M:
+                m_Angle.setState(AngleSubSystem.State.SPEAKER_1M);
+                m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                LEDSegment.side1target.setColor(LightsSubsystem.orange);
+                break;
+            case AMP:
+                m_Angle.setState(AngleSubSystem.State.AMP);
+                m_shooter_setpoint = Constants.SHOOTER.AMP_SHOOT_SPEED;
+                m_shooterRight_setpoint = Constants.SHOOTER.AMP_RIGHT_OFFSET;
+                LEDSegment.side1target.setColor(LightsSubsystem.yellow);
+                break;
+            case TRAP:
+                m_Angle.setState(AngleSubSystem.State.TRAP);
+                m_shooter_setpoint = Constants.SHOOTER.TRAP_SHOOT_SPEED;
+                LEDSegment.side1target.setColor(LightsSubsystem.purple);
+                break;
+            case INTAKE:
+                m_Angle.setState(AngleSubSystem.State.INTAKE);
+                LEDSegment.side1target.setColor(LightsSubsystem.blue);
+                // 3/13/2024 - not going to shoot from intake angle now
+                // m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                // m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;
+                break;
+            // case FEEDSTATION:
+            //   not implemented yet
+            //     m_Angle.setState(AngleSubSystem.State.FEEDSTATION);
+            //     break;
+            case SPEAKER_PODIUM:
+                m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
+                m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                LEDSegment.side1target.setColor(LightsSubsystem.orange);
+                break;
+            case SPEAKER_PODIUM_SOURCE:
+                m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM_SOURCE);
+                m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                LEDSegment.side1target.setColor(LightsSubsystem.orange);
+                break;
+            case CUSTOM:
 
-                    break;
-            }
+                break;
+        }
 
-            // if (m_spunShooterUp){
-            //     m_Shooter.setRightOffsetSpeed(m_shooterRight_setpoint);
-            //     m_Shooter.setSpeed(m_shooter_setpoint);
-            // }
-        // }
-
+        if (m_target!=Target.INTAKE) spinUp();
 
     }
 
@@ -361,6 +349,7 @@ public class NoteSubSystem extends SubsystemBase {
         m_Angle.setCustomPosition(desiredPosition);
         m_Angle.setState(AngleSubSystem.State.CUSTOM_ANGLE);
         m_shooter_setpoint = desiredSpeed;
+        spinUp();
         LEDSegment.side1target.setColor(LightsSubsystem.white);
     }
 
@@ -570,19 +559,20 @@ public class NoteSubSystem extends SubsystemBase {
 
 
         if (m_haveNote1){
-            if ((isAtAngle)&&
-                (m_spunShooterUp)&&
-                (m_Shooter.atSpeed())&&
-                (m_target!=Target.INTAKE)){
-                //all ready to shoot
-                //  if at intake angle, you can shoot, but will not turn it green
-                //  the green is to indicate you have changed from intake (blue) to another angle
-                LEDSegment.side1.setColor(LightsSubsystem.green);
-            }
-            else {
-                //waiting for conditions to be ready to shoot
-                //note in manual mode, driver still has to drive to field position for selected target and point correcting direction
-                LEDSegment.side1.setBandAnimation(LightsSubsystem.green,.5);
+            if (m_target!=Target.INTAKE){
+                if ((isAtAngle)&&
+                    (m_spunShooterUp)&&
+                    (m_Shooter.atSpeed())){
+                    //all ready to shoot
+                    //  if at intake angle, you can shoot, but will not turn it green
+                    //  the green is to indicate you have changed from intake (blue) to another angle
+                    LEDSegment.side1.setColor(LightsSubsystem.green);
+                }
+                else {
+                    //waiting for conditions to be ready to shoot
+                    //note in manual mode, driver still has to drive to field position for selected target and point correcting direction
+                    LEDSegment.side1.setBandAnimation(LightsSubsystem.green,.5);
+                }
             }
         }
 
@@ -668,6 +658,7 @@ public class NoteSubSystem extends SubsystemBase {
         m_shooter_setpoint = speed;
         m_shooterRight_setpoint = Constants.SHOOTER.RIGHT_OFFSET;
         m_Shooter.setSpeed(m_shooter_setpoint);
+        LEDSegment.side1.setFadeAnimation(LightsSubsystem.blue,.5);
         // setAction(ActionRequest.SHOOT);   cannot do this unless AtSpeed works
         // so use user delay for spinup to happen.
     }
