@@ -239,7 +239,8 @@ public class RobotContainer {
     // m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
     //                                     .andThen(()->SmartDashboard.putBoolean("NoteSensor3", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
-
+    // m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", true)))
+    //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
 
 
     // m_angleZeroLimitSwitchTrigger.onTrue(Commands.runOnce(()->m_NoteSubSystem.zeroAngleSubsystem())
