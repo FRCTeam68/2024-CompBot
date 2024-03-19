@@ -78,8 +78,8 @@ public final class Constants {
         public static final double MAX_SPEED = 100;  // rps
         public static final double SPEAKER_SHOOT_SPEED = 80;
         public static final double TRAP_SHOOT_SPEED = 43; 
-        public static final double AMP_SHOOT_SPEED = 26;  
-        public static final double AMP_RIGHT_OFFSET = 26;  //0 to tune shooter pid - 26 ,top does not roll at 26
+        public static final double AMP_SHOOT_SPEED = 23;   //20 layup // 26 dunk VelFOC.
+        public static final double AMP_RIGHT_OFFSET = 15;  //14 layup // 16 dunk VelFOC.  //0 to tune shooter pid - 26 ,top does not roll at 26
         public static final double RIGHT_OFFSET = 0;
         public static final double BUMP_VALUE = 1;   // rps
         public static final double SPINUP_TIME = 2;  // seconds
