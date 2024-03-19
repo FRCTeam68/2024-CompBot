@@ -95,7 +95,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     m_robotContainer.StopSubSystems();
-    SignalLogger.stop();
+    // SignalLogger.stop();
   }
 
   /** This function is called periodically when disabled. */

@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.ShooterPIDTuning;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubSystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -34,6 +33,7 @@ import frc.robot.subsystems.NoteSubSystem;
 import frc.robot.subsystems.NoteSubSystem.ActionRequest;
 import frc.robot.subsystems.NoteSubSystem.Target;
 import frc.robot.subsystems.Vision;
+import frc.robot.commands.*;
 
 public class RobotContainer {
   private double MaxSpeed = 5.2; // meters per second desired top speed, see tuner consts kSpeedAt12VoltsMps
@@ -100,15 +100,15 @@ public class RobotContainer {
 
     
     NamedCommands.registerCommand("shoot_spinup", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP))    );
-    NamedCommands.registerCommand("target_speaker", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    NamedCommands.registerCommand("target_speaker", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
     NamedCommands.registerCommand("shoot", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
 
     NamedCommands.registerCommand("target_intake", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.INTAKE)));
-    NamedCommands.registerCommand("intake", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
+    NamedCommands.registerCommand("intake", new IntakeNoteCmd(m_NoteSubSystem));
 
-    NamedCommands.registerCommand("target_speaker_1m", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M)));
-    NamedCommands.registerCommand("target_speaker_podium", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
-    NamedCommands.registerCommand("target_speaker_podium_source", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM_SOURCE)));
+    NamedCommands.registerCommand("target_speaker_1m", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_1M, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
+    NamedCommands.registerCommand("target_speaker_podium", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
+    NamedCommands.registerCommand("target_speaker_podium_source", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM_SOURCE, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
     NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 
@@ -184,6 +184,8 @@ public class RobotContainer {
     m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
     m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
     m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    //for trial
+    m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
     m_xboxController.leftTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
     m_xboxController.rightTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
@@ -237,7 +239,8 @@ public class RobotContainer {
     // m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
     //                                     .andThen(()->SmartDashboard.putBoolean("NoteSensor3", true)))
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
-
+    // m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", true)))
+    //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
 
 
     // m_angleZeroLimitSwitchTrigger.onTrue(Commands.runOnce(()->m_NoteSubSystem.zeroAngleSubsystem())
