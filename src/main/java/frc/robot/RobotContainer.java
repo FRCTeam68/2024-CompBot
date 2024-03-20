@@ -17,8 +17,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -27,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubSystem;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.NoteSubSystem;
 import frc.robot.subsystems.NoteSubSystem.ActionRequest;
 import frc.robot.subsystems.NoteSubSystem.Target;
@@ -40,6 +43,7 @@ public class RobotContainer {
   private final CommandXboxController m_xboxController = new CommandXboxController(0); // drive controller
   public final CommandSwerveDrivetrain m_DriveSubSystem = TunerConstants.DriveTrain;
   public final Vision m_Vision = new Vision();
+  public final LED m_LED;
 
   public final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -72,11 +76,14 @@ public class RobotContainer {
   private final SendableChooser<String> m_autoWaitTimeChooser = new SendableChooser<>();
 
   private final LoggedDashboardChooser<Command> autoChooser;
-
+  Field2d field;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-  
+    m_LED = new LED(m_xboxController);
+    m_LED.register();
+    field = new Field2d();
+    field.setRobotPose(new Pose2d(10, 5, new Rotation2d(1,1)));
     // Register Named Commands
     // NamedCommands.registerCommand("shoot_spinup", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
     //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
@@ -122,6 +129,7 @@ public class RobotContainer {
     SmartDashboard.putBoolean("NoteSensor3", false);
     SmartDashboard.putBoolean("AngleLimitLowSwitch", false);
     SmartDashboard.putBoolean("ClimberPitMode", false);
+    SmartDashboard.putData(field);
 
     m_autoWaitTimeChooser.setDefaultOption("none", "0");
     m_autoWaitTimeChooser.addOption("one", "1");
@@ -168,7 +176,7 @@ public class RobotContainer {
     m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
 
 
-    m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
+    // m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
     m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
     m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));

@@ -1,15 +1,22 @@
 package frc.robot.subsystems;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
@@ -36,6 +43,18 @@ import frc.robot.generated.TunerConstants;
      * <h1>Head for your cats</h1>
      * 
      * @hidden Do not let it eat after midnight
+     * Quiet please, it is seeing.
+     * <hr>
+     * <code>
+     * Full fathom five thy father lies; <hr>
+     * Of his bones are coral made; <hr>
+     * Those are pearls that were his eyes; <br>
+     * Nothing of him that doth fade, <br>
+     * But doth suffer a sea-change <br>
+     * Into something rich and strange. <br>
+     * Sea-nymphs hourly ring his knell: <br>
+     * Ding-dong. <br>
+     * Hark! now I hear them -- Ding-dong, bell. </code>
      * @author ajmoritz2
      */
 public class Vision {
@@ -53,33 +72,56 @@ public class Vision {
     private Transform3d currentCamTrans;
     private AprilTagFieldLayout layout;
 
-    private PhotonCamera camF;
-    private PhotonCamera camB;
+    public PhotonPoseEstimator blPoseEst;
+    public PhotonPoseEstimator brPoseEst;
+
+    public EstimatedRobotPose estPose = null;
+    public Pose2d pastPose = new Pose2d(0,0,new Rotation2d(0,0));
+
+    private PhotonCamera camBr;
+    private PhotonCamera camBl;
 
     private int[] stageTags;
 
     // {Distance, Shooter angle} -> Linear InterORIation
     private double[][] distanceAngles = {{1.74, 0}, {2.69, 12}, {3.69, 28}, {4.65, 32}, {5.65, 38}, {6.70, 40}};
 
+    public boolean backOdoUpdated = false;
+
     public Vision(){
-        camF = new PhotonCamera(Constants.Vision.camLName);
-        camB = new PhotonCamera(Constants.Vision.camRName);
+        camBr = new PhotonCamera(Constants.Vision.camBrName);
+        camBl = new PhotonCamera(Constants.Vision.camBlName);
         layout =  AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
         for (double[] vals : distanceAngles) {
             // ULTRAKILL
             speakerMap.put(vals[0], vals[1]);
         }
-        /* Keeping for might later use
-        fPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.frontCameraLocation);
-        bPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.backCameraLocation);
-        */
+        /* Keeping for might later use */
+        // fPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.frontCameraLocation);
+        
+        // Make sure we enable multi-targets on the Camera. 
+        blPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camBl, Constants.Vision.backlCameraLocation);
+        blPoseEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        
+        brPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camBl, Constants.Vision.backrCameraLocation);
+        brPoseEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         // stageTags = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Constants.BLUE_TAGS.stage : Constants.RED_TAGS.stage;
+        
         stageTags = Constants.BLUE_TAGS.stage;
-        cameraInUse = camF;
+        cameraInUse = camBr;
         currentCamTrans = Constants.Vision.frontCameraLocation;
+
     }
 
+
+    // Pose estimationg stuff
+    public Pose2d estimatePoseBack(){
+        if (estPose == null)
+            return null;        
+        return estPose.estimatedPose.toPose2d();
+
+    }
 
     // Getting more specific
    
@@ -99,6 +141,7 @@ public class Vision {
         return 0;
     }
 
+    @Deprecated
     public Pose3d getRobotLocation(PhotonTrackedTarget target){
         
         return PhotonUtils.estimateFieldToRobotAprilTag(
@@ -115,8 +158,23 @@ public class Vision {
         return 0;
     }
 
+    /**
+     * <strong>April tag</strong> target!
+     * @param target
+     * @return radians angle between target? TEST
+     */
     public double getYawToTarget(PhotonTrackedTarget target) {
-        return target.getYaw();
+        Pose2d tagPose = layout.getTagPose(target.getFiducialId()).get().toPose2d();
+        Pose2d robotPose = estimatePoseBack();
+        
+        double dx = tagPose.getX() - robotPose.getX();
+        double dy = tagPose.getY() - tagPose.getY();
+
+        double hyp = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+        double angle = Math.acos(dx/hyp);
+
+        return angle;
     }
 
     // Probably the most useful one
@@ -126,8 +184,10 @@ public class Vision {
      * @return
      */
     public double aimWithYawAtTarget(PhotonTrackedTarget target) {
-        // Ori, what are you doing!?
-        return TunerConstants.steerPID.calculate(Math.toRadians(target.getYaw()), Math.toRadians(Robot.m_robotContainer.m_DriveSubSystem.getPigeon2().getYaw().getValue())+7.92);
+        // Ori, what are you doing!? So verbose! 
+        return TunerConstants.steerPID.calculate(getYawToTarget(target), Robot.m_robotContainer.m_DriveSubSystem.getOdometry().getEstimatedPosition().getRotation().getRadians()); // MANKIND IS DEAD
+        //TODO: I'll probably have to switch those values around and maybe add an offset of sorts because I dont really know how it works at all.
+   
     }
 
     //Slightly less useful one
@@ -168,7 +228,7 @@ public class Vision {
         return null;
     }
 
-    public List<PhotonTrackedTarget> getCurrentTargets(){
+    public List<PhotonTrackedTarget> getCurrentTargets(){ // BLOOD IS FUEL
         if (!resultsInUse.hasTargets())
             return null;
         return resultsInUse.getTargets();
@@ -189,38 +249,84 @@ public class Vision {
      */
     public void updateCurrentCam(){
         resultsInUse = cameraInUse.getLatestResult();
+        PhotonPipelineResult backResult = camBl.getLatestResult();
+
+        Optional<EstimatedRobotPose> isEst = blPoseEst.update(backResult);
+
+        if (isEst.isPresent()){
+            if (estPose != null){
+                pastPose = estPose.estimatedPose.toPose2d();
+            } else {
+                pastPose = new Pose2d();
+            }
+            estPose = isEst.get();
+            
+        }
     }
 
+    public void updatebrCam(){
+        resultsInUse = camBr.getLatestResult();
+        PhotonPipelineResult backResult = camBr.getLatestResult();
+
+        Optional<EstimatedRobotPose> isEst = brPoseEst.update(backResult);
+
+        if (isEst.isPresent()){
+            if (estPose != null){
+                pastPose = estPose.estimatedPose.toPose2d();
+            } else {
+                pastPose = new Pose2d();
+            }
+            estPose = isEst.get();
+            
+        }
+    }
+    
+    public void updateblCam(){
+        resultsInUse = camBl.getLatestResult();
+        PhotonPipelineResult backResult = camBl.getLatestResult();
+
+        Optional<EstimatedRobotPose> isEst = blPoseEst.update(backResult);
+
+        if (isEst.isPresent()){
+            if (estPose != null){
+                pastPose = estPose.estimatedPose.toPose2d();
+            } else {
+                pastPose = new Pose2d();
+            }
+            estPose = isEst.get();
+            
+        }
+    }
     public PhotonPipelineResult getFrontResult(){
-        return camF.getLatestResult();
+        return camBr.getLatestResult();
     }
 
     public PhotonPipelineResult getBackResult(){
-        return camB.getLatestResult();
+        return camBl.getLatestResult();
     }
 
-    public void photoBoth(){
+    public void photoBoth(){ // HELL IS FULL
         takePhotoFront();
         takePhotoBack();
     }
 
     public void takePhotoFront() {
-        camF.takeInputSnapshot();
-        camF.takeOutputSnapshot();
+        camBr.takeInputSnapshot();
+        camBr.takeOutputSnapshot();
     }
 
     public void takePhotoBack() {
-        camB.takeInputSnapshot();
-        camB.takeOutputSnapshot();
+        camBl.takeInputSnapshot();
+        camBl.takeOutputSnapshot();
     }
 
     public void setUsedCamera(Camera cam) {
         if (cam == Camera.FRONT) {
             currentCamTrans = Constants.Vision.frontCameraLocation;
-            cameraInUse = camF;
+            cameraInUse = camBr;
         } else if (cam == Camera.BACK) {
-            currentCamTrans = Constants.Vision.backCameraLocation;
-            cameraInUse = camB;
+            currentCamTrans = Constants.Vision.backlCameraLocation;
+            cameraInUse = camBl;
         }
     }
 
@@ -228,7 +334,7 @@ public class Vision {
      * Swaps between back and front camera
      */
     public void swapCamera() {
-        if (cameraInUse.equals(camB)){
+        if (cameraInUse.equals(camBl)){
             setUsedCamera(Camera.FRONT);
         } else {
             setUsedCamera(Camera.BACK);
@@ -236,6 +342,8 @@ public class Vision {
     }
 
     public PhotonCamera getCamera(Camera cam) {
-        return (cam == Camera.FRONT ? camF : camB); // Getter!
+        return (cam == Camera.FRONT ? camBr : camBl); // Getter!
     }
 }
+
+// FLESH AND BONES YEARN TO BE SHOWN

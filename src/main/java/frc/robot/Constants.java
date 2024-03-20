@@ -112,17 +112,21 @@ public final class Constants {
     }
 
     public static final class Vision {
-        public static final String camLName = "Arducam_OV9782_1"; //TODO: change names!
-        public static final String camRName = "Arducam_OV9782_2";
+        public static final String camBlName = "Arducam_OV9281_USB_Camera bl"; //TODO: change names!
+        public static final String camBrName = "Arducam_OV9281_USB_Camera br";
 
         public static final String aprilTagLayoutPath = ""; // Not needed to be used unless custom
 
         // Front camera constants... Faces past intake
         public static final Transform3d frontCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(9.5)), new Rotation3d(0, 0, 0)); // TODO: Fix these values
 
-        // Back Camera Constants... Faces through shooter
-        public static final Transform3d backCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(14.5)), new Rotation3d(0, Units.degreesToRadians(5), 0)); // TODO: Fix these values
+        // Back Camera Constants... On back left Motor
+        public static final Transform3d backlCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(-8.25),
+         Units.inchesToMeters(-11.2), Units.inchesToMeters(11.85)), new Rotation3d(0, Units.degreesToRadians(28.125), Units.degreesToRadians(30))); // TODO: Fix these values
     
+        public static final Transform3d backrCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(-8.25), 
+        Units.inchesToMeters(11.2), Units.inchesToMeters(11.85)), new Rotation3d(0, Units.degreesToRadians(28.125), Units.degreesToRadians(-30))); // TODO: Fix these values
+
         // Field Constants...P
         public static final int tallThingFiscal = 8;
         public static final double tallThingHeight = Units.inchesToMeters(57);

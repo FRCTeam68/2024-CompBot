@@ -41,7 +41,7 @@ public class RollerSubSystem extends SubsystemBase {
         m_setPoint_Speed = 0;
 
         m_rollerMotor = new TalonFX(canID, canbus);
-
+        
         m_voltageOut = new VoltageOut(0);
 
           /* Start at velocity 0, enable FOC, no feed forward, use slot 0 */

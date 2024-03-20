@@ -2,7 +2,10 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
@@ -13,6 +16,8 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -30,12 +35,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
-
+    
+    SwerveDrivePoseEstimator poseEstimator;
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
+        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_pigeon2.getRotation2d(), m_modulePositions, new Pose2d());
+
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -43,6 +51,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
+        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_pigeon2.getRotation2d(), m_modulePositions, new Pose2d());
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -84,37 +93,53 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
          Vision vision = Robot.m_robotContainer.m_Vision;
-         double stageD = vision.distanceToStage();
-
-        if (stageD > 1.5 && stageD < 1.7) {
+         
+        updateOdometry();
+        poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
+        vision.updateblCam();
+        poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), this.m_lastSimTime);
+        vision.updatebrCam();
+        poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), this.m_lastSimTime);
+        Robot.m_robotContainer.field.setRobotPose(poseEstimator.getEstimatedPosition());
+        // if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
+        // {
            
-        }
-        /*
-        if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
-        {
-           
-            PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(15, vision.getCurrentTargets());
-            if (wantedTarget != null) {
-                System.out.println("Robot Angle: " + vision.getYawToTarget(wantedTarget));
-                double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget))*0.1;
-                double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
-                System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
+        //     PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(15, vision.getCurrentTargets());
+        //     if (wantedTarget != null) {
+        //         System.out.println("Robot Angle: " + vision.getYawToTarget(wantedTarget));
+        //         double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget))*0.1;
+        //         double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
+        //         System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
                 
-                this.setControl(Robot.m_robotContainer.drive.withRotationalRate(1));
-                return;
-            }
+        //         this.setControl(Robot.m_robotContainer.drive.withRotationalRate(vision.aimWithYawAtTarget(wantedTarget)));
+        //         return;
+        //     }
 
-        }
-        */
+        // }
+        
 
-        // Test driving with this in and see how it feels.
+        // Seems to drive fine enough.
         ChassisSpeeds speeds = ChassisSpeeds.discretize(request.VelocityX, request.VelocityY, request.RotationalRate, 0.02);
 
         this.setControl(request.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond));
     }
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
+        
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+    }
+
+    /**
+     * <p>This adds the <em>vision measurement</em>. It already updates the main odometry</p>
+     * </br>
+     * <p> Vision measurement still needs to be worked on but it should get in at some point.
+     */
+    public void updateOdometry() {
+        // this.m_odometry.addVisionMeasurement(Robot.m_robotContainer.m_Vision.estimatePoseBack(), this.m_lastSimTime);
+    }
+
+    public SwerveDrivePoseEstimator getOdometry(){ 
+        return this.m_odometry;
     }
 
     private void startSimThread() {

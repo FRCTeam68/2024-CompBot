@@ -1,105 +1,73 @@
 package frc.robot.subsystems;
 
-
-import java.util.Optional;
-
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.LED;
 
-public class LEDSubsystem extends SubsystemBase {
-  private final AddressableLED m_led = new AddressableLED(LED.PWMPORT);
-  private final AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(LED.BUFFERSIZE);
+public class LEDSubsystem implements Subsystem {
 
-  private boolean shooter = false;
-  private boolean redBall = false;
-  private boolean blueBall = false;
+    private AddressableLED stripL;
+    private AddressableLED stripR;
 
-  public LEDSubsystem() {
-    m_led.setLength(m_ledBuffer.getLength());
-    m_led.setData(m_ledBuffer);
-    m_led.start();
-  }
+  
+    private AddressableLEDBuffer bufferL;
+    private AddressableLEDBuffer bufferR;
 
-  @Override
-  public void periodic() {
-    if (DriverStation.isEnabled()) {
-      Optional<Alliance> ally = DriverStation.getAlliance();
-      if (ally.equals(Alliance.Red)) {
+    public LEDSubsystem() {
+        stripL = new AddressableLED(LED.PWMPORT); //TODO: change port
+        // stripR = new AddressableLED(0); //TODO: change port
+        bufferL = new AddressableLEDBuffer(LED.BUFFERSIZE); //TODO: change length
+        // bufferR = new AddressableLEDBuffer(0); //TODO: change length
 
-        redBall = true;
-      }
-      else if (ally.equals(Alliance.Blue)) { // should only have pipelines 0 & 1
+        stripL.setLength(bufferL.getLength());
+        // stripR.setLength(bufferR.getLength());
 
-        blueBall = true;
-      }
-      setLEDs();
+        stripL.setData(bufferL);
+        // stripR.setData(bufferR);
+
+        stripL.start();
+        // stripR.start();
     }
-  }
+    /**
+     * Try to call only once when you change. Maybe create a toggle?
+     * @param color
+     */
+    public void setLeftColor(Color color) {
+        for (int i = 0; i < bufferL.getLength(); i++) {
+            bufferL.setLED(i, color);
+        }
 
-  @Override
-  public void simulationPeriodic() {}
+        stripL.setData(bufferL);
+    }
 
-  public void setShooter(boolean ready){
-    shooter=ready;
-  }
+    /**
+     * Try to call only once when you change. Maybe create a toggle?
+     * @param color
+     */
+    public void setRightColor(Color color) {
+        for (int i = 0; i < bufferR.getLength(); i++) {
+            bufferR.setLED(i, color);
+        }
 
-  private void setLEDs() {
-    setBallLEDs();
-    setShooterLEDs();
-    m_led.setData(m_ledBuffer);
-  }
+        stripR.setData(bufferR);
+    }
 
-  private void setBallLEDs() {
-    if (redBall && blueBall) {
-      setFrontHalf();
+    public void setLeftLED(int index, Color color) {
+        bufferL.setLED(index, color);
     }
-    else if (redBall || blueBall) {
-      if (redBall) {
-        setFrontAll(Color.kRed);
-      }
-      if (blueBall) {
-        setFrontAll(Color.kBlue);
-      }
-    }
-    else {
-      setFrontAll(Color.kBlack); // Off
-    }
-  }
 
-  private void setShooterLEDs() {
-    if (shooter) {
-      setBackAll(Color.kGreen);
+    public void setRightLED(int index, Color color) {
+        bufferR.setLED(index, color);
     }
-    else {
-      setBackAll(Color.kBlack); // Off
-    }
-  }
 
-  private void setFrontAll(Color color) {
-    for (var i = 0; i < m_ledBuffer.getLength() / 2; i++) {
-      m_ledBuffer.setLED(i, color);
+    public void updateLeftLED(){
+        stripL.setData(bufferL);
     }
-  }
 
-  public void setFrontHalf() {
-    for (int i = 0; i < m_ledBuffer.getLength() / 2; i++) {
-      if (i < m_ledBuffer.getLength() / 2) {
-        m_ledBuffer.setLED(i, Color.kBlue);
-      }
-      else {
-        m_ledBuffer.setLED(i, Color.kRed);
-      }
+    public void updateRightLED(){
+        stripR.setData(bufferR);
     }
-  }
-
-  public void setBackAll(Color color) {
-    for (var i = m_ledBuffer.getLength() / 2; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setLED(i, color);
-    }
-  }
+    
 }
