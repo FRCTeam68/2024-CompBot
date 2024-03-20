@@ -20,14 +20,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.BumpClimbSubSystem;
 import frc.robot.subsystems.ClimberSubSystem;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.NoteSubSystem;
@@ -59,6 +60,7 @@ public class RobotContainer {
   
   NoteSubSystem m_NoteSubSystem = new NoteSubSystem();
   ClimberSubSystem m_Climber = new ClimberSubSystem();
+  BumpClimbSubSystem m_BumpClimb = new BumpClimbSubSystem(m_NoteSubSystem, m_Climber);
   // DigitalInput m_noteSensor1 = new DigitalInput(0);   will be I2C sensor
   DigitalInput m_noteSensor2 = new DigitalInput(0);
   DigitalInput m_noteSensor3 = new DigitalInput(1);
@@ -69,7 +71,8 @@ public class RobotContainer {
   DigitalInput m_angleZeroLimitSwitch = new DigitalInput(2);
   Trigger m_angleZeroLimitSwitchTrigger = new Trigger(m_angleZeroLimitSwitch::get);
 
-  private boolean m_climbActive = false;
+  boolean m_climbActive = false;
+  boolean m_climbResetActive = false;
   
   // Dashboard inputs
   private double m_autoWaitTimeSelected = 0;
@@ -130,6 +133,8 @@ public class RobotContainer {
     SmartDashboard.putBoolean("AngleLimitLowSwitch", false);
     SmartDashboard.putBoolean("ClimberPitMode", false);
     SmartDashboard.putData(field);
+    SmartDashboard.putBoolean("ClimbActive", m_climbActive);
+    SmartDashboard.putBoolean("ClimbResetActive", m_climbResetActive);
 
     m_autoWaitTimeChooser.setDefaultOption("none", "0");
     m_autoWaitTimeChooser.addOption("one", "1");
@@ -211,7 +216,22 @@ public class RobotContainer {
     // //Right Joystick Y
     // m_ps4Controller.axisGreaterThan(5,0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((-Constants.INTAKE.BUMP_VALUE))));
     // m_ps4Controller.axisLessThan(5,-0.7).whileTrue(Commands.run(()->m_NoteSubSystem.bumpIntake2Speed((Constants.INTAKE.BUMP_VALUE))));
+    // m_BumpClimb.setDefaultCommand(Commands.run( () ->
+    //             m_BumpClimb.bumpOrClimb(m_ps4Controller.getLeftY(), m_ps4Controller.getRightY()), m_NoteSubSystem, m_Climber));
 
+    // //Left Joystick Y
+    // m_ps4Controller.axisGreaterThan(1,-1).whileTrue(Commands.run(()->bumpOrClimb(true, m_ps4Controller.getLeftY())));
+    // // m_ps4Controller.axisLessThan(1,-0.1).whileTrue(Commands.run(()->bumpOrClimb(true, m_ps4Controller.getLeftY())));
+    // //Right Joystick Y
+    // m_ps4Controller.axisGreaterThan(5,-1).whileTrue(Commands.run(()->bumpOrClimb(false, m_ps4Controller.getRightY())));
+    // // m_ps4Controller.axisLessThan(5,-0.1).whileTrue(Commands.run(()->bumpOrClimb(false, m_ps4Controller.getRightY())));
+
+    m_ps4Controller.options().onTrue(Commands.runOnce(()->m_BumpClimb.toggleClimbMode())
+                               .andThen(()->SmartDashboard.putBoolean("ClimbActive", m_BumpClimb.getClimbMode())));
+
+    m_ps4Controller.touchpad().onTrue(Commands.runOnce(()->m_BumpClimb.togglePitMode())
+                               .andThen(()->SmartDashboard.putBoolean("ClimbResetActive", m_BumpClimb.getPitMode() )));
+                                                 
     m_ps4Controller.share().onTrue(Commands.runOnce(()->m_NoteSubSystem.resetSetpoints()));
 
     m_ps4Controller.PS().onTrue(Commands.runOnce(()->m_climbActive=!m_climbActive)
@@ -230,11 +250,50 @@ public class RobotContainer {
                        .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
 
 
-
     // m_angleZeroLimitSwitchTrigger.onTrue(Commands.runOnce(()->m_NoteSubSystem.zeroAngleSubsystem())
     //                                             .andThen(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", true)))
     //                             .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", false)));
   }
+
+  // private void bumpOrClimb(boolean isLeft, double joyValue){
+
+  //   System.out.println("bumpOrClimb/isLeft: " + isLeft);
+  //   Logger.recordOutput("bumpOrClimb/isLeft", isLeft );
+  //   System.out.println("bumpOrClimb/joyValue: " + joyValue);
+  //   Logger.recordOutput("bumpOrClimb/joyValue", joyValue );
+
+  //   double new_joyValue = -m_ps4Controller.getLeftY();
+  //   System.out.println("bumpOrClimb/newjoyValue: " + new_joyValue);
+  //   Logger.recordOutput("bumpOrClimb/newjoyValue", new_joyValue );
+
+  //   if(m_climbActive){
+  //     if (isLeft){
+  //       m_Climber.setLeftSpeedVout(new_joyValue * 12);
+  //     }
+  //     else{
+  //       m_Climber.setRightSpeedVout(new_joyValue * 12);
+  //     }
+  //   }
+  //   else{
+  //     //intake bump function
+  //     if (isLeft){
+  //       if (joyValue > .7){
+  //         m_NoteSubSystem.bumpIntake1Speed((-Constants.INTAKE.BUMP_VALUE));
+  //       }
+  //       else if (joyValue < -.7){
+  //         m_NoteSubSystem.bumpIntake1Speed((Constants.INTAKE.BUMP_VALUE));
+  //       }
+  //     }
+  //     else{
+  //       if (joyValue > .7){
+  //         m_NoteSubSystem.bumpIntake2Speed((-Constants.INTAKE.BUMP_VALUE));
+  //       }
+  //       else if (joyValue < -.7){
+  //         m_NoteSubSystem.bumpIntake2Speed((Constants.INTAKE.BUMP_VALUE));
+  //       }
+  //     }
+  //   }
+  // }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

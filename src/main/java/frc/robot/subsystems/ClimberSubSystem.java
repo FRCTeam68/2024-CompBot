@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.RollerSubSystem.Mode;
 
 // --45 rotations/s at full throttle.
 // --left motor 98 rotation range 
@@ -29,6 +30,7 @@ public class ClimberSubSystem extends SubsystemBase {
     private TalonFX m_climberRightMotor;
     private VoltageOut m_voltageOut;
     private NeutralOut m_neutral;
+    private Mode m_presentMode;
     private double m_setPoint_Left_Voltage;
     private double m_setPoint_Right_Voltage;
     private double m_leftPosition;
@@ -40,8 +42,6 @@ public class ClimberSubSystem extends SubsystemBase {
         m_setPoint_Right_Speed = 0;
         m_leftPosition = 0;
         m_rightPosition = 0;
-
-        setPitMode(false);
 
         climberMotorsInit();
     }
@@ -99,97 +99,78 @@ public class ClimberSubSystem extends SubsystemBase {
     }
 
     public void setSpeedVout(double leftDesiredVoltage, double rightDesiredVoltage){
-        setLeftSpeedVout(leftDesiredVoltage);
-        setRightSpeedVout(rightDesiredVoltage);
-    }
+        // System.out.println("climber setSpeedesired" + desiredVoltage);
 
 
-    public void setLeftSpeedVout(double desiredVoltage){
-        // System.out.println("left climber setSpeedesired" + desiredVoltage);
+        if(m_presentMode == Mode.VOLTAGE_OUT){
 
-        m_leftPosition = m_climberLeftMotor.getPosition().getValueAsDouble();
-
-        if ((Math.abs(desiredVoltage) <= 1)){
-            //deadzone for motor control, just make it zero volts
-            // System.out.println("set left zero");
-            m_setPoint_Left_Voltage = 0;
-        }
-        else if ((desiredVoltage < -1) && (m_leftPosition < -Constants.CLIMBER.MAX_HEIGHT)){
-            //asking to travel up, but already at max height
-            System.out.println("left climber max height reached");
-            m_setPoint_Left_Voltage = 0;
-        } 
-        else if ((desiredVoltage > 1) && (m_leftPosition >=0)){
-            //asking to travel down, but already at min height
-            //    resetMode active needs negative values to respool climber in the pits
-            //    because when you turn robot on position will be zero.
-            //    So do not limit at zero.
-            if (m_pitMode){
-                //go slower
-                m_setPoint_Left_Voltage = desiredVoltage/2;
-            } 
-            else{
-                System.out.println("left climber start height 0 reached");
+            m_leftPosition = m_climberLeftMotor.getPosition().getValueAsDouble();
+            if ((Math.abs(leftDesiredVoltage) <= 1)){  //|| (m_leftPosition > 12)) {
+                System.out.println("set left zero");
                 m_setPoint_Left_Voltage = 0;
-            } 
-        }  
-        else {
-            m_setPoint_Left_Voltage = m_pitMode ? desiredVoltage/2 : desiredVoltage;;
-        }
+            }
+            else {
+                m_setPoint_Left_Voltage = leftDesiredVoltage;
+            }
 
-        // System.out.println("left climber setSpeedVout: " + m_setPoint_Left_Voltage);
-        Logger.recordOutput("Climber/LeftPos", m_leftPosition );
-        Logger.recordOutput("Climber/LeftVolt", m_setPoint_Left_Voltage );
-        m_climberLeftMotor.setControl(m_voltageOut.withOutput(m_setPoint_Left_Voltage));
-    }
-
-    public void setRightSpeedVout(double desiredVoltage){
-        // System.out.println("right climber setSpeedesired" + desiredVoltage);
-
-        m_rightPosition = m_climberRightMotor.getPosition().getValueAsDouble();
-
-        if ((Math.abs(desiredVoltage) <= 1)){
-            //deadzone for motor control, just make it zero volts
-            // System.out.println("set left zero");
-            m_setPoint_Right_Voltage = 0;
-        }
-        else if ((desiredVoltage > 1) && (m_rightPosition > Constants.CLIMBER.MAX_HEIGHT)){
-            //asking to travel up, but already at max height
-            System.out.println("right climber max height reached");
-            m_setPoint_Right_Voltage = 0;
-        } 
-        else if ((desiredVoltage < -1) && (m_rightPosition <= 0)){
-            //asking to travel down, but already at min height
-            //    resetMode active needs negative values to respool climber in the pits
-            //    because when you turn robot on position will be zero.
-            //    So do not limit at zero.
-            if (m_pitMode){
-                //go slower
-                m_setPoint_Right_Voltage = desiredVoltage/2;
-            } 
-            else{
-                System.out.println("right climber start height 0 reached");
+            m_rightPosition = m_climberLeftMotor.getPosition().getValueAsDouble();
+            if ((Math.abs(rightDesiredVoltage) <= 1)){  //|| (m_rightPosition > 12)) {
+                System.out.println("set right zero");
                 m_setPoint_Right_Voltage = 0;
             }
-        } 
-        else {
-            m_setPoint_Right_Voltage = m_pitMode ? desiredVoltage/2 : desiredVoltage;
+            else {
+                m_setPoint_Right_Voltage = rightDesiredVoltage;
+            }
 
+
+            System.out.println("climber setSpeedVout, L: " + m_setPoint_Left_Voltage 
+                                                + " , R: " + m_setPoint_Right_Voltage);
+            m_climberLeftMotor.setControl(m_voltageOut.withOutput(m_setPoint_Left_Voltage));
+            m_climberRightMotor.setControl(m_voltageOut.withOutput(m_setPoint_Right_Voltage));
         }
-
-        // System.out.println("right climber setSpeedVout: " + m_setPoint_Right_Voltage);
-        Logger.recordOutput("Climber/RightPos", m_rightPosition );
-        Logger.recordOutput("Climber/RightVolt", m_setPoint_Right_Voltage );
-        m_climberRightMotor.setControl(m_voltageOut.withOutput(m_setPoint_Right_Voltage));
     }
 
-    public void setPitMode(boolean pitMode){
-        m_pitMode = pitMode;
-        Logger.recordOutput("Climber/pitMode", m_pitMode );
-    }
-    public boolean getPitMode(){
-        return m_pitMode;
-    }
+
+    // public void setSpeed(double desiredRotationsPerSecond){
+
+    //     System.out.println("set desired speed: " + desiredRotationsPerSecond);
+
+    //     if (Math.abs(desiredRotationsPerSecond) <= 1) { // Joystick deadzone
+    //         desiredRotationsPerSecond = 0;
+    //         m_setPoint_Left_Speed = 0;
+    //         m_setPoint_Right_Speed = 0;
+    //         m_climberLeftMotor.setControl(m_neutral);
+    //         m_climberRightMotor.setControl(m_neutral);
+    //     }
+    //     else
+    //         m_setPoint_Left_Speed = desiredRotationsPerSecond;
+    //         m_setPoint_Right_Speed = -desiredRotationsPerSecond + m_rightOffset_Speed;
+
+    //         System.out.println("climber present mode: " + m_presentMode.toString());
+    //         switch(m_presentMode){
+    //             case VOLTAGE_OUT:
+    //                 System.out.println("voltage out mode - use setSpeedVout instead");
+    //                 break;
+    //             default:
+    //             case VOLTAGE_FOC:
+    //                 /* Use voltage velocity */
+    //                 //m_intakeMotor.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
+    //                 System.out.println("call motor voltage foc");
+    //                 m_climberLeftMotor.setControl(m_voltageVelocity.withVelocity(m_setPoint_Left_Speed));
+    //                 m_climberRightMotor.setControl(m_voltageVelocity.withVelocity(m_setPoint_Right_Speed));
+    //                 break;
+        
+    //             case CURRENTTORQUE_FOC:
+    //                 double friction_torque = (desiredRotationsPerSecond > 0) ? 1 : -1; // To account for friction, we add this to the arbitrary feed forward
+    //                 /* Use torque velocity */
+    //                 //m_intakeMotor.setControl(m_torqueVelocity.withVelocity(desiredRotationsPerSecond).withFeedForward(friction_torque));
+    //                 System.out.println("call motor torqueVelocity");
+    //                 m_climberLeftMotor.setControl(m_torqueVelocity.withVelocity(m_setPoint_Left_Speed).withFeedForward(friction_torque));
+    //                 m_climberRightMotor.setControl(m_torqueVelocity.withVelocity(m_setPoint_Right_Speed).withFeedForward(friction_torque));
+    //                 break;
+    //         }
+    // }
+
 
     public double getLeftSpeed(){
         return this.m_setPoint_Left_Speed;
@@ -217,7 +198,11 @@ public class ClimberSubSystem extends SubsystemBase {
         builder.addDoubleProperty("right speed", this::getRightSpeed,null);
         builder.addDoubleProperty("left position", this::getLeftPosition,null);
         builder.addDoubleProperty("right position", this::getRightPosition,null);
-        builder.addBooleanProperty("pit mode", this::getPitMode, this::setPitMode);
+    }
+
+    public Object setPitMode(boolean m_climbActive) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setPitMode'");
     }
 
 }
