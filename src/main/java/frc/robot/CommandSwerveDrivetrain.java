@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -96,10 +97,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
          
         updateOdometry();
         poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
-        vision.updateblCam();
-        poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), this.m_lastSimTime);
+        // vision.updateblCam();
+        // poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), this.m_lastSimTime);
         vision.updatebrCam();
-        poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), this.m_lastSimTime);
+        poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), Timer.getFPGATimestamp());
+        // System.out.println(vision.estimatePoseBack().toString());
         Robot.m_robotContainer.field.setRobotPose(poseEstimator.getEstimatedPosition());
         // if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
         // {

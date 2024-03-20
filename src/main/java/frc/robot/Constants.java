@@ -112,8 +112,8 @@ public final class Constants {
     }
 
     public static final class Vision {
-        public static final String camBlName = "Arducam_OV9281_USB_Camera bl"; //TODO: change names!
-        public static final String camBrName = "Arducam_OV9281_USB_Camera br";
+        public static final String camBlName = "Arducam_OV9281_USB_Camerabl"; //TODO: change names!
+        public static final String camBrName = "Arducam_OV9281_USB_Camerabr";
 
         public static final String aprilTagLayoutPath = ""; // Not needed to be used unless custom
 
@@ -121,11 +121,13 @@ public final class Constants {
         public static final Transform3d frontCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(9.5)), new Rotation3d(0, 0, 0)); // TODO: Fix these values
 
         // Back Camera Constants... On back left Motor
-        public static final Transform3d backlCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(-8.25),
-         Units.inchesToMeters(-11.2), Units.inchesToMeters(11.85)), new Rotation3d(0, Units.degreesToRadians(28.125), Units.degreesToRadians(30))); // TODO: Fix these values
+        public static final Transform3d backlCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(8.25),
+         Units.inchesToMeters(-11.2), Units.inchesToMeters(11.85)), 
+         new Rotation3d(0, Units.degreesToRadians(28.125), Units.degreesToRadians(-30))); // TODO: Fix these values
     
-        public static final Transform3d backrCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(-8.25), 
-        Units.inchesToMeters(11.2), Units.inchesToMeters(11.85)), new Rotation3d(0, Units.degreesToRadians(28.125), Units.degreesToRadians(-30))); // TODO: Fix these values
+        public static final Transform3d backrCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(8.25), 
+        Units.inchesToMeters(11.2), Units.inchesToMeters(11.85)), 
+        new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(30))); // TODO: Fix these values
 
         // Field Constants...P
         public static final int tallThingFiscal = 8;
