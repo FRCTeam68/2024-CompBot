@@ -3,57 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.48,
-        "y": 2.3
+        "x": 2.63,
+        "y": 4.24
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.85101693718827,
-        "y": 2.739682058936565
+        "x": 1.9816624906408973,
+        "y": 3.6561593313210383
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.057061425286748,
-        "y": 3.8219052210075923
+        "x": 3.0833851691456364,
+        "y": 2.8274298828882696
       },
       "prevControl": {
-        "x": 7.192213627363204,
-        "y": 3.194584267228499
+        "x": 2.5148944737698895,
+        "y": 3.084859631737665
       },
       "nextControl": {
-        "x": 5.686570613046216,
-        "y": 4.026650143561572
+        "x": 3.60012235463901,
+        "y": 2.5934356856837226
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.302104946252649,
-        "y": 4.972376690596612
+        "x": 8.630997594536757,
+        "y": 0.682483075179928
       },
       "prevControl": {
-        "x": 4.772477831657956,
-        "y": 4.658794766993073
-      },
-      "nextControl": {
-        "x": 3.804867277192988,
-        "y": 5.30386846996972
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.8298914555073775,
-        "y": 5.547612425391121
-      },
-      "prevControl": {
-        "x": 3.4147393900488554,
-        "y": 5.290220015119367
+        "x": 7.6309975945367565,
+        "y": 0.682483075179928
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,8 +48,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.4,
+      "name": "Start Inatke",
+      "waypointRelativePos": 0.95,
       "command": {
         "type": "sequential",
         "data": {
@@ -73,7 +57,7 @@
             {
               "type": "named",
               "data": {
-                "name": "target_speaker_1m"
+                "name": "intake"
               }
             }
           ]
@@ -95,7 +79,7 @@
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -38.59606377301506,
+    "rotation": -37.37477375650597,
     "velocity": 0
   },
   "useDefaultConstraints": true

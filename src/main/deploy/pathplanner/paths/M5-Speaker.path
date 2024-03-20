@@ -3,57 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.48,
-        "y": 2.3
+        "x": 8.63,
+        "y": 0.68
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.85101693718827,
-        "y": 2.739682058936565
+        "x": 7.968014035790542,
+        "y": 0.721482108047352
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.057061425286748,
-        "y": 3.8219052210075923
+        "x": 4.087610265481815,
+        "y": 1.979200918021789
       },
       "prevControl": {
-        "x": 7.192213627363204,
-        "y": 3.194584267228499
+        "x": 5.729288154903508,
+        "y": 1.0689724367215963
       },
       "nextControl": {
-        "x": 5.686570613046216,
-        "y": 4.026650143561572
+        "x": 2.4459323760601217,
+        "y": 2.889429399321982
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.302104946252649,
-        "y": 4.972376690596612
+        "x": 0.72394368066646,
+        "y": 4.387391197585246
       },
       "prevControl": {
-        "x": 4.772477831657956,
-        "y": 4.658794766993073
-      },
-      "nextControl": {
-        "x": 3.804867277192988,
-        "y": 5.30386846996972
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.8298914555073775,
-        "y": 5.547612425391121
-      },
-      "prevControl": {
-        "x": 3.4147393900488554,
-        "y": 5.290220015119367
+        "x": 1.1041842511238482,
+        "y": 4.085148692862707
       },
       "nextControl": null,
       "isLocked": false,
@@ -64,8 +48,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0.4,
+      "name": "Target",
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "sequential",
         "data": {
@@ -73,7 +57,7 @@
             {
               "type": "named",
               "data": {
-                "name": "target_speaker_1m"
+                "name": "target_speaker"
               }
             }
           ]
@@ -89,13 +73,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -59.26451229807989,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -38.59606377301506,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": true
