@@ -31,11 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.BumpClimbSubSystem;
 import frc.robot.subsystems.ClimberSubSystem;
-<<<<<<< HEAD
 import frc.robot.subsystems.LED;
-=======
 import frc.robot.subsystems.LightsSubsystem;
->>>>>>> origin/PathPlanner3
 import frc.robot.subsystems.NoteSubSystem;
 import frc.robot.subsystems.NoteSubSystem.ActionRequest;
 import frc.robot.subsystems.NoteSubSystem.Target;
