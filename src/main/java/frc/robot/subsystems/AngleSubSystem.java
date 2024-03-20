@@ -26,7 +26,9 @@ public class AngleSubSystem extends SubsystemBase {
         INTAKE,
         FEEDSTATION,
         SPEAKER_PODIUM,
-        BRAKE
+        BRAKE, 
+        SPEAKER_PODIUM_SOURCE,
+        CUSTOM_ANGLE
     }
 
     public enum Mode{
@@ -46,6 +48,7 @@ public class AngleSubSystem extends SubsystemBase {
     private double m_amp_position;
     private double m_trap_position;
     private double m_intake_position;
+    private double m_custom_position;
 
     private TalonFX m_angleLeftMotor;
     private TalonFX m_angleRightMotor;
@@ -66,6 +69,7 @@ public class AngleSubSystem extends SubsystemBase {
         m_trap_position = Constants.ANGLE.TRAP;
         m_intake_position = Constants.ANGLE.INTAKE;
         m_setPoint_Position = Constants.ANGLE.SPEAKER;
+        m_custom_position = Constants.ANGLE.SPEAKER;;
         m_setPoint_Adjust = 0;
         m_bumpTimer = new Timer();
         m_bumpTimer.start();
@@ -238,6 +242,9 @@ public class AngleSubSystem extends SubsystemBase {
     public void setIntakePosition(double desiredPosition){
         m_intake_position = desiredPosition;
     }
+    public void setCustomPosition(double desiredPosition){
+        m_custom_position = desiredPosition;
+    }
 
 
     public double getPosition(){
@@ -256,6 +263,9 @@ public class AngleSubSystem extends SubsystemBase {
     public double getIntakePosition(){
         return this.m_intake_position;
     }
+    public double getCustomPosition(){
+        return this.m_custom_position;
+    }
 
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -267,6 +277,7 @@ public class AngleSubSystem extends SubsystemBase {
         builder.addDoubleProperty("amp position", this::getAmpPosition,this::setAmpPosition);
         builder.addDoubleProperty("trap position", this::getTrapPosition,this::setTrapPosition);
         builder.addDoubleProperty("intake position", this::getIntakePosition,this::setIntakePosition);
+        builder.addDoubleProperty("custom position", this::getCustomPosition,this::setCustomPosition);
         builder.addStringProperty("State", () -> m_presentState.toString(),null);
         builder.addStringProperty("Mode", () -> m_presentMode.toString(),null);
     }
@@ -290,6 +301,9 @@ public class AngleSubSystem extends SubsystemBase {
             case SPEAKER_PODIUM:
                 desiredPosition = m_speaker_podium_position;
                 break;
+            case SPEAKER_PODIUM_SOURCE:
+                desiredPosition = Constants.ANGLE.SPEAKER_PODIUM_SOURCE;
+                break;
             case AMP:
                 desiredPosition = m_amp_position;;
                 break;
@@ -303,6 +317,9 @@ public class AngleSubSystem extends SubsystemBase {
             case BRAKE:
                 // m_angleLeftMotor.setControl(m_brake);
                 m_angleLeftMotor.setVoltage(0);
+                break;
+            case CUSTOM_ANGLE:
+                desiredPosition = m_custom_position;
                 break;
         }
         m_setPoint_Adjust = 0;

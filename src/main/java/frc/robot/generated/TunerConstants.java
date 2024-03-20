@@ -6,12 +6,16 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackType;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import frc.robot.CommandSwerveDrivetrain;
 
 public class TunerConstants {
+
+
     // Both sets of gains need to be tuned to your individual robot.
 
     // The steer motor uses any SwerveModule.SteerRequestType control request with the
@@ -26,7 +30,7 @@ public class TunerConstants {
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
     public static final Slot0Configs driveGains = new Slot0Configs()
         //.withKP(3).withKI(0).withKD(0)      //swerve wizard
-        .withKP(28).withKI(0).withKD(0)    //4,0,0
+        .withKP(28).withKI(0).withKD(0)    //38,0,0  //4,0,0
         .withKS(0).withKV(0).withKA(0);
 
 
@@ -148,4 +152,9 @@ public class TunerConstants {
 
     public static final CommandSwerveDrivetrain DriveTrain = new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft,
             FrontRight, BackLeft, BackRight);
+
+public static CurrentLimitsConfigs driveLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(80);
+public static CurrentLimitsConfigs steerLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(60);
+public static TalonFXConfiguration driveConfig = new TalonFXConfiguration().withCurrentLimits(driveLimit);
+public static TalonFXConfiguration steerConfig = new TalonFXConfiguration().withCurrentLimits(steerLimit);
 }

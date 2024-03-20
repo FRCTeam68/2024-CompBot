@@ -6,6 +6,10 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.Utils;
+
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
@@ -19,9 +23,11 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -41,15 +47,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
-        super(driveTrainConstants, OdometryUpdateFrequency, modules);
-        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_pigeon2.getRotation2d(), m_modulePositions, new Pose2d());
-
-        configurePathPlanner();
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-    }
+    // public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
+    //     super(driveTrainConstants, OdometryUpdateFrequency, modules);
+    //     configurePathPlanner();
+    //     if (Utils.isSimulation()) {
+    //         startSimThread();
+    //     }
+    // }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_pigeon2.getRotation2d(), m_modulePositions, new Pose2d());
@@ -57,6 +61,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
     }
 
     private void configurePathPlanner() {
@@ -75,7 +80,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
                                             new ReplanningConfig()),
-            ()->false, // Change this if the path needs to be flipped on red vs blue
+            () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
             this); // Subsystem for requirements
     }
 
@@ -95,7 +110,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
          Vision vision = Robot.m_robotContainer.m_Vision;
          
-        updateOdometry();
         poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
         // vision.updateblCam();
         // poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), this.m_lastSimTime);
@@ -103,27 +117,30 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), Timer.getFPGATimestamp());
         // System.out.println(vision.estimatePoseBack().toString());
         Robot.m_robotContainer.field.setRobotPose(poseEstimator.getEstimatedPosition());
-        // if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
-        // {
+
+        /*
+        if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
+        {
            
-        //     PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(15, vision.getCurrentTargets());
-        //     if (wantedTarget != null) {
-        //         System.out.println("Robot Angle: " + vision.getYawToTarget(wantedTarget));
-        //         double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget))*0.1;
-        //         double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
-        //         System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
+            PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(15, vision.getCurrentTargets());
+            if (wantedTarget != null) {
+                System.out.println("Robot Angle: " + vision.getYawToTarget(wantedTarget));
+                double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget))*0.1;
+                double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
+                System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
                 
         //         this.setControl(Robot.m_robotContainer.drive.withRotationalRate(vision.aimWithYawAtTarget(wantedTarget)));
         //         return;
         //     }
 
         // }
-        
+    */    
 
         // Seems to drive fine enough.
         ChassisSpeeds speeds = ChassisSpeeds.discretize(request.VelocityX, request.VelocityY, request.RotationalRate, 0.02);
 
         this.setControl(request.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond));
+    
     }
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
@@ -131,17 +148,21 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
     }
 
-    /**
-     * <p>This adds the <em>vision measurement</em>. It already updates the main odometry</p>
-     * </br>
-     * <p> Vision measurement still needs to be worked on but it should get in at some point.
-     */
-    public void updateOdometry() {
-        // this.m_odometry.addVisionMeasurement(Robot.m_robotContainer.m_Vision.estimatePoseBack(), this.m_lastSimTime);
-    }
-
     public SwerveDrivePoseEstimator getOdometry(){ 
         return this.m_odometry;
+    }
+    public void setCurrentLimits(){
+        this.getModule(0).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(1).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(2).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(3).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+
+        this.getModule(0).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+        this.getModule(1).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+        this.getModule(2).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+        this.getModule(3).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+    
+        
     }
 
     private void startSimThread() {

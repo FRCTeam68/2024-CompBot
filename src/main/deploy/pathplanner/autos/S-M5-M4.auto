@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7336934388833163,
-      "y": 4.348392164717821
+      "x": 0.7531929553170285,
+      "y": 4.397140955802102
     },
-    "rotation": -59.03624346792651
+    "rotation": -61.78264414527071
   },
   "command": {
     "type": "sequential",
@@ -32,13 +32,25 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source - Source Note"
+            "pathName": "Source - M5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Note 5 - ShootM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         },
         {
@@ -48,15 +60,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "target_speaker_podium"
+            "pathName": "ShootA - Middle 4"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shoot"
+            "pathName": "M4-shoot"
           }
         }
       ]

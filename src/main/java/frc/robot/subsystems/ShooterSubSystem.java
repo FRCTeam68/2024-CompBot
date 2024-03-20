@@ -9,8 +9,10 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -44,13 +46,19 @@ public class ShooterSubSystem extends SubsystemBase {
     private double m_setPoint_Left_Voltage;
     private double m_setPoint_Right_Voltage;
     private double m_rightOffset_Voltage;
+    private LinearFilter m_atSpeedFilter;
+    private double m_filteredLeftSpeed;
 
+    //left is bottom  
+    //right is top
     public ShooterSubSystem(){
         m_presentState = State.IDLE;
-        m_presentMode = Mode.VOLTAGE_OUT;
+        m_presentMode = Mode.VOLTAGE_FOC;
         m_setPoint_Left_Speed = 0;
         m_setPoint_Right_Speed = 0;
         m_rightOffset_Speed = Constants.SHOOTER.RIGHT_OFFSET;
+        m_atSpeedFilter = LinearFilter.movingAverage(5);
+        m_filteredLeftSpeed = 0;
 
         shooterMotorsInit();
     }
@@ -59,8 +67,8 @@ public class ShooterSubSystem extends SubsystemBase {
         m_shooterLeftMotor = new TalonFX(Constants.SHOOTER.LEFT_CANID);
         m_shooterRightMotor = new TalonFX(Constants.SHOOTER.RIGHT_CANID);
 
-        m_shooterLeftMotor.setInverted(true);
-        m_shooterRightMotor.setInverted(false);
+        // m_shooterLeftMotor.setInverted(true);    //bottom
+        // m_shooterRightMotor.setInverted(true);   //top
 
         m_voltageOut = new VoltageOut(0);
 
@@ -79,10 +87,11 @@ public class ShooterSubSystem extends SubsystemBase {
         /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
         //0.11, 0.5, 0.0001, 0.12.  , .21 got there faster,  1 was too high (oscilated around zero when off)
         // still only getting to 20 instead of 40 that was being commanded
-        configs.Slot0.kP = .2; // An error of 1 rotation per second results in 2V output  
-        configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
-        configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
-        configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+        configs.Slot0.kP = .2; // 0.11 An error of 1 rotation per second results in 2V output  
+        configs.Slot0.kI = 0; //  0.5; // An error of 1 rotation per second increases output by 0.5V every second
+        configs.Slot0.kD = 0; //  0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
+        configs.Slot0.kV = 0.13; //0.13; // 12V/89rps = 0.134volts;  0.03volts minimum to make wheels turn
+                                 // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
         // Peak output of 8 volts
         configs.Voltage.PeakForwardVoltage = 12;
         configs.Voltage.PeakReverseVoltage = -12;
@@ -93,9 +102,45 @@ public class ShooterSubSystem extends SubsystemBase {
         configs.Slot1.kD = 0.001; // A change of 1000 rotation per second squared results in 1 amp output
     
         // Peak output of 40 amps
-        // configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
-        // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
+        configs.TorqueCurrent.PeakForwardTorqueCurrent = 60;
+        configs.TorqueCurrent.PeakReverseTorqueCurrent = -60;
+
         configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        // configs.withCurrentLimits(Constants.limit80);
+
+        configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        /* Retry config apply up to 5 times, report if failure */
+        StatusCode status = StatusCode.StatusCodeNotInitialized;
+        for (int i = 0; i < 5; ++i) {
+          status = m_shooterLeftMotor.getConfigurator().apply(configs);  //bottom
+          if (status.isOK()) break;
+        }
+        if(!status.isOK()) {
+          System.out.println("Could not apply configs to left shooter motor, error code: " + status.toString());
+        }
+
+        configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        /* Retry config apply up to 5 times, report if failure */
+        for (int i = 0; i < 5; ++i) {
+          status = m_shooterRightMotor.getConfigurator().apply(configs);   //top
+          if (status.isOK()) break;
+        }
+        if(!status.isOK()) {
+          System.out.println("Could not apply configs to right shooter motor, error code: " + status.toString());
+        }
+
+        System.out.println("shooter subsystem created.   "+ "mode: " + m_presentMode.toString());
+    }
+
+    public void configureVelocityPID(double kp, double ki, double kd, double kv) {
+        TalonFXConfiguration configs = new TalonFXConfiguration();
+
+        configs.Slot0.kP = kp; 
+        configs.Slot0.kI = ki; 
+        configs.Slot0.kD = kd; 
+        configs.Slot0.kV = kv;
 
         /* Retry config apply up to 5 times, report if failure */
         StatusCode status = StatusCode.StatusCodeNotInitialized;
@@ -115,8 +160,6 @@ public class ShooterSubSystem extends SubsystemBase {
         if(!status.isOK()) {
           System.out.println("Could not apply configs to right shooter motor, error code: " + status.toString());
         }
-
-        System.out.println("shooter subsystem created.   "+ "mode: " + m_presentMode.toString());
     }
 
     public void setSpinUpSpeed(double desiredSpeed){
@@ -179,7 +222,7 @@ public class ShooterSubSystem extends SubsystemBase {
             }
             else{
                 m_setPoint_Left_Speed = desiredRotationsPerSecond;
-                m_setPoint_Right_Speed = -desiredRotationsPerSecond + m_rightOffset_Speed;
+                m_setPoint_Right_Speed = -desiredRotationsPerSecond + m_rightOffset_Speed;  //top
             }
 
             Logger.recordOutput("Shooter/setLeftSpeed",  m_setPoint_Left_Speed);
@@ -210,11 +253,22 @@ public class ShooterSubSystem extends SubsystemBase {
         }
     }
 
+    // this is the state machine of the notesubsystem
+    @Override
+    public void periodic() {
+        double motorLeftSpeed = m_shooterLeftMotor.getVelocity().getValueAsDouble();
+        double motorRightSpeed = m_shooterRightMotor.getVelocity().getValueAsDouble();  //top
+        m_filteredLeftSpeed = m_atSpeedFilter.calculate(motorLeftSpeed);
+        Logger.recordOutput("Speed/LeftSpeed", motorLeftSpeed );
+        Logger.recordOutput("Speed/RightSpeed", motorRightSpeed );
+        Logger.recordOutput("Speed/LeftSpeedF", m_filteredLeftSpeed );
+        Logger.recordOutput("Speed/LeftVoltage", m_shooterLeftMotor.get() );
+        Logger.recordOutput("Speed/RightVoltage", m_shooterRightMotor.get() );
+    }
+
     public boolean atSpeed(){
-        double motorSpeed = m_shooterLeftMotor.getVelocity().getValueAsDouble();
-        // System.out.println("  left shooter setpoint speed:" + m_setPoint_Left_Speed + ", motor speed: " + motorSpeed );
-        boolean conditionMet =  Math.abs(m_setPoint_Left_Speed-motorSpeed) < 5.0;
-        conditionMet = true;  //bypass for simulation
+        boolean conditionMet =  Math.abs(m_setPoint_Left_Speed-m_filteredLeftSpeed) < 3.0;
+        //conditionMet = true;  //for simulation since position always comes back 0
         return conditionMet;
     }
 

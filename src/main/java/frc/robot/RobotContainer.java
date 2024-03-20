@@ -7,6 +7,7 @@ package frc.robot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -30,11 +31,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.BumpClimbSubSystem;
 import frc.robot.subsystems.ClimberSubSystem;
+<<<<<<< HEAD
 import frc.robot.subsystems.LED;
+=======
+import frc.robot.subsystems.LightsSubsystem;
+>>>>>>> origin/PathPlanner3
 import frc.robot.subsystems.NoteSubSystem;
 import frc.robot.subsystems.NoteSubSystem.ActionRequest;
 import frc.robot.subsystems.NoteSubSystem.Target;
 import frc.robot.subsystems.Vision;
+import frc.robot.commands.*;
 
 public class RobotContainer {
   private double MaxSpeed = 5.2; // meters per second desired top speed, see tuner consts kSpeedAt12VoltsMps
@@ -58,15 +64,16 @@ public class RobotContainer {
   
   CommandPS4Controller m_ps4Controller = new CommandPS4Controller(1);
   
+  private final LightsSubsystem m_lightsSubsystem = new LightsSubsystem();
   NoteSubSystem m_NoteSubSystem = new NoteSubSystem();
   ClimberSubSystem m_Climber = new ClimberSubSystem();
   BumpClimbSubSystem m_BumpClimb = new BumpClimbSubSystem(m_NoteSubSystem, m_Climber);
   // DigitalInput m_noteSensor1 = new DigitalInput(0);   will be I2C sensor
   DigitalInput m_noteSensor2 = new DigitalInput(0);
-  DigitalInput m_noteSensor3 = new DigitalInput(1);
+  // DigitalInput m_noteSensor3 = new DigitalInput(1);
   // Trigger m_NoteSensorTrigger1 = new Trigger(m_noteSensor1::get);
   Trigger m_NoteSensorTrigger2 = new Trigger(m_noteSensor2::get);
-  Trigger m_NoteSensorTrigger3 = new Trigger(m_noteSensor3::get);
+  // Trigger m_NoteSensorTrigger3 = new Trigger(m_noteSensor3::get);
 
   DigitalInput m_angleZeroLimitSwitch = new DigitalInput(2);
   Trigger m_angleZeroLimitSwitchTrigger = new Trigger(m_angleZeroLimitSwitch::get);
@@ -106,18 +113,26 @@ public class RobotContainer {
 
     
     NamedCommands.registerCommand("shoot_spinup", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP))    );
-    NamedCommands.registerCommand("target_speaker", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    NamedCommands.registerCommand("target_speaker", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
     NamedCommands.registerCommand("shoot", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
 
     NamedCommands.registerCommand("target_intake", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.INTAKE)));
-    NamedCommands.registerCommand("intake", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
+    NamedCommands.registerCommand("intake", new IntakeNoteCmd(m_NoteSubSystem));
 
-    NamedCommands.registerCommand("target_speaker_1m", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M)));
-    NamedCommands.registerCommand("target_speaker_podium", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
+    NamedCommands.registerCommand("target_speaker_1m", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_1M, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
+    NamedCommands.registerCommand("target_speaker_podium", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
+    NamedCommands.registerCommand("target_speaker_podium_source", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM_SOURCE, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
     NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 
+     m_DriveSubSystem.setCurrentLimits();
+
     configureBindings();
+
+    setupPidTuningCommandShuffleboard();
+
+    
+    
 
     // Put subsystems to dashboard.
     Shuffleboard.getTab("NoteSubsystem").add(m_NoteSubSystem);
@@ -175,27 +190,34 @@ public class RobotContainer {
     }
     m_DriveSubSystem.registerTelemetry(logger::telemeterize);
 
-    m_xboxController.pov(0).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0.2 * MaxSpeed).withVelocityY(0)));
-    m_xboxController.pov(180).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(-0.2 * MaxSpeed).withVelocityY(0)));
-    m_xboxController.pov(90).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(-0.2 * MaxSpeed)));
-    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
-
+    // m_xboxController.pov(0).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0.2 * MaxSpeed).withVelocityY(0)));
+    // m_xboxController.pov(180).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(-0.2 * MaxSpeed).withVelocityY(0)));
+    // m_xboxController.pov(90).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(-0.2 * MaxSpeed)));
+    // m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
+    m_xboxController.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
 
     // m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
     m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
-    m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    //m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    //for trial
+    m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
     m_xboxController.leftTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
     m_xboxController.rightTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
     m_xboxController.leftBumper().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SPIT_NOTE2)));
     m_xboxController.rightBumper().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP)));
-    m_xboxController.start().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
+    m_xboxController.start().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP_ALL)));
 
     m_ps4Controller.triangle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_ps4Controller.circle().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
     m_ps4Controller.square().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
     m_ps4Controller.cross().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+
+    //m_ps4Controller.L1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.FEEDSTATION_SPIN)));
+    m_ps4Controller.L2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.DISLODGE_WITH_SHOOTER)));
+    m_ps4Controller.R1().onTrue(Commands.runOnce(()->m_NoteSubSystem.setPassSpeed(Constants.SHOOTER.PASS1_SPEED)));
+    m_ps4Controller.R2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setPassSpeed(Constants.SHOOTER.PASS2_SPEED)));
 
     // m_ps4Controller.L2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
     // m_ps4Controller.R2().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
@@ -245,10 +267,11 @@ public class RobotContainer {
     //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor1", false)));
     m_NoteSensorTrigger2.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor2", true)))
                        .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor2", false)));
-    m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
-                                        .andThen(()->SmartDashboard.putBoolean("NoteSensor3", true)))
-                       .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
-
+    // m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.BEAM3))
+    //                                     .andThen(()->SmartDashboard.putBoolean("NoteSensor3", true)))
+    //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
+    // m_NoteSensorTrigger3.onTrue(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", true)))
+    //                    .onFalse(Commands.runOnce(()->SmartDashboard.putBoolean("NoteSensor3", false)));
 
     // m_angleZeroLimitSwitchTrigger.onTrue(Commands.runOnce(()->m_NoteSubSystem.zeroAngleSubsystem())
     //                                             .andThen(()->SmartDashboard.putBoolean("AngleLimitLowSwitch", true)))
@@ -308,7 +331,14 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
+  @SuppressWarnings("unused")
+  private void setupPidTuningCommandShuffleboard(){
+    // First, assign a local variable the Tab that we are going to use
+    // for pid tuning in Shuffleboard
+    Shuffleboard.getTab("PID Tuning").add(new ShooterPIDTuning(m_NoteSubSystem));
+  }
+
   public void StopSubSystems(){
-    m_NoteSubSystem.setAction(ActionRequest.STOP);
+    m_NoteSubSystem.setAction(ActionRequest.STOP_ALL);
   }
 }

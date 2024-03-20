@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7531929553170285,
-      "y": 6.737082927847566
+      "x": 0.7336934388833163,
+      "y": 4.348392164717821
     },
-    "rotation": 59.03624346792651
+    "rotation": -59.03624346792651
   },
   "command": {
     "type": "sequential",
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp -  Amp Note"
+            "pathName": "Source - Source Note"
           }
         },
         {
@@ -50,37 +50,25 @@
         {
           "type": "named",
           "data": {
-            "name": "target_speaker_podium"
+            "name": "target_speaker_podium_source"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Note -  Center"
+            "pathName": "3-M5"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "target_speaker_1m"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
+            "pathName": "M5-Speaker"
           }
         }
       ]

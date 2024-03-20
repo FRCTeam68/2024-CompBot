@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -23,6 +25,9 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
     private static RobotType robotType = RobotType.DEVBOT;
+
+    public static CurrentLimitsConfigs limit80 = new CurrentLimitsConfigs().withStatorCurrentLimit(80);
+    public static CurrentLimitsConfigs limit60 = new CurrentLimitsConfigs().withStatorCurrentLimit(60);
 
     public enum RobotType {
         CHASSISBOT,
@@ -72,13 +77,17 @@ public final class Constants {
         public static final String CANBUS = "rio";
         public static final double MAX_SPEED = 100;  // rps
         public static final double SPEAKER_SHOOT_SPEED = 80;
-        public static final double TRAP_SHOOT_SPEED = 40; 
-        public static final double AMP_SHOOT_SPEED = 20;  
+        public static final double TRAP_SHOOT_SPEED = 43; 
+        public static final double AMP_SHOOT_SPEED = 23;   //20 layup // 26 dunk VelFOC.
+        public static final double AMP_RIGHT_OFFSET = 15;  //14 layup // 16 dunk VelFOC.  //0 to tune shooter pid - 26 ,top does not roll at 26
         public static final double RIGHT_OFFSET = 0;
         public static final double BUMP_VALUE = 1;   // rps
         public static final double SPINUP_TIME = 2;  // seconds
         public static final double STOP_TIME = 2; 
         public static final double ATSPEED_TIMEOUT = 1;  //seconds
+        public static final double DISLODGE_SHOOT_SPEED = -60;
+        public static final double PASS1_SPEED = 60;
+        public static final double PASS2_SPEED = 40;
     }
 
     public static final class ANGLE {
@@ -96,11 +105,12 @@ public final class Constants {
         public static final double AMP = 2;
         public static final double TRAP = 0;   //distance 1.57M
         public static final double SPEAKER = 0;
-        public static final double SPEAKER_1M = 20;
-        public static final double SPEAKER_PODIUM = 22; //24
-        public static final double INTAKE = 12;   //14
+        public static final double SPEAKER_1M = 21; //18 ; //16 //15 //20
+        public static final double SPEAKER_PODIUM = 26; //24; //16 //22 //24
+        public static final double INTAKE = 17; // 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
+        public static final double SPEAKER_PODIUM_SOURCE = 16;
         
     }
 
@@ -108,7 +118,7 @@ public final class Constants {
         public static final int LEFT_CANID = 40;
         public static final int RIGHT_CANID = 41;
         public static final String CANBUS = "DRIVEbus";
-        public static final double MAX_HEIGHT = 100;   //100 rotates is about 9in
+        public static final double MAX_HEIGHT = 115;   //100 rotates is about 9in
     }
 
     public static final class Vision {
@@ -140,5 +150,9 @@ public final class Constants {
 
     public static final class BLUE_TAGS {
         public static final int[] stage = {14,15,16};
+    }
+
+    public static final class LightsConstants {
+        public static final int CANDLE_PORT = 60;
     }
 }
