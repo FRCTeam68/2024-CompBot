@@ -107,40 +107,30 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new PathPlannerAuto(pathName);
     }
 
-    public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
-         Vision vision = Robot.m_robotContainer.m_Vision;
-         
-        poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
+    public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {         
+        // poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
         // vision.updateblCam();
         // poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), this.m_lastSimTime);
-        vision.updatebrCam();
-        poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), Timer.getFPGATimestamp());
-        // System.out.println(vision.estimatePoseBack().toString());
-        Robot.m_robotContainer.field.setRobotPose(poseEstimator.getEstimatedPosition());
-
-        /*
-        if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
-        {
-           
-            PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(15, vision.getCurrentTargets());
-            if (wantedTarget != null) {
-                System.out.println("Robot Angle: " + vision.getYawToTarget(wantedTarget));
-                double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget))*0.1;
-                double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
-                System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
-                
-        //         this.setControl(Robot.m_robotContainer.drive.withRotationalRate(vision.aimWithYawAtTarget(wantedTarget)));
-        //         return;
-        //     }
-
-        // }
-    */    
+        // vision.updatebrCam();
+        // poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), Timer.getFPGATimestamp());
 
         // Seems to drive fine enough.
         ChassisSpeeds speeds = ChassisSpeeds.discretize(request.VelocityX, request.VelocityY, request.RotationalRate, 0.02);
 
         this.setControl(request.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond));
     
+    }
+
+    public void updatePoseEstimator() {
+        poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
+    }
+
+    public void addVisionMeasurement(Pose2d pose){
+        poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp());
+    }
+
+    public Pose2d getEstimatedPose() {
+        return poseEstimator.getEstimatedPosition();
     }
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
