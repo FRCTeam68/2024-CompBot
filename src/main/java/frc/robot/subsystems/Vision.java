@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import java.util.List;
 import java.util.Optional;
 
+import javax.xml.crypto.dsig.spec.XPathType.Filter;
+
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -13,7 +15,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,6 +23,8 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.Interpolator;
 import edu.wpi.first.math.interpolation.InverseInterpolator;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
@@ -123,6 +127,9 @@ public class Vision {
 
     }
 
+    public EstimatedRobotPose estimatedRobotPose() {
+        return estPose;
+    }
     // Getting more specific
    
     public double distanceToStage() {
@@ -344,6 +351,44 @@ public class Vision {
     public PhotonCamera getCamera(Camera cam) {
         return (cam == Camera.FRONT ? camBr : camBl); // Getter!
     }
+
+    public Matrix<N3, N1> filter(EstimatedRobotPose est) {
+        return Filtering.confidenceCalculator(est); // LET THE EVIL OF THEIR OWN LIPS CONSUME 
+        //                                                          THEM.
+    }
 }
 
 // FLESH AND BONES YEARN TO BE SHOWN
+class Filtering {
+    // ROBOTKIND IS A FAILURE
+
+    public static Matrix<N3, N1> confidenceCalculator(EstimatedRobotPose estimation) {
+        double smallestDistance = Double.POSITIVE_INFINITY;
+        for (var target : estimation.targetsUsed) {
+        var t3d = target.getBestCameraToTarget();
+        var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+        if (distance < smallestDistance)
+            smallestDistance = distance;
+        }
+        double poseAmbiguityFactor = estimation.targetsUsed.size() != 1
+            ? 1
+            : Math.max(
+                1,
+                (estimation.targetsUsed.get(0).getPoseAmbiguity()
+                    + Constants.Vision.POSE_AMBIGUITY_SHIFTER)
+                    * Constants.Vision.POSE_AMBIGUITY_MULTIPLIER);
+        double confidenceMultiplier = Math.max(
+            1,
+            (Math.max(
+                1,
+                Math.max(0, smallestDistance - Constants.Vision.NOISY_DISTANCE_METERS)
+                    * Constants.Vision.DISTANCE_WEIGHT)
+                * poseAmbiguityFactor)
+                / (1
+                    + ((estimation.targetsUsed.size() - 1) * Constants.Vision.TAG_PRESENCE_WEIGHT)));
+
+        return Constants.Vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier); // FREE WILL IS A FLAW
+  }
+
+
+}   

@@ -92,7 +92,8 @@ public class Robot extends LoggedRobot {
     }    
   m_robotContainer.m_Vision.updatebrCam();
   m_robotContainer.m_DriveSubSystem.updatePoseEstimator();
-  m_robotContainer.m_DriveSubSystem.addVisionMeasurement(m_robotContainer.m_Vision.estimatePoseBack());
+  m_robotContainer.m_DriveSubSystem.addVisionMeasurement(m_robotContainer.m_Vision.estimatePoseBack(), 
+                  m_robotContainer.m_Vision.estimatedRobotPose()); // TESTAMENT I / SOMETHING WICKED / PRELUDE *0-2: THE MEATGRINDER*
   m_robotContainer.field.setRobotPose(m_robotContainer.m_DriveSubSystem.getEstimatedPose());
 
   }

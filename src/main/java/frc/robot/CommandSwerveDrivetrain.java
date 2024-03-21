@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.function.Supplier;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.Utils;
@@ -56,7 +57,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     // }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
-        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_pigeon2.getRotation2d(), m_modulePositions, new Pose2d());
+        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_pigeon2.getRotation2d(), m_modulePositions, new Pose2d(), Constants.Vision.STATE_STANDARD_DEVIATIONS, Constants.Vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS);
+        poseEstimator.setVisionMeasurementStdDevs(null);
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
@@ -125,8 +127,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
     }
 
-    public void addVisionMeasurement(Pose2d pose){
-        poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp());
+    public void addVisionMeasurement(Pose2d pose, EstimatedRobotPose estPose){
+        poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp(), Robot.m_robotContainer.m_Vision.filter(estPose)); 
+        // THEN I SHALL BEGIN AGAIN, WITH MY WORD
+        //                AS LAW
     }
 
     public Pose2d getEstimatedPose() {
