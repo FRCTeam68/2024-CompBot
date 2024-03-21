@@ -54,12 +54,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -80,19 +74,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.7
+            "waitTime": 0.2
           }
         },
         {
           "type": "named",
           "data": {
             "name": "target_speaker_1m"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.2
           }
         },
         {
@@ -116,19 +104,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.2
           }
         },
         {
           "type": "named",
           "data": {
             "name": "target_speaker_podium_source"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
           }
         },
         {
@@ -152,7 +134,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.2
           }
         },
         {
