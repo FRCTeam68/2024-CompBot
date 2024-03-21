@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.NoteSubSystem;
@@ -26,7 +28,7 @@ public class SetTargetCustomCmd extends Command {
   public void initialize() {
     cmdTimer.reset();
     cmdTimer.start();
-    m_noteSubSystem.setTargetCustom(m_anglePosition, m_shooterSpeed);
+        m_noteSubSystem.setTargetCustom(m_anglePosition, m_shooterSpeed);
     
   }
 
@@ -37,7 +39,9 @@ public class SetTargetCustomCmd extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    Logger.recordOutput("TargetCustomCmd",  "end");
+  }
 
   // Command will run until the button is released, or autonomous timer hits
   @Override

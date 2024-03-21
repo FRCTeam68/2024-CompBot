@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.NoteSubSystem;
@@ -23,7 +25,7 @@ public class IntakeNoteCmd extends Command {
   public void initialize() {
     cmdTimer.reset();
     cmdTimer.start();
-    m_noteSubSystem.setAction(ActionRequest.INTAKENOTE);
+        m_noteSubSystem.setAction(ActionRequest.INTAKENOTE);
     
   }
 
@@ -34,7 +36,9 @@ public class IntakeNoteCmd extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    Logger.recordOutput("IntakeCmd",  "end");
+  }
 
   // Command will run until the button is released, or autonomous timer hits
   @Override

@@ -229,6 +229,10 @@ public class AngleSubSystem extends SubsystemBase {
         return conditionMet;
     }
 
+    public double getAngleF(){
+        return m_filteredPosition;
+    }
+
 
     public void setSpeakerPosition(double desiredPosition) {
         m_speaker_position = desiredPosition;
