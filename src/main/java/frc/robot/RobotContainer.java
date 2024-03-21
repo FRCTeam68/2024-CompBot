@@ -42,7 +42,6 @@ public class RobotContainer {
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController m_xboxController = new CommandXboxController(0); // drive controller
   public final CommandSwerveDrivetrain m_DriveSubSystem = TunerConstants.DriveTrain;
-  public final Vision m_Vision = new Vision();
 
   public final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband

@@ -66,12 +66,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.08
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -102,12 +96,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.07
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -129,12 +117,6 @@
           "type": "path",
           "data": {
             "pathName": "Middle3 - Shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.05
           }
         },
         {
