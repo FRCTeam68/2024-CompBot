@@ -32,7 +32,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.4
+            "waitTime": 0.2
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.0
+            "waitTime": 0.3
           }
         },
         {
@@ -66,12 +66,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -80,7 +74,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.4
+            "waitTime": 0.2
           }
         },
         {
@@ -110,7 +104,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.4
+            "waitTime": 0.2
           }
         },
         {
@@ -123,12 +117,6 @@
           "type": "path",
           "data": {
             "pathName": "M4-shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
           }
         },
         {

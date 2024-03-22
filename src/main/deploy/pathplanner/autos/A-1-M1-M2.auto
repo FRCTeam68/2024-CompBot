@@ -54,12 +54,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.2
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -84,15 +78,15 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
