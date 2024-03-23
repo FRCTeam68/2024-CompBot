@@ -87,7 +87,7 @@ public final class Constants {
         public static final double ATSPEED_TIMEOUT = 1;  //seconds
         public static final double DISLODGE_SHOOT_SPEED = -60;
         public static final double PASS1_SPEED = 60;
-        public static final double PASS2_SPEED = 40;
+        public static final double PASS2_SPEED = 60; //40;
     }
 
     public static final class ANGLE {
