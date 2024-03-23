@@ -36,6 +36,18 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Amp -  Amp Note"
@@ -51,12 +63,6 @@
           "type": "named",
           "data": {
             "name": "target_speaker_podium"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.2
           }
         },
         {
@@ -86,7 +92,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
           }
         },
         {
@@ -110,7 +116,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
           }
         },
         {
