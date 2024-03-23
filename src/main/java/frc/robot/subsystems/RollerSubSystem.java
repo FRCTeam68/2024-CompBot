@@ -70,6 +70,8 @@ public class RollerSubSystem extends SubsystemBase {
         // Peak output of 8 volts
         configs.Voltage.PeakForwardVoltage = 12;
         configs.Voltage.PeakReverseVoltage = -12;
+
+        configs.CurrentLimits.StatorCurrentLimit = 60;
         
         /* Torque-based velocity does not require a feed forward, as torque will accelerate the rotor up to the desired velocity by itself */
         configs.Slot1.kP = 5; // An error of 1 rotation per second results in 5 amps output
