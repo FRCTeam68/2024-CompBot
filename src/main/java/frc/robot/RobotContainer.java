@@ -7,7 +7,6 @@ package frc.robot;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -18,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +26,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.IntakeNoteCmd;
+import frc.robot.commands.SetTargetCustomCmd;
+import frc.robot.commands.ShooterPIDTuning;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubSystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -33,7 +36,6 @@ import frc.robot.subsystems.NoteSubSystem;
 import frc.robot.subsystems.NoteSubSystem.ActionRequest;
 import frc.robot.subsystems.NoteSubSystem.Target;
 import frc.robot.subsystems.Vision;
-import frc.robot.commands.*;
 
 public class RobotContainer {
   private double MaxSpeed = 5.2; // meters per second desired top speed, see tuner consts kSpeedAt12VoltsMps
@@ -43,6 +45,7 @@ public class RobotContainer {
   private final CommandXboxController m_xboxController = new CommandXboxController(0); // drive controller
   public final CommandSwerveDrivetrain m_DriveSubSystem = TunerConstants.DriveTrain;
   public final Vision m_Vision = new Vision();
+  public Field2d field = new Field2d();
 
   public final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -142,7 +145,7 @@ public class RobotContainer {
 
     System.out.println("note sensor switch: " + m_noteSensor2.get());
     System.out.println("low limit switch: " + m_angleZeroLimitSwitch.get());
-    
+    SmartDashboard.putData(field);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

@@ -77,6 +77,11 @@ public class Robot extends LoggedRobot {
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled commands, running already-scheduled commands, removing
+    // finished or interrupted commands, and running subsystem periodic() methods.
+    // This must be called from the robot's periodic block in order for anything in
+    // the Command-based framework to work.
     CommandScheduler.getInstance().run();
     m_robotContainer.m_Vision.setUsedCamera(Camera.FRONT);
     m_robotContainer.m_Vision.updateCurrentCam();
@@ -88,7 +93,12 @@ public class Robot extends LoggedRobot {
       if (lastResult.valid) {
         m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
-    }
+    }    
+  m_robotContainer.m_Vision.updatebrCam();
+  m_robotContainer.m_DriveSubSystem.updatePoseEstimator();
+  m_robotContainer.m_DriveSubSystem.addVisionMeasurement(m_robotContainer.m_Vision.estimatePoseBack(), 
+                  m_robotContainer.m_Vision.estimatedRobotPose()); // TESTAMENT I / SOMETHING WICKED / PRELUDE *0-2: THE MEATGRINDER*
+  m_robotContainer.field.setRobotPose(m_robotContainer.m_DriveSubSystem.getEstimatedPose());
       }
 
   /** This function is called once when the robot is disabled. */
