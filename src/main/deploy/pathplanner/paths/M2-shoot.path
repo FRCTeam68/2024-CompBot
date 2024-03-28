@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7531929553170285,
-        "y": 4.397140955802102
+        "x": 8.328755089814218,
+        "y": 5.7523573479451
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.172432558641841,
-        "y": 3.880403770308729
+        "x": 7.714520322152286,
+        "y": 5.957102270499078
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.44786151110764,
-        "y": 0.7202868251890345
+        "x": 2.95,
+        "y": 6.93
       },
       "prevControl": {
-        "x": 7.214493659756553,
-        "y": 0.41441159805396544
+        "x": 3.385627673868176,
+        "y": 6.912578575750977
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,16 +32,16 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Start Intake",
-      "waypointRelativePos": 0.35,
+      "name": "Target Speaker",
+      "waypointRelativePos": 0.25,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "intake"
+                "name": "target_speaker"
               }
             }
           ]
@@ -57,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": 32.79613041963144,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -59.90678339857099,
+    "rotation": -16.090816348852233,
     "velocity": 0
   },
   "useDefaultConstraints": true

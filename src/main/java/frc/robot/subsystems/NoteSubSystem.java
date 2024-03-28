@@ -351,6 +351,8 @@ public class NoteSubSystem extends SubsystemBase {
         m_shooter_setpoint = desiredSpeed;
         spinUp();
         LEDSegment.side1target.setColor(LightsSubsystem.white);
+        Logger.recordOutput("Note/TargtCustom",  desiredPosition);
+        Logger.recordOutput("Note/Target",  m_target);
     }
 
     public void setAction(ActionRequest wantedAction) {
@@ -380,10 +382,6 @@ public class NoteSubSystem extends SubsystemBase {
             beam3Period = Beam3.getPeriod();
             Beam3.reset();
             m_beam_count_total += 1;
-            Logger.recordOutput("Note/beam3count", beam3count);
-            Logger.recordOutput("Note/beam3tripped", beam3Tripped);
-            Logger.recordOutput("Note/beam3period", beam3Period);
-            Logger.recordOutput("Note/beam3countTotal", m_beam_count_total);
             
             if (m_presentState == State.INTAKING_NOTE1){
                 //front side of note coming through
@@ -422,9 +420,13 @@ public class NoteSubSystem extends SubsystemBase {
             }
                 
         }
-        SmartDashboard.putNumber("beam3 count", beam3count);
+        Logger.recordOutput("Note/beam3count", beam3count);
+        Logger.recordOutput("Note/beam3tripped", beam3Tripped);
+        Logger.recordOutput("Note/beam3period", beam3Period);
+        Logger.recordOutput("Note/beam3countTotal", m_beam_count_total);
+        // SmartDashboard.putNumber("beam3 count", beam3count);
         SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
-        SmartDashboard.putNumber("beam3 period", beam3Period);
+        // SmartDashboard.putNumber("beam3 period", beam3Period);
         SmartDashboard.putNumber("beam3 count total", m_beam_count_total);
         
 
@@ -438,12 +440,12 @@ public class NoteSubSystem extends SubsystemBase {
                     m_shootStopTime.stop();
                     m_shootStopTime.reset();
                     Logger.recordOutput("Note/Comment",  "shoot timer elapsed");
-                    if (m_haveNote1){
+                    // if (m_haveNote1){
                         m_Feeder2.setSpeed(0);  
                         setHaveNote1(false);
                         LEDSegment.side1.setColor(LightsSubsystem.orange);
                         setState(State.IDLE);
-                    }
+                    // }
                 }
                 break;
             case STOP:
@@ -484,8 +486,13 @@ public class NoteSubSystem extends SubsystemBase {
                     setTarget(Target.INTAKE);
                 }
                 if (!m_haveNote1){
-                    if (m_Angle.atAngle()){
-                        Logger.recordOutput("Note/Comment",  "start intake");
+                    double anglenow = m_Angle.getAngleF();
+                    //looking for intake angle to be close to start rollers.
+                    //we don't want too far off or note can get stuck.
+                    //this is hardcode range around 17!
+                    //there is more tolerance to be off when lower than when higher
+                    if ((anglenow>10)&&(anglenow<20)){
+                        Logger.recordOutput("Note/Comment",  "start intake:"+anglenow);
                         m_Intake.setSpeed(m_intake_setpoint);
                         m_Feeder1.setSpeed(m_feeder1_setpoint);
                         m_Feeder2.setSpeed(m_feeder2_setpoint);
@@ -494,13 +501,7 @@ public class NoteSubSystem extends SubsystemBase {
                         setAction(ActionRequest.IDLE);
                      }
                 }
-                // 3/13/2024  not going to shoot from intake position now
-                // else{
-                //     Logger.recordOutput("Note/Comment",  "no intake, have note");
-                //     spinUp();
-                //     //we have a note.  do not intake
-                //     setAction(ActionRequest.IDLE);
-                // }
+
                 break;
             case SPIT_NOTE2:
                 if (m_actionChanged){
@@ -555,9 +556,10 @@ public class NoteSubSystem extends SubsystemBase {
                 break;
         }
 
+        //further LED states ...
         isAtAngle = m_Angle.atAngle();
 
-
+        String readyToShootMsg = "no";
         if (m_haveNote1){
             if (m_target!=Target.INTAKE){
                 if ((isAtAngle)&&
@@ -567,14 +569,19 @@ public class NoteSubSystem extends SubsystemBase {
                     //  if at intake angle, you can shoot, but will not turn it green
                     //  the green is to indicate you have changed from intake (blue) to another angle
                     LEDSegment.side1.setColor(LightsSubsystem.green);
+                    readyToShootMsg = "green";
                 }
                 else {
                     //waiting for conditions to be ready to shoot
                     //note in manual mode, driver still has to drive to field position for selected target and point correcting direction
                     LEDSegment.side1.setBandAnimation(LightsSubsystem.green,.5);
+                    readyToShootMsg = "waiting A or S";
                 }
             }
+             //else condition is at intake target, with note;  stay with all blue set by beam break
+             //                                              or pass note sets Fade blue
         }
+        Logger.recordOutput("Note/ReadyToShoot", readyToShootMsg);
 
         SmartDashboard.putBoolean("AtAngle AMP", (m_target == Target.AMP)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle TRAP", (m_target == Target.TRAP)&&(isAtAngle));

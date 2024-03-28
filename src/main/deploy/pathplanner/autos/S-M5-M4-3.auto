@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 0.7531929553170285,
-      "y": 6.737082927847566
+      "y": 4.397140955802102
     },
-    "rotation": 59.03624346792651
+    "rotation": -61.78264414527071
   },
   "command": {
     "type": "sequential",
@@ -38,19 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp -  Amp Note"
+            "pathName": "Source - M5"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "target_speaker_podium"
+            "pathName": "Middle Note 5 - ShootM"
           }
         },
         {
@@ -68,13 +62,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Note -  Center"
+            "pathName": "ShootA - Middle 4"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "target_speaker_1m"
+            "pathName": "M4-Speaker"
           }
         },
         {
@@ -92,49 +86,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center - Source Note"
+            "pathName": "Source - Source Note"
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "target_speaker_podium"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source Note - Middle 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle 1 - Shoot Spot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot Spot - Middle 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle 2 - Shoot Spot"
+            "waitTime": 0.3
           }
         },
         {

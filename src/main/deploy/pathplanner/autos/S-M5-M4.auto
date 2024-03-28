@@ -32,13 +32,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.2
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Source - Middle Note 5"
+            "pathName": "Source - M5"
           }
         },
         {
@@ -63,6 +63,24 @@
           "type": "path",
           "data": {
             "pathName": "ShootA - Middle 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M4-Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         }
       ]

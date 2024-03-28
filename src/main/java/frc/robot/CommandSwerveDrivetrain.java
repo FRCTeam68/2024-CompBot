@@ -99,19 +99,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
-        Vision vision = Robot.m_robotContainer.m_Vision;
-        double stageD = vision.distanceToStage();
-        
-        SmartDashboard.putNumber("TrapDistance", stageD);
-        Logger.recordOutput("Vision/Distance",  stageD);
-        if (stageD > 1.5 && stageD < 1.7) {
-            Logger.recordOutput("Vision/TrapGood",  true);
-            SmartDashboard.putBoolean("TrapGood", true);
-        }
-        else{           
-            Logger.recordOutput("Vision/TrapGood",  false);
-            SmartDashboard.putBoolean("TrapGood", false);
-        }
+     
         /*
         if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
         {

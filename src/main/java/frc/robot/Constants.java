@@ -87,7 +87,7 @@ public final class Constants {
         public static final double ATSPEED_TIMEOUT = 1;  //seconds
         public static final double DISLODGE_SHOOT_SPEED = -60;
         public static final double PASS1_SPEED = 60;
-        public static final double PASS2_SPEED = 40;
+        public static final double PASS2_SPEED = 60; //40;
     }
 
     public static final class ANGLE {
@@ -118,7 +118,7 @@ public final class Constants {
         public static final int LEFT_CANID = 40;
         public static final int RIGHT_CANID = 41;
         public static final String CANBUS = "DRIVEbus";
-        public static final double MAX_HEIGHT = 115;   //100 rotates is about 9in
+        public static final double MAX_HEIGHT = 122;  // old hooks: 115;   //100 rotates is about 9in
     }
 
     public static final class Vision {
