@@ -27,8 +27,10 @@ public class TunerConstants {
         // .withKS(0).withKV(0).withKA(0);
 
         // try4 sysid
-        .withKP(49).withKI(0).withKD(2.3)   //16,0,0
-        .withKS(0.44).withKV(0.09).withKA(0.06);
+        // .withKP(49).withKI(0).withKD(2.3)
+        // .withKS(0.44).withKV(0.09).withKA(0.06);
+        .withKP(49).withKI(0).withKD(0)
+        .withKS(0).withKV(0).withKA(0);
 
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
@@ -38,7 +40,7 @@ public class TunerConstants {
         // .withKS(0).withKV(0).withKA(0);
 
         // try4 sysid
-        .withKP(0.04).withKI(0).withKD(0)    //38,0,0  //4,0,0
+        .withKP(0.04).withKI(0).withKD(0)
         .withKS(0).withKV(0.1).withKA(0.03);
 
 
