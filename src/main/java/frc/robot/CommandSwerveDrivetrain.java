@@ -7,21 +7,19 @@ import org.photonvision.EstimatedRobotPose;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -44,6 +42,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Pose2d lastEstimate = new Pose2d();
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
+    private final SwerveRequest.FieldCentricFacingAngle aimBotRequestion = new SwerveRequest.FieldCentricFacingAngle().withSteerRequestType(SteerRequestType.MotionMagic).withDeadband(0.1);
 
     // public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
     //     super(driveTrainConstants, OdometryUpdateFrequency, modules);
@@ -61,51 +60,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
 
     }
-
-    public void runVelocity(ChassisSpeeds speeds) {
-        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-        System.out.println("X: %s|  Y: %s".formatted(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond));
-        this.setControl(autoRequest.withSpeeds(targetSpeeds));
-    }
-
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Pathfind.mVelMS);
-        int i =0;
-        for (SwerveModule mod : this.Modules) {
-            i++;
-            mod.apply(desiredStates[i], SwerveModule.DriveRequestType.Velocity);
-        }
-    }
-
     private void configurePathPlanner() {
         double driveBaseRadius = 0;
         for (var moduleLocation : m_moduleLocations) {
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
-
-        // AutoBuilder.configureHolonomic(
-        //     ()->this.getState().Pose, // Supplier of current robot pose
-        //     this::seedFieldRelative,  // Consumer for seeding pose against auto
-        //     this::getCurrentRobotChassisSpeeds,
-        //     (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
-        //     new HolonomicPathFollowerConfig(new PIDConstants(1, 0, 0),
-        //                                     new PIDConstants(1, 0, 0),
-        //                                     TunerConstants.kSpeedAt12VoltsMps,
-        //                                     driveBaseRadius,
-        //                                     new ReplanningConfig()),
-        //     () -> {
-        //             // Boolean supplier that controls when the path will be mirrored for the red alliance
-        //             // This will flip the path being followed to the red side of the field.
-        //             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-        //             var alliance = DriverStation.getAlliance();
-        //             if (alliance.isPresent()) {
-        //                 return alliance.get() == DriverStation.Alliance.Red;
-        //             }
-        //             return false;
-        //         },
-        //     this); // Subsystem for requirements
-
         
         AutoBuilder.configureHolonomic(
             this::getEstimatedPose, // Supplier of current robot pose
@@ -133,6 +92,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void setPose (Pose2d pose) {
         poseEstimator.resetPosition(m_pigeon2.getRotation2d(), m_modulePositions, pose);
+        m_odometry.resetPosition(m_pigeon2.getRotation2d(), m_modulePositions, pose);
     }
 
     public Command drive(Supplier<SwerveRequest.FieldCentric> requestSupplier, CommandXboxController xboxController) { 
@@ -146,6 +106,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command getAutoPath(String pathName) {
         return new PathPlannerAuto(pathName);
+    }
+
+    public Command aimTheBot(Rotation2d angle, double xSpeed, double ySpeed) {
+        return run(() -> this.setControl(this.aimBotRequestion.withTargetDirection(angle).withVelocityX(xSpeed).withVelocityY(ySpeed)));
     }
 
     public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {         
@@ -164,6 +128,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void updatePoseEstimator() {
         poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
+        this.m_odometry.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
     }
 
     public void addBrVisionMeasurement(Pose2d pose, EstimatedRobotPose estPose){

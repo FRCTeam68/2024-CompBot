@@ -4,19 +4,20 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.Vision.Camera;
+import java.util.Optional;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.EstimatedRobotPose;
 
 import com.ctre.phoenix6.SignalLogger;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -91,25 +92,24 @@ public class Robot extends LoggedRobot {
         m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
     }
-    m_robotContainer.m_DriveSubSystem.lastEstimate = m_robotContainer.m_DriveSubSystem.getEstimatedPose();
-    m_robotContainer.m_Vision.updateCurrentCam();
-    m_robotContainer.m_DriveSubSystem.updatePoseEstimator();
-    
-    if (m_robotContainer.m_Vision.getBlTagCount() > 0 || m_robotContainer.m_Vision.getBrTagCount() > 0) {
 
-        
-        m_robotContainer.m_Vision.updatebrCam();
-        m_robotContainer.m_DriveSubSystem.addBrVisionMeasurement(m_robotContainer.m_Vision.estimatePoseBack(),
-            m_robotContainer.m_Vision.estimatedRobotPose()); // TESTAMENT I / SOMETHING WICKED / PRELUDE *0-2: THE
-                                                             // MEATGRINDER*
-
-        m_robotContainer.m_Vision.updateblCam();
-        m_robotContainer.m_DriveSubSystem.addBlVisionMeasurement(m_robotContainer.m_Vision.estimatePoseBack(),
-            m_robotContainer.m_Vision.estimatedRobotPose()); // *0-4: CLARE DE LUNE*
-
-      
+    Optional<EstimatedRobotPose> OptionalPoseBr = m_robotContainer.m_Vision.getEstimatedPoseBr();
+    if (OptionalPoseBr.isPresent()) {
+      final EstimatedRobotPose estimatedPose = OptionalPoseBr.get();
+      m_robotContainer.m_DriveSubSystem.poseEstimator.setVisionMeasurementStdDevs(
+          m_robotContainer.m_Vision.getEstimationStdDevsBr(estimatedPose.estimatedPose.toPose2d()));
+      m_robotContainer.m_DriveSubSystem.poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
     }
-    
+
+    Optional<EstimatedRobotPose> OptionalPoseBl = m_robotContainer.m_Vision.getEstimatedPoseBl();
+
+    if (OptionalPoseBr.isPresent()) {
+      final EstimatedRobotPose estimatedPose = OptionalPoseBl.get();
+      m_robotContainer.m_DriveSubSystem.poseEstimator.setVisionMeasurementStdDevs(
+          m_robotContainer.m_Vision.getEstimationStdDevsBl(estimatedPose.estimatedPose.toPose2d()));
+      m_robotContainer.m_DriveSubSystem.poseEstimator.addVisionMeasurement(estimatedPose.estimatedPose.toPose2d(), estimatedPose.timestampSeconds);
+    }
+
     m_robotContainer.field.setRobotPose(m_robotContainer.m_DriveSubSystem.getEstimatedPose());
 
   }
