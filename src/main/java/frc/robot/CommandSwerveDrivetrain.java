@@ -7,10 +7,12 @@ import org.photonvision.EstimatedRobotPose;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -18,6 +20,8 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -37,6 +41,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double m_lastSimTime;
     
     SwerveDrivePoseEstimator poseEstimator;
+    public Pose2d lastEstimate = new Pose2d();
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
@@ -49,13 +54,27 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     // }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
-        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_pigeon2.getRotation2d(), m_modulePositions, new Pose2d(), Constants.Vision.STATE_STANDARD_DEVIATIONS, Constants.Vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS);
-        poseEstimator.setVisionMeasurementStdDevs(null);
+        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_pigeon2.getRotation2d(), m_modulePositions, new Pose2d());
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
         }
 
+    }
+
+    public void runVelocity(ChassisSpeeds speeds) {
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
+        System.out.println("X: %s|  Y: %s".formatted(speeds.vxMetersPerSecond,speeds.vyMetersPerSecond));
+        this.setControl(autoRequest.withSpeeds(targetSpeeds));
+    }
+
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Pathfind.mVelMS);
+        int i =0;
+        for (SwerveModule mod : this.Modules) {
+            i++;
+            mod.apply(desiredStates[i], SwerveModule.DriveRequestType.Velocity);
+        }
     }
 
     private void configurePathPlanner() {
@@ -64,10 +83,34 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
+        // AutoBuilder.configureHolonomic(
+        //     ()->this.getState().Pose, // Supplier of current robot pose
+        //     this::seedFieldRelative,  // Consumer for seeding pose against auto
+        //     this::getCurrentRobotChassisSpeeds,
+        //     (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
+        //     new HolonomicPathFollowerConfig(new PIDConstants(1, 0, 0),
+        //                                     new PIDConstants(1, 0, 0),
+        //                                     TunerConstants.kSpeedAt12VoltsMps,
+        //                                     driveBaseRadius,
+        //                                     new ReplanningConfig()),
+        //     () -> {
+        //             // Boolean supplier that controls when the path will be mirrored for the red alliance
+        //             // This will flip the path being followed to the red side of the field.
+        //             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+        //             var alliance = DriverStation.getAlliance();
+        //             if (alliance.isPresent()) {
+        //                 return alliance.get() == DriverStation.Alliance.Red;
+        //             }
+        //             return false;
+        //         },
+        //     this); // Subsystem for requirements
+
+        
         AutoBuilder.configureHolonomic(
-            ()->this.getState().Pose, // Supplier of current robot pose
+            this::getEstimatedPose, // Supplier of current robot pose
             this::seedFieldRelative,  // Consumer for seeding pose against auto
-            this::getCurrentRobotChassisSpeeds,
+            ()->m_kinematics.toChassisSpeeds(this.m_moduleStates),
             (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
             new HolonomicPathFollowerConfig(new PIDConstants(1, 0, 0),
                                             new PIDConstants(1, 0, 0),
@@ -86,6 +129,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     return false;
                 },
             this); // Subsystem for requirements
+    }
+
+    public void setPose (Pose2d pose) {
+        poseEstimator.resetPosition(m_pigeon2.getRotation2d(), m_modulePositions, pose);
     }
 
     public Command drive(Supplier<SwerveRequest.FieldCentric> requestSupplier, CommandXboxController xboxController) { 
@@ -119,8 +166,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
     }
 
-    public void addVisionMeasurement(Pose2d pose, EstimatedRobotPose estPose){
-        poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp(), Robot.m_robotContainer.m_Vision.filter(estPose)); 
+    public void addBrVisionMeasurement(Pose2d pose, EstimatedRobotPose estPose){
+        if (pose == null)
+            pose = new Pose2d();
+        poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()); 
+        // THEN I SHALL BEGIN AGAIN, WITH MY WORD
+        //                AS LAW
+    }
+
+    public void addBlVisionMeasurement(Pose2d pose, EstimatedRobotPose estPose){
+        if (pose == null)
+            pose = new Pose2d();
+        poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()); 
         // THEN I SHALL BEGIN AGAIN, WITH MY WORD
         //                AS LAW
     }

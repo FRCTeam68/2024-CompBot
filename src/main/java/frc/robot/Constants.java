@@ -12,6 +12,9 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -43,6 +46,14 @@ public final class Constants {
     public static RobotType getRobot() {
     return robotType;
   }
+
+    public static final class Pathfind {
+        public static final double mVelMS = 2
+        ;
+        public static final double mAccMS = 2;
+        public static final double mRVelRS = Math.PI/2;
+        public static final double mRAccRS = Math.PI;
+    }
 
     public static final class LED {
         public static final int PWMPORT = 0;
@@ -136,13 +147,15 @@ public final class Constants {
         public static final Transform3d frontCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(9.5)), new Rotation3d(0, 0, 0)); // TODO: Fix these values
 
         // Back Camera Constants... On back left Motor
-        public static final Transform3d backlCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(-8.25),
+        public static final Transform3d backrCameraLocation = 
+        new Transform3d(new Translation3d(Units.inchesToMeters(-8.25),
          Units.inchesToMeters(-11.2), Units.inchesToMeters(11.85)), 
-         new Rotation3d(0, Units.degreesToRadians(28.125), Units.degreesToRadians(-30))); // TODO: Fix these values
+         new Rotation3d(0, Units.degreesToRadians(28.125), Units.degreesToRadians(210))); // TODO: Fix these values
     
-        public static final Transform3d backrCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(-8.25), 
+        public static final Transform3d backlCameraLocation = 
+        new Transform3d(new Translation3d(Units.inchesToMeters(-8.25), 
         Units.inchesToMeters(11.2), Units.inchesToMeters(11.85)), 
-        new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(210))); // TODO: Fix these values
+        new Rotation3d(0, Units.degreesToRadians(28.125), Units.degreesToRadians(150))); // TODO: Fix these values
 
         // Field Constants...P
         public static final int tallThingFiscal = 8;
@@ -150,36 +163,17 @@ public final class Constants {
 
          /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
         public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
-        public static final double POSE_AMBIGUITY_SHIFTER = 0.2;
-        public static final double POSE_AMBIGUITY_MULTIPLIER = 4;
-        public static final double NOISY_DISTANCE_METERS = 2.5;
-        public static final double DISTANCE_WEIGHT = 7;
-        public static final int TAG_PRESENCE_WEIGHT = 10;
+        public static final double MAX_DISTANCE = 4;
 
         /**
          * Standard deviations of model states. Increase these numbers to trust your
-         * model's state estimates less. This
+         *`` model's state estimates less. This
          * matrix is in the form [x, y, theta]ᵀ, with units in meters and radians, then
          * meters.
          */
 
-         private static final double[] visionSTDData = {1,1,1*Math.PI}; // Dont go less than  1
-        public static final Matrix<N3, N1> VISION_MEASUREMENT_STANDARD_DEVIATIONS = MatBuilder
-            .fill(Nat.N3(),Nat.N1(),
-                visionSTDData
-            );
-
-        /**
-         * Standard deviations of the vision measurements. Increase these numbers to
-         * trust global measurements from vision
-         * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and
-         * radians.
-         */
-        private static final double[] stateSTDData = {0.1,0.1,0.1}; // Dont go less than  1
-        public static final Matrix<N3, N1> STATE_STANDARD_DEVIATIONS = MatBuilder
-            .fill(Nat.N3(),Nat.N1(),
-                stateSTDData
-            );
+         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+        public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
     }
 
     public static final class RED_TAGS {
@@ -188,6 +182,7 @@ public final class Constants {
 
     public static final class BLUE_TAGS {
         public static final int[] stage = {14,15,16};
+        public static final Pose2d goal = new Pose2d(2.01, 6.00, new Rotation2d(Units.degreesToRadians(-178.57)));
     }
 
     public static final class LightsConstants {

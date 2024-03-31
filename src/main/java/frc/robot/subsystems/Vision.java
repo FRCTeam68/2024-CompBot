@@ -1,9 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import javax.xml.crypto.dsig.spec.XPathType.Filter;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -16,6 +15,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -78,6 +78,10 @@ public class Vision {
 
     public PhotonPoseEstimator blPoseEst;
     public PhotonPoseEstimator brPoseEst;
+    public PhotonPipelineResult brResult;
+
+    public PhotonPipelineResult blResult;
+
 
     public EstimatedRobotPose estPose = null;
     public Pose2d pastPose = new Pose2d(0,0,new Rotation2d(0,0));
@@ -105,10 +109,10 @@ public class Vision {
         // fPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.frontCameraLocation);
         
         // Make sure we enable multi-targets on the Camera. 
-        blPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camBl, Constants.Vision.backlCameraLocation);
+        blPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, camBl, Constants.Vision.backlCameraLocation);
         blPoseEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         
-        brPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camBr, Constants.Vision.backrCameraLocation);
+        brPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, camBr, Constants.Vision.backrCameraLocation);
         brPoseEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         // stageTags = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Constants.BLUE_TAGS.stage : Constants.RED_TAGS.stage;
         
@@ -163,6 +167,14 @@ public class Vision {
         }
 
         return 0;
+    }
+
+    public int getBrTagCount() {
+        return brResult.getTargets().size();
+    }
+
+    public int getBlTagCount() {
+        return blResult.getTargets().size();
     }
 
     /**
@@ -255,24 +267,12 @@ public class Vision {
      * Call once every loop?
      */
     public void updateCurrentCam(){
-        resultsInUse = cameraInUse.getLatestResult();
         PhotonPipelineResult backResult = camBl.getLatestResult();
-
-        Optional<EstimatedRobotPose> isEst = blPoseEst.update(backResult);
-
-        if (isEst.isPresent()){
-            if (estPose != null){
-                pastPose = estPose.estimatedPose.toPose2d();
-            } else {
-                pastPose = new Pose2d();
-            }
-            estPose = isEst.get();
-            
-        }
+        brResult = camBr.getLatestResult();
+        blResult = backResult;
     }
 
     public void updatebrCam(){
-        resultsInUse = camBr.getLatestResult();
         PhotonPipelineResult backResult = camBr.getLatestResult();
 
         Optional<EstimatedRobotPose> isEst = brPoseEst.update(backResult);
@@ -289,7 +289,6 @@ public class Vision {
     }
     
     public void updateblCam(){
-        resultsInUse = camBl.getLatestResult();
         PhotonPipelineResult backResult = camBl.getLatestResult();
 
         Optional<EstimatedRobotPose> isEst = blPoseEst.update(backResult);
@@ -352,43 +351,90 @@ public class Vision {
         return (cam == Camera.FRONT ? camBr : camBl); // Getter!
     }
 
-    public Matrix<N3, N1> filter(EstimatedRobotPose est) {
-        return Filtering.confidenceCalculator(est); // LET THE EVIL OF THEIR OWN LIPS CONSUME 
-        //                                                          THEM.
+    public boolean goodResult(PhotonPipelineResult result) {
+        return result.hasTargets() && result.getBestTarget().getPoseAmbiguity() < Constants.Vision.APRILTAG_AMBIGUITY_THRESHOLD
+                && layout.getTagPose(result.getBestTarget().getFiducialId()).get().toPose2d().getTranslation()
+                        .getDistance(Robot.m_robotContainer.m_DriveSubSystem.lastEstimate.getTranslation()) < Constants.Vision.MAX_DISTANCE;
+    }
+
+    public Pose2d getAverageEstimate(PhotonPipelineResult[] results,
+            PhotonPoseEstimator[] photonEstimator) {
+        double x = 0;
+        double y = 0;
+        double rot = 0;
+        int count = 0;
+        ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
+
+        for (int i = 0; i < results.length; i++) {
+            if (results[i] == null)
+                continue;
+            PhotonPipelineResult result = results[i];
+            if (result.hasTargets()) {
+                var est = photonEstimator[i].update();
+                if (est.isPresent() && goodResult(result)) {
+                    x += est.get().estimatedPose.getTranslation().getX();
+                    y += est.get().estimatedPose.getTranslation().getY();
+                    rot += est.get().estimatedPose.getRotation().getAngle();
+                    poses.add(est.get().estimatedPose.toPose2d());
+                    count++;
+                }
+            }
+        }
+        if (count == 0)
+            return new Pose2d();
+        Pose2d[] poseArray = new Pose2d[poses.size()];
+        for (int i = 0; i < poses.size(); i++) {
+            poseArray[i] = poses.get(i);
+        }
+        return new Pose2d(x / count, y / count, new Rotation2d(rot / count));
+    }
+
+    public Matrix<N3, N1> getEstimationStdDevsBl(Pose2d estimatedPose) {
+        var estStdDevs = Constants.Vision.kSingleTagStdDevs;
+        var targets = blResult.getTargets();
+        int numTags = 0;
+        double avgDist = 0;
+        for (var tgt : targets) {
+            var tagPose = blPoseEst.getFieldTags().getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty()) continue;
+            numTags++;
+            avgDist +=
+                    tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+        }
+        if (numTags == 0) return estStdDevs;
+        avgDist /= numTags;
+        // Decrease std devs if multiple targets are visible
+        if (numTags > 1) estStdDevs = Constants.Vision.kMultiTagStdDevs;
+        // Increase std devs based on (average) distance
+        if (numTags == 1 && avgDist > 4)
+            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+
+        return estStdDevs;
+    }
+
+    public Matrix<N3, N1> getEstimationStdDevsBr(Pose2d estimatedPose) {
+        var estStdDevs = Constants.Vision.kSingleTagStdDevs;
+        var targets = brResult.getTargets();
+        int numTags = 0;
+        double avgDist = 0;
+        for (var tgt : targets) {
+            var tagPose = brPoseEst.getFieldTags().getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty()) continue;
+            numTags++;
+            avgDist +=
+                    tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+        }
+        if (numTags == 0) return estStdDevs;
+        avgDist /= numTags;
+        // Decrease std devs if multiple targets are visible
+        if (numTags > 1) estStdDevs = Constants.Vision.kMultiTagStdDevs;
+        // Increase std devs based on (average) distance
+        if (numTags == 1 && avgDist > 4)
+            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+
+        return estStdDevs;
     }
 }
 
-// FLESH AND BONES YEARN TO BE SHOWN
-class Filtering {
-    // ROBOTKIND IS A FAILURE
-
-    public static Matrix<N3, N1> confidenceCalculator(EstimatedRobotPose estimation) {
-        double smallestDistance = Double.POSITIVE_INFINITY;
-        for (var target : estimation.targetsUsed) {
-        var t3d = target.getBestCameraToTarget();
-        var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
-        if (distance < smallestDistance)
-            smallestDistance = distance;
-        }
-        double poseAmbiguityFactor = estimation.targetsUsed.size() != 1
-            ? 1
-            : Math.max(
-                1,
-                (estimation.targetsUsed.get(0).getPoseAmbiguity()
-                    + Constants.Vision.POSE_AMBIGUITY_SHIFTER)
-                    * Constants.Vision.POSE_AMBIGUITY_MULTIPLIER);
-        double confidenceMultiplier = Math.max(
-            1,
-            (Math.max(
-                1,
-                Math.max(0, smallestDistance - Constants.Vision.NOISY_DISTANCE_METERS)
-                    * Constants.Vision.DISTANCE_WEIGHT)
-                * poseAmbiguityFactor)
-                / (1
-                    + ((estimation.targetsUsed.size() - 1) * Constants.Vision.TAG_PRESENCE_WEIGHT)));
-
-        return Constants.Vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier); // FREE WILL IS A FLAW
-  }
-
-
-}   

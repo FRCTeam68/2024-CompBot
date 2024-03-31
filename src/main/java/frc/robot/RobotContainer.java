@@ -33,6 +33,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ClimberSubSystem;
 import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.NoteSubSystem;
+import frc.robot.subsystems.Pathfind;
 import frc.robot.subsystems.NoteSubSystem.ActionRequest;
 import frc.robot.subsystems.NoteSubSystem.Target;
 import frc.robot.subsystems.Vision;
@@ -146,6 +147,7 @@ public class RobotContainer {
     System.out.println("note sensor switch: " + m_noteSensor2.get());
     System.out.println("low limit switch: " + m_angleZeroLimitSwitch.get());
     SmartDashboard.putData(field);
+    
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -185,10 +187,12 @@ public class RobotContainer {
 
     m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
-    m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
+    // m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
     //m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
     //for trial
-    m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
+    // m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
+
+    m_xboxController.x().whileTrue(Pathfind.goToPose(m_DriveSubSystem.getEstimatedPose(),Constants.BLUE_TAGS.goal));
 
     m_xboxController.leftTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
     m_xboxController.rightTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));

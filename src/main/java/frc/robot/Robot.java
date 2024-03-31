@@ -14,10 +14,9 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
+import org.photonvision.PhotonPoseEstimator;
 
 import com.ctre.phoenix6.SignalLogger;
-
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -56,7 +55,7 @@ public class Robot extends LoggedRobot {
 
     SignalLogger.setPath("//media/sda1/");
     SignalLogger.start();
-    
+
     // Start AdvantageKit logger
     Logger.start();
 
@@ -83,9 +82,7 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_robotContainer.m_Vision.setUsedCamera(Camera.FRONT);
-    m_robotContainer.m_Vision.updateCurrentCam();
-    if (UseLimelight) {    
+    if (UseLimelight) {
       var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
 
       Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
@@ -93,13 +90,29 @@ public class Robot extends LoggedRobot {
       if (lastResult.valid) {
         m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
-    }    
-  m_robotContainer.m_Vision.updatebrCam();
-  m_robotContainer.m_DriveSubSystem.updatePoseEstimator();
-  m_robotContainer.m_DriveSubSystem.addVisionMeasurement(m_robotContainer.m_Vision.estimatePoseBack(), 
-                  m_robotContainer.m_Vision.estimatedRobotPose()); // TESTAMENT I / SOMETHING WICKED / PRELUDE *0-2: THE MEATGRINDER*
-  m_robotContainer.field.setRobotPose(m_robotContainer.m_DriveSubSystem.getEstimatedPose());
-      }
+    }
+    m_robotContainer.m_DriveSubSystem.lastEstimate = m_robotContainer.m_DriveSubSystem.getEstimatedPose();
+    m_robotContainer.m_Vision.updateCurrentCam();
+    m_robotContainer.m_DriveSubSystem.updatePoseEstimator();
+    
+    if (m_robotContainer.m_Vision.getBlTagCount() > 0 || m_robotContainer.m_Vision.getBrTagCount() > 0) {
+
+        
+        m_robotContainer.m_Vision.updatebrCam();
+        m_robotContainer.m_DriveSubSystem.addBrVisionMeasurement(m_robotContainer.m_Vision.estimatePoseBack(),
+            m_robotContainer.m_Vision.estimatedRobotPose()); // TESTAMENT I / SOMETHING WICKED / PRELUDE *0-2: THE
+                                                             // MEATGRINDER*
+
+        m_robotContainer.m_Vision.updateblCam();
+        m_robotContainer.m_DriveSubSystem.addBlVisionMeasurement(m_robotContainer.m_Vision.estimatePoseBack(),
+            m_robotContainer.m_Vision.estimatedRobotPose()); // *0-4: CLARE DE LUNE*
+
+      
+    }
+    
+    m_robotContainer.field.setRobotPose(m_robotContainer.m_DriveSubSystem.getEstimatedPose());
+
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
@@ -110,9 +123,13 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  /**
+   * This autonomous runs the autonomous command selected by your
+   * {@link RobotContainer} class.
+   */
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -125,7 +142,8 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+  }
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -134,7 +152,6 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -142,7 +159,8 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
@@ -153,13 +171,16 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }
