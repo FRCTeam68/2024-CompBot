@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4,
-      "y": 5.52811290895741
+      "x": 0.7531929553170285,
+      "y": 4.406890714018958
     },
-    "rotation": 0
+    "rotation": -59.03624346792648
   },
   "command": {
     "type": "sequential",
@@ -36,21 +36,9 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "Center;Center source"
+            "pathName": "Speaker-M4"
           }
         },
         {
@@ -60,9 +48,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "target_speaker_1m"
+            "pathName": "bM4-shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
@@ -80,49 +74,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center-Middle3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle3-ShootSpeaker"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Speaker-M4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "M4-shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
+            "pathName": "M4 Shoot - M3"
           }
         }
       ]
