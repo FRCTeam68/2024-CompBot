@@ -399,7 +399,8 @@ public class NoteSubSystem extends SubsystemBase {
             else if(m_presentState == State.SHOOTING){
                 //backside of note coming through
                 Logger.recordOutput("Note/Comment",  "note shot");
-                m_Feeder2.setSpeed(0);
+                //not stopping FD2 because false triggers.  let it run
+                // m_Feeder2.setSpeed(0);
                 m_shootStopTime.stop();
                 m_shootStopTime.reset();
                 setHaveNote1(false);
@@ -441,7 +442,8 @@ public class NoteSubSystem extends SubsystemBase {
                     m_shootStopTime.reset();
                     Logger.recordOutput("Note/Comment",  "shoot timer elapsed");
                     // if (m_haveNote1){
-                        m_Feeder2.setSpeed(0);  
+                        //not stopping FD2 because false triggers.  let it run
+                        // m_Feeder2.setSpeed(0);  
                         setHaveNote1(false);
                         LEDSegment.side1.setColor(LightsSubsystem.orange);
                         setState(State.IDLE);
