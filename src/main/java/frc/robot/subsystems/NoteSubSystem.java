@@ -131,9 +131,9 @@ public class NoteSubSystem extends SubsystemBase {
         // In all modes except semi-period mode, the counter can be configured to increment either once per edge (2X decoding),
         //  or once per pulse (1X decoding). By default, counters are set to two-pulse mode, 
         //  though if only one channel is specified the counter will only count up.
-        Beam3 = new Counter(Counter.Mode.kTwoPulse);
-        Beam3.setUpSource(1);
-        Beam3.setUpSourceEdge(true, false);
+        // Beam3 = new Counter(Counter.Mode.kTwoPulse);
+        // Beam3.setUpSource(1);
+        // Beam3.setUpSourceEdge(true, false);
 
         //3/18 - 5:50pm - true, true - not tripping.  no beam count up
         //       5:53pm - true, false - nothing!!
@@ -153,22 +153,23 @@ public class NoteSubSystem extends SubsystemBase {
         
         //-------------------------------------------------------------------------
         // try6
-        // Initializes an AnalogInput on port 1 and enables 2-bit averaging
+        // Initializes an AnalogInput on port 1 and enables 4-bit averaging (32 samples averaged)
         // Using analog might have advantage that it can filter high frequency noise with averaging
 
-        // AnalogInput input = new AnalogInput(1);
-        // input.setAverageBits(2);
+        AnalogInput input = new AnalogInput(0);
+        input.setAverageBits(4);
 
         // // Initializes an AnalogTrigger using the above input
-        // AnalogTrigger noteTriggerAnalog = new AnalogTrigger(input);
+        AnalogTrigger noteTriggerAnalog = new AnalogTrigger(input);
 
         // // Sets the trigger to enable at a voltage of 4 volts, and disable at a value of 1.5 volts
-        // noteTriggerAnalog.setLimitsVoltage(1.5, 4);
+        noteTriggerAnalog.setLimitsVoltage(1.5, 4);
 
-        // Beam3 = new Counter(noteTriggerAnalog);
+        Beam3 = new Counter(noteTriggerAnalog);
         // // above already sets calls setUpSource counter
 
-        // Beam3.setUpSourceEdge(true, true);
+        // Apr 4th, states, testing inverted logic level shifter
+        Beam3.setUpSourceEdge(false, true);
 
         //try6.1, could try just counting rising edge.  but then period is time since last rising ???
 
@@ -369,20 +370,27 @@ public class NoteSubSystem extends SubsystemBase {
 
         boolean isAtAngle = false;
         boolean beam3Tripped = false;
-        double beam3Period = 0;
+        // double beam3Period = 0;
 
         double beam3count = Beam3.get();
-        if (beam3count < 0){
-            //should not be counting down
-            m_beam_count_total -= 1;
-            Beam3.reset();
-        }
-        else if (beam3count > 0){
+        m_beam_count_total += beam3count;
+        if (beam3count>0){
+            // expect rising edge and falling edge of pulse to be counted
+            // Also, can only measure period if count is 2 or more
+            // Period is measured from last 2 edges
+            // beam3Period = (beam3count>=2) ? Beam3.getPeriod() : -1;
             beam3Tripped = true;
-            beam3Period = Beam3.getPeriod();
             Beam3.reset();
-            m_beam_count_total += 1;
+            // latch to smartboard the last period measurement.
+            // need to this to test if two-edge method is generally working
+            // AdvantageKit will store for every beam trip and can be used for statistics 
+            // if period measured is consistant.
+            SmartDashboard.putNumber("beam3 last count", beam3count);
+            // SmartDashboard.putNumber("beam3 last period", beam3Period);
+        }
+           
             
+        if (beam3Tripped){
             if (m_presentState == State.INTAKING_NOTE1){
                 //front side of note coming through
                 Logger.recordOutput("Note/Comment",  "stop intake");
@@ -423,7 +431,7 @@ public class NoteSubSystem extends SubsystemBase {
         }
         Logger.recordOutput("Note/beam3count", beam3count);
         Logger.recordOutput("Note/beam3tripped", beam3Tripped);
-        Logger.recordOutput("Note/beam3period", beam3Period);
+        // Logger.recordOutput("Note/beam3period", beam3Period);
         Logger.recordOutput("Note/beam3countTotal", m_beam_count_total);
         // SmartDashboard.putNumber("beam3 count", beam3count);
         SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
