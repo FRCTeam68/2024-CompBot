@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.2040230285711169,
-        "y": 4.617838352621813
+        "x": 1.87,
+        "y": 3.52
       },
       "prevControl": {
-        "x": 1.4579427402569678,
-        "y": 4.064556229297399
+        "x": 2.123919711685851,
+        "y": 2.966717876675586
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,7 +49,7 @@
   "eventMarkers": [
     {
       "name": "Target",
-      "waypointRelativePos": 0.3,
+      "waypointRelativePos": 0.4,
       "command": {
         "type": "sequential",
         "data": {
@@ -57,7 +57,7 @@
             {
               "type": "named",
               "data": {
-                "name": "target_speaker"
+                "name": "target_speaker_podium_source"
               }
             }
           ]
@@ -73,7 +73,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.98497432596671,
+    "rotation": -47.66451021069476,
     "rotateFast": false
   },
   "reversed": false,

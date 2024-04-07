@@ -68,13 +68,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "M4-Speaker"
+            "pathName": "M4-ShootM"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
           }
         },
         {
@@ -93,6 +105,12 @@
           "type": "wait",
           "data": {
             "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "target_speaker_podium"
           }
         },
         {

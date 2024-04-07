@@ -55,7 +55,7 @@ public class Robot extends LoggedRobot {
     // Logger.disableDeterministicTimestamps()
 
     SignalLogger.setPath("//media/sda1/");
-    SignalLogger.start();
+    // SignalLogger.start();
     
     // Start AdvantageKit logger
     Logger.start();

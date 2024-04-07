@@ -32,7 +32,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.4
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.2
           }
         },
         {
@@ -56,19 +56,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
           }
         },
         {
           "type": "named",
           "data": {
             "name": "target_speaker_podium"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.2
           }
         },
         {
@@ -92,7 +86,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle1-Speaker"
+            "pathName": "Middle1-Shoot"
           }
         },
         {

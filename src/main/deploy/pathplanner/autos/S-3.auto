@@ -32,6 +32,18 @@
         {
           "type": "wait",
           "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
             "waitTime": 0.2
           }
         },
@@ -50,7 +62,7 @@
         {
           "type": "named",
           "data": {
-            "name": "target_speaker_podium_source"
+            "name": "target_speaker_podium"
           }
         },
         {
