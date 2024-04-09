@@ -9,7 +9,6 @@ package frc.robot;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
@@ -141,10 +140,11 @@ public final class Constants {
     }
 
     public static final class Vision {
+        public static final AprilTagFieldLayout aprillayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
         public static final String camBlName = "Arducam_OV9281_USB_Camerabl"; //TODO: change names!
         public static final String camBrName = "Arducam_OV9281_USB_Camerabr";
 
-        public static final AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo); // Not needed to be used unless custom
+        public static final String aprilTagLayoutPath = ""; // Not needed to be used unless custom
 
         // Front camera constants... Faces past intake
         public static final Transform3d frontCameraLocation = new Transform3d(new Translation3d(Units.inchesToMeters(9.5), 0, Units.inchesToMeters(9.5)), new Rotation3d(0, 0, 0)); // TODO: Fix these values

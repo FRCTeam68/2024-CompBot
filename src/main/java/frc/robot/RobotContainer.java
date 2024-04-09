@@ -192,7 +192,7 @@ public class RobotContainer {
     //for trial
     // m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
-    m_xboxController.x().whileTrue(Pathfind.goToPose(m_DriveSubSystem.getEstimatedPose(),Constants.BLUE_TAGS.goal));
+    m_xboxController.x().whileTrue(m_DriveSubSystem.angleDrive(8, () -> -m_xboxController.getLeftY() * MaxSpeed, () -> -m_xboxController.getLeftX() * MaxSpeed));
 
     m_xboxController.leftTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
     m_xboxController.rightTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
