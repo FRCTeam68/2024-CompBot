@@ -80,19 +80,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BCenter - Source Note"
+            "pathName": "c-M1"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "target_speaker_podium"
+            "pathName": "M1-Shoot"
           }
         },
         {
@@ -110,7 +104,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source Note - Middle 3"
+            "pathName": "Shoot-M2"
           }
         }
       ]

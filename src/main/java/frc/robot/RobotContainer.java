@@ -108,7 +108,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("shoot", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));
 
     NamedCommands.registerCommand("target_intake", Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.INTAKE)));
-    NamedCommands.registerCommand("intake", new IntakeNoteCmd(m_NoteSubSystem));
+    NamedCommands.registerCommand("intake", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
 
     NamedCommands.registerCommand("target_speaker_1m", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_1M, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
     NamedCommands.registerCommand("target_speaker_podium", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
@@ -120,7 +120,7 @@ public class RobotContainer {
 
     configureBindings();
 
-    setupPidTuningCommandShuffleboard();
+    // setupPidTuningCommandShuffleboard();
 
     
     
@@ -187,12 +187,15 @@ public class RobotContainer {
 
     m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
-    // m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
     //m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
     //for trial
     // m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
     m_xboxController.x().whileTrue(m_DriveSubSystem.angleDrive(8, () -> -m_xboxController.getLeftY() * MaxSpeed, () -> -m_xboxController.getLeftX() * MaxSpeed));
+    // m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
+    m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    //for trial
+    // m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
     m_xboxController.leftTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE)));
     m_xboxController.rightTrigger().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT)));

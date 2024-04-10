@@ -105,6 +105,8 @@ public class ShooterSubSystem extends SubsystemBase {
         configs.TorqueCurrent.PeakForwardTorqueCurrent = 60;
         configs.TorqueCurrent.PeakReverseTorqueCurrent = -60;
 
+        configs.CurrentLimits.StatorCurrentLimit = 80;
+
         configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         // configs.withCurrentLimits(Constants.limit80);
 

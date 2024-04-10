@@ -110,6 +110,7 @@ public class AngleSubSystem extends SubsystemBase {
 
         cfg.CurrentLimits.SupplyCurrentLimitEnable = true;
         cfg.CurrentLimits.SupplyCurrentLimit = 30.0;
+        cfg.CurrentLimits.StatorCurrentLimit = 60;
 
         StatusCode status = StatusCode.StatusCodeNotInitialized;
         for(int i = 0; i < 5; ++i) {
@@ -134,6 +135,7 @@ public class AngleSubSystem extends SubsystemBase {
 
         cfgRight.CurrentLimits.SupplyCurrentLimitEnable = true;
         cfgRight.CurrentLimits.SupplyCurrentLimit = 30.0;
+        cfgRight.CurrentLimits.StatorCurrentLimit = 60;
 
         status = StatusCode.StatusCodeNotInitialized;
         for(int i = 0; i < 5; ++i) {
@@ -227,6 +229,10 @@ public class AngleSubSystem extends SubsystemBase {
         boolean conditionMet =  Math.abs(m_setPoint_Position-m_filteredPosition) < 1.0;
         //conditionMet = true;  //for simulation since position always comes back 0
         return conditionMet;
+    }
+
+    public double getAngleF(){
+        return m_filteredPosition;
     }
 
 

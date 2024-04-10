@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 0.7531929553170285,
-      "y": 6.737082927847566
+      "y": 4.406890714018958
     },
-    "rotation": 59.03624346792651
+    "rotation": -59.03624346792648
   },
   "command": {
     "type": "sequential",
@@ -38,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp -  Amp Note"
+            "pathName": "Speaker-M4"
           }
         },
         {
@@ -48,9 +48,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "target_speaker_podium"
+            "pathName": "bM4-shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
@@ -68,19 +74,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Note -  Center"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "target_speaker_1m"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
+            "pathName": "M4 Shoot - M3"
           }
         }
       ]

@@ -32,7 +32,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.4
           }
         },
         {
@@ -56,19 +56,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.15
           }
         },
         {
           "type": "named",
           "data": {
             "name": "target_speaker_1m"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
           }
         },
         {
@@ -80,25 +74,49 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.2
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center-Middle3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle3-ShootSpeaker"
+            "pathName": "BCenter - Source Note"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "target_speaker_podium"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Note - Middle 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle3 - Shoot"
           }
         },
         {

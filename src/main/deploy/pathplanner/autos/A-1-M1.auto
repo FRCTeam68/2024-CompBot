@@ -32,6 +32,18 @@
         {
           "type": "wait",
           "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
             "waitTime": 0.2
           }
         },
@@ -44,13 +56,43 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
           }
         },
         {
           "type": "named",
           "data": {
             "name": "target_speaker_podium"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "AmpNote-Middle1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle1-Shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {

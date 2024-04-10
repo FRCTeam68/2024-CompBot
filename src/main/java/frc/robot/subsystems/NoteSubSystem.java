@@ -131,9 +131,9 @@ public class NoteSubSystem extends SubsystemBase {
         // In all modes except semi-period mode, the counter can be configured to increment either once per edge (2X decoding),
         //  or once per pulse (1X decoding). By default, counters are set to two-pulse mode, 
         //  though if only one channel is specified the counter will only count up.
-        Beam3 = new Counter(Counter.Mode.kTwoPulse);
-        Beam3.setUpSource(1);
-        Beam3.setUpSourceEdge(true, false);
+        // Beam3 = new Counter(Counter.Mode.kTwoPulse);
+        // Beam3.setUpSource(1);
+        // Beam3.setUpSourceEdge(true, false);
 
         //3/18 - 5:50pm - true, true - not tripping.  no beam count up
         //       5:53pm - true, false - nothing!!
@@ -153,22 +153,23 @@ public class NoteSubSystem extends SubsystemBase {
         
         //-------------------------------------------------------------------------
         // try6
-        // Initializes an AnalogInput on port 1 and enables 2-bit averaging
+        // Initializes an AnalogInput on port 1 and enables 4-bit averaging (32 samples averaged)
         // Using analog might have advantage that it can filter high frequency noise with averaging
 
-        // AnalogInput input = new AnalogInput(1);
-        // input.setAverageBits(2);
+        AnalogInput input = new AnalogInput(0);
+        input.setAverageBits(4);
 
         // // Initializes an AnalogTrigger using the above input
-        // AnalogTrigger noteTriggerAnalog = new AnalogTrigger(input);
+        AnalogTrigger noteTriggerAnalog = new AnalogTrigger(input);
 
         // // Sets the trigger to enable at a voltage of 4 volts, and disable at a value of 1.5 volts
-        // noteTriggerAnalog.setLimitsVoltage(1.5, 4);
+        noteTriggerAnalog.setLimitsVoltage(1.5, 4);
 
-        // Beam3 = new Counter(noteTriggerAnalog);
+        Beam3 = new Counter(noteTriggerAnalog);
         // // above already sets calls setUpSource counter
 
-        // Beam3.setUpSourceEdge(true, true);
+        // Apr 4th, states, testing inverted logic level shifter
+        Beam3.setUpSourceEdge(false, true);
 
         //try6.1, could try just counting rising edge.  but then period is time since last rising ???
 
@@ -351,6 +352,8 @@ public class NoteSubSystem extends SubsystemBase {
         m_shooter_setpoint = desiredSpeed;
         spinUp();
         LEDSegment.side1target.setColor(LightsSubsystem.white);
+        Logger.recordOutput("Note/TargtCustom",  desiredPosition);
+        Logger.recordOutput("Note/Target",  m_target);
     }
 
     public void setAction(ActionRequest wantedAction) {
@@ -367,24 +370,27 @@ public class NoteSubSystem extends SubsystemBase {
 
         boolean isAtAngle = false;
         boolean beam3Tripped = false;
-        double beam3Period = 0;
+        // double beam3Period = 0;
 
         double beam3count = Beam3.get();
-        if (beam3count < 0){
-            //should not be counting down
-            m_beam_count_total -= 1;
-            Beam3.reset();
-        }
-        else if (beam3count > 0){
+        m_beam_count_total += beam3count;
+        if (beam3count>0){
+            // expect rising edge and falling edge of pulse to be counted
+            // Also, can only measure period if count is 2 or more
+            // Period is measured from last 2 edges
+            // beam3Period = (beam3count>=2) ? Beam3.getPeriod() : -1;
             beam3Tripped = true;
-            beam3Period = Beam3.getPeriod();
             Beam3.reset();
-            m_beam_count_total += 1;
-            Logger.recordOutput("Note/beam3count", beam3count);
-            Logger.recordOutput("Note/beam3tripped", beam3Tripped);
-            Logger.recordOutput("Note/beam3period", beam3Period);
-            Logger.recordOutput("Note/beam3countTotal", m_beam_count_total);
+            // latch to smartboard the last period measurement.
+            // need to this to test if two-edge method is generally working
+            // AdvantageKit will store for every beam trip and can be used for statistics 
+            // if period measured is consistant.
+            SmartDashboard.putNumber("beam3 last count", beam3count);
+            // SmartDashboard.putNumber("beam3 last period", beam3Period);
+        }
+           
             
+        if (beam3Tripped){
             if (m_presentState == State.INTAKING_NOTE1){
                 //front side of note coming through
                 Logger.recordOutput("Note/Comment",  "stop intake");
@@ -401,7 +407,8 @@ public class NoteSubSystem extends SubsystemBase {
             else if(m_presentState == State.SHOOTING){
                 //backside of note coming through
                 Logger.recordOutput("Note/Comment",  "note shot");
-                m_Feeder2.setSpeed(0);
+                //not stopping FD2 because false triggers.  let it run
+                // m_Feeder2.setSpeed(0);
                 m_shootStopTime.stop();
                 m_shootStopTime.reset();
                 setHaveNote1(false);
@@ -422,9 +429,13 @@ public class NoteSubSystem extends SubsystemBase {
             }
                 
         }
-        SmartDashboard.putNumber("beam3 count", beam3count);
+        Logger.recordOutput("Note/beam3count", beam3count);
+        Logger.recordOutput("Note/beam3tripped", beam3Tripped);
+        // Logger.recordOutput("Note/beam3period", beam3Period);
+        Logger.recordOutput("Note/beam3countTotal", m_beam_count_total);
+        // SmartDashboard.putNumber("beam3 count", beam3count);
         SmartDashboard.putBoolean("beam3 tripped", beam3Tripped);
-        SmartDashboard.putNumber("beam3 period", beam3Period);
+        // SmartDashboard.putNumber("beam3 period", beam3Period);
         SmartDashboard.putNumber("beam3 count total", m_beam_count_total);
         
 
@@ -438,12 +449,13 @@ public class NoteSubSystem extends SubsystemBase {
                     m_shootStopTime.stop();
                     m_shootStopTime.reset();
                     Logger.recordOutput("Note/Comment",  "shoot timer elapsed");
-                    if (m_haveNote1){
-                        m_Feeder2.setSpeed(0);  
+                    // if (m_haveNote1){
+                        //not stopping FD2 because false triggers.  let it run
+                        // m_Feeder2.setSpeed(0);  
                         setHaveNote1(false);
                         LEDSegment.side1.setColor(LightsSubsystem.orange);
                         setState(State.IDLE);
-                    }
+                    // }
                 }
                 break;
             case STOP:
@@ -484,8 +496,13 @@ public class NoteSubSystem extends SubsystemBase {
                     setTarget(Target.INTAKE);
                 }
                 if (!m_haveNote1){
-                    if (m_Angle.atAngle()){
-                        Logger.recordOutput("Note/Comment",  "start intake");
+                    double anglenow = m_Angle.getAngleF();
+                    //looking for intake angle to be close to start rollers.
+                    //we don't want too far off or note can get stuck.
+                    //this is hardcode range around 17!
+                    //there is more tolerance to be off when lower than when higher
+                    if ((anglenow>10)&&(anglenow<20)){
+                        Logger.recordOutput("Note/Comment",  "start intake:"+anglenow);
                         m_Intake.setSpeed(m_intake_setpoint);
                         m_Feeder1.setSpeed(m_feeder1_setpoint);
                         m_Feeder2.setSpeed(m_feeder2_setpoint);
@@ -494,13 +511,7 @@ public class NoteSubSystem extends SubsystemBase {
                         setAction(ActionRequest.IDLE);
                      }
                 }
-                // 3/13/2024  not going to shoot from intake position now
-                // else{
-                //     Logger.recordOutput("Note/Comment",  "no intake, have note");
-                //     spinUp();
-                //     //we have a note.  do not intake
-                //     setAction(ActionRequest.IDLE);
-                // }
+
                 break;
             case SPIT_NOTE2:
                 if (m_actionChanged){
@@ -555,9 +566,10 @@ public class NoteSubSystem extends SubsystemBase {
                 break;
         }
 
+        //further LED states ...
         isAtAngle = m_Angle.atAngle();
 
-
+        String readyToShootMsg = "no";
         if (m_haveNote1){
             if (m_target!=Target.INTAKE){
                 if ((isAtAngle)&&
@@ -567,14 +579,19 @@ public class NoteSubSystem extends SubsystemBase {
                     //  if at intake angle, you can shoot, but will not turn it green
                     //  the green is to indicate you have changed from intake (blue) to another angle
                     LEDSegment.side1.setColor(LightsSubsystem.green);
+                    readyToShootMsg = "green";
                 }
                 else {
                     //waiting for conditions to be ready to shoot
                     //note in manual mode, driver still has to drive to field position for selected target and point correcting direction
                     LEDSegment.side1.setBandAnimation(LightsSubsystem.green,.5);
+                    readyToShootMsg = "waiting A or S";
                 }
             }
+             //else condition is at intake target, with note;  stay with all blue set by beam break
+             //                                              or pass note sets Fade blue
         }
+        Logger.recordOutput("Note/ReadyToShoot", readyToShootMsg);
 
         SmartDashboard.putBoolean("AtAngle AMP", (m_target == Target.AMP)&&(isAtAngle));
         SmartDashboard.putBoolean("AtAngle TRAP", (m_target == Target.TRAP)&&(isAtAngle));

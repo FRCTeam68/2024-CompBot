@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 4.243606396951512,
-        "y": 5.537862667174266
+        "x": 2.7633315409828914,
+        "y": 5.525790144659046
       },
       "prevControl": {
-        "x": 4.389852770204353,
-        "y": 6.239845258787905
+        "x": 2.909577914235732,
+        "y": 6.227772736272685
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,9 +30,27 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.1,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "target_speaker_1m"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
@@ -48,5 +66,5 @@
     "rotation": 8.840050581102249,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

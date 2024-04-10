@@ -123,8 +123,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             this::seedFieldRelative,  // Consumer for seeding pose against auto
             ()->m_kinematics.toChassisSpeeds(this.m_moduleStates),
             (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
-            new HolonomicPathFollowerConfig(new PIDConstants(1, 0, 0),
-                                            new PIDConstants(1, 0, 0),
+            new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
+                                            new PIDConstants(5, 0, 0),
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
                                             new ReplanningConfig()),
@@ -159,13 +159,23 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new PathPlannerAuto(pathName);
     }
 
-    public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {         
-        // poseEstimator.update(this.m_pigeon2.getRotation2d(), m_modulePositions);
-        // vision.updateblCam();
-        // poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), this.m_lastSimTime);
-        // vision.updatebrCam();
-        // poseEstimator.addVisionMeasurement(vision.estimatePoseBack(), Timer.getFPGATimestamp());
-
+    public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
+     
+        /*
+        if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
+        {
+           
+            PhotonTrackedTarget wantedTarget = vision.getFiscalIDTarget(15, vision.getCurrentTargets());
+            if (wantedTarget != null) {
+                System.out.println("Robot Angle: " + vision.getYawToTarget(wantedTarget));
+                double angleSpeed = Math.toRadians(vision.aimWithYawAtTarget(wantedTarget))*0.1;
+                double ForwardSpeed = vision.driveDistFromTarget(wantedTarget, Constants.Vision.tallThingHeight, 0, 4);
+                System.out.println("Started Visioning AngleSpeed %s | Forward Speed %s | Aiming at %s".formatted(angleSpeed, ForwardSpeed, wantedTarget.getFiducialId()));
+                
+                this.setControl(Robot.m_robotContainer.drive.withRotationalRate(1));
+                return;
+            }
+                */
         // Seems to drive fine enough.
         ChassisSpeeds speeds = ChassisSpeeds.discretize(request.VelocityX, request.VelocityY, request.RotationalRate, 0.02);
 

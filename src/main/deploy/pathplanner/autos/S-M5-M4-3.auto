@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 0.7531929553170285,
-      "y": 6.737082927847566
+      "y": 4.397140955802102
     },
-    "rotation": 59.03624346792651
+    "rotation": -61.78264414527071
   },
   "command": {
     "type": "sequential",
@@ -32,145 +32,85 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.2
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp -  Amp Note"
+            "pathName": "Source - M5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle Note 5 - ShootM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootA - Middle 4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M4-ShootM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source - Source Note"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
           }
         },
         {
           "type": "named",
           "data": {
             "name": "target_speaker_podium"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp Note -  Center"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.7
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "target_speaker_1m"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.2
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center - Source Note"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "target_speaker_podium_source"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.8
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source Note - Middle 3"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.3
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle C - Shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "target_speaker_1m"
           }
         },
         {

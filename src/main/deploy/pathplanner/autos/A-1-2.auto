@@ -32,6 +32,18 @@
         {
           "type": "wait",
           "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
             "waitTime": 0.2
           }
         },
@@ -44,7 +56,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.1
           }
         },
         {
@@ -72,69 +84,15 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "target_speaker_1m"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center - Source Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "target_speaker_podium"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source Note - Middle 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle 1 - Shoot Spot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot Spot - Middle 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle 2 - Shoot Spot"
           }
         },
         {

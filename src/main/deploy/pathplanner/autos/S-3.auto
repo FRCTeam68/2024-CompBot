@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4,
-      "y": 5.52811290895741
+      "x": 0.7336934388833163,
+      "y": 4.348392164717821
     },
-    "rotation": 0
+    "rotation": -59.03624346792651
   },
   "command": {
     "type": "sequential",
@@ -14,25 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "wait2s"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center;Center source"
+            "name": "shoot_spinup"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 5.0
+            "waitTime": 0.5
           }
         },
         {
@@ -42,9 +30,39 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Center Source - Amp Source"
+            "pathName": "Source - Source Note"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "target_speaker_podium"
           }
         },
         {

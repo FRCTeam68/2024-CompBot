@@ -53,9 +53,7 @@ public class Robot extends LoggedRobot {
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
-    SignalLogger.setPath("//media/sda1/");
-    SignalLogger.start();
-
+    SignalLogger.setPath("//media/sda1/");    
     // Start AdvantageKit logger
     Logger.start();
 
@@ -84,7 +82,9 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    if (UseLimelight) {
+    m_robotContainer.m_Vision.setUsedCamera(Camera.FRONT);
+    m_robotContainer.m_Vision.updateCurrentCam();
+    if (UseLimelight) {    
       var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
 
       Pose2d llPose = lastResult.getBotPose2d_wpiBlue();

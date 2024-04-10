@@ -32,6 +32,18 @@
         {
           "type": "wait",
           "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
             "waitTime": 0.2
           }
         },
@@ -50,7 +62,31 @@
         {
           "type": "named",
           "data": {
-            "name": "target_speaker_podium_source"
+            "name": "target_speaker_podium"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3-M5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M5-Speaker"
           }
         },
         {
