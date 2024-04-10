@@ -51,7 +51,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     SwerveDrivePoseEstimator poseEstimator;
     public Pose2d lastEstimate = new Pose2d();
 
-    HolonomicDriveController trajCont  = new HolonomicDriveController(new PIDController(1,0,0), new PIDController(10, 0, 0), new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(Math.PI*2, Math.PI)));
+    HolonomicDriveController trajCont  = new HolonomicDriveController(new PIDController(1,0,0), 
+        new PIDController(10, 0, 0), new ProfiledPIDController(2.5, 0, 0, new TrapezoidProfile.Constraints(Math.PI*2, Math.PI)));
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds()
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage).withSteerRequestType(SteerRequestType.MotionMagic);
@@ -189,7 +190,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void angle(int tagID, double xSpeed, double ySpeed) {
         Optional<Pose3d> tagPose  = Constants.Vision.aprillayout.getTagPose(tagID);
-        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 0);
+        ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, 0);
 
         if (tagPose.isPresent()){
             Pose2d tag = tagPose.get().toPose2d();
@@ -197,9 +198,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             double dx = tag.getX()-robotPose.getX();
             double dy = tag.getY()-robotPose.getY();
             double hyp = Math.hypot(dx, dy);
-            double  theta = -(Math.asin(dx/hyp)+ (Math.PI/2));
+            double ySign = (Math.abs(dy)/dy)-1;
+            double  theta = -(Math.asin(dx/hyp) + (ySign*Math.PI/8) + (Math.PI/2));
             Pose2d referencePose = new Pose2d(getEstimatedPose().getTranslation(), new Rotation2d(theta));
             speeds.omegaRadiansPerSecond = trajCont.calculate(getEstimatedPose(), referencePose, 0, new Rotation2d(theta)).omegaRadiansPerSecond;
+            if (Math.abs(speeds.omegaRadiansPerSecond) < 0.1) {
+                speeds.omegaRadiansPerSecond = 0;
+            }
             System.out.println("Deg: "+ theta*180/Math.PI + " | OMEGA: " + speeds.omegaRadiansPerSecond);
             this.setControl(this.autoRequest.withSpeeds(speeds));
             return;

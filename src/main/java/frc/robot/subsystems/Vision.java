@@ -109,10 +109,10 @@ public class Vision {
         // fPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, Constants.Vision.frontCameraLocation);
         
         // Make sure we enable multi-targets on the Camera. 
-        blPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, camBl, Constants.Vision.backlCameraLocation);
+        blPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camBl, Constants.Vision.backlCameraLocation);
         blPoseEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         
-        brPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.LOWEST_AMBIGUITY, camBr, Constants.Vision.backrCameraLocation);
+        brPoseEst = new PhotonPoseEstimator(layout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camBr, Constants.Vision.backrCameraLocation);
         brPoseEst.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         // stageTags = (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) ? Constants.BLUE_TAGS.stage : Constants.RED_TAGS.stage;
         
