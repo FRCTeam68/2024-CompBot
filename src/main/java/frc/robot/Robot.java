@@ -15,7 +15,8 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.CANBus.CANBusStatus;
 import com.ctre.phoenix6.SignalLogger;
 
 
@@ -68,6 +69,7 @@ public class Robot extends LoggedRobot {
 
     m_robotContainer.m_DriveSubSystem.getDaqThread().setThreadPriority(99);
 
+    System.out.println("CAN bus is FD: " + CANBus.isNetworkFD("DRIVEbus"));
   }
 
   @Override
@@ -87,7 +89,20 @@ public class Robot extends LoggedRobot {
         m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
       }
     }
-      }
+
+    CANBusStatus canInfo = CANBus.getStatus("DRIVEbus");
+    Logger.recordOutput("CANBUS/DRIVEbus/Util", canInfo.BusUtilization);
+    Logger.recordOutput("CANBUS/DRIVEbus/Status",  canInfo.Status.getName());
+    if (!canInfo.Status.isOK())
+      Logger.recordOutput("CANBUS/DRIVEbus/Desc",  canInfo.Status.getDescription());
+    
+    CANBusStatus canInfo2 = CANBus.getStatus("rio");
+    Logger.recordOutput("CANBUS/rio/Util", canInfo2.BusUtilization);
+    Logger.recordOutput("CANBUS/rio/Status",  canInfo2.Status.getName());
+    if (!canInfo2.Status.isOK())
+      Logger.recordOutput("CANBUS/rio/Desc",  canInfo2.Status.getDescription());
+
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
