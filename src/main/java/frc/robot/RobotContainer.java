@@ -108,6 +108,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("target_speaker_1m", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_1M, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
     NamedCommands.registerCommand("target_speaker_podium", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
     NamedCommands.registerCommand("target_speaker_podium_source", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM_SOURCE, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
+    NamedCommands.registerCommand("target_speaker_stage", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_STAGE, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
     NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 

@@ -112,6 +112,7 @@ public final class Constants {
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
         public static final double SPEAKER_PODIUM_SOURCE = 16;
+        public static final double SPEAKER_STAGE = 35; // 36; //34;
         
     }
 

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6628436333795761,
-      "y": 3.7001035540532623
+      "x": 0.7531929553170285,
+      "y": 4.397140955802102
     },
-    "rotation": -69.90476880809517
+    "rotation": -61.78264414527071
   },
   "command": {
     "type": "sequential",
@@ -24,36 +24,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.1
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Copy of Source - Middle Note 5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Middle Note 5 - ShootM"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 0.2
@@ -62,7 +32,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootA - Middle 4"
+            "pathName": "Test Fast Source - M5short"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Test Middle Note 5 - ShootM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]

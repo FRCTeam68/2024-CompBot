@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.85,
-        "y": 5.64
+        "x": 5.7,
+        "y": 1.46
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8500000000000023,
-        "y": 5.64
+        "x": 5.310275883164594,
+        "y": 1.567227997733907
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.9108150520339064,
-        "y": 4.02665014356157
+        "x": 3.74,
+        "y": 2.9
       },
       "prevControl": {
-        "x": 4.8383416481797346,
-        "y": 4.650634669440361
-      },
-      "nextControl": {
-        "x": 6.804190682778205,
-        "y": 3.50686795840125
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 8.484751221283915,
-        "y": 2.300942939178041
-      },
-      "prevControl": {
-        "x": 7.909515486489406,
-        "y": 2.8176801246714143
+        "x": 4.519980657348482,
+        "y": 2.207767166603218
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "StartIntake",
-      "waypointRelativePos": 0.4,
+      "name": "target",
+      "waypointRelativePos": 0.05,
       "command": {
         "type": "sequential",
         "data": {
@@ -57,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "intake"
+                "name": "target_speaker_stage"
               }
             }
           ]
@@ -73,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -26.56505117707785,
+    "rotation": -33.0,
     "rotateFast": false
   },
   "reversed": false,

@@ -76,6 +76,18 @@
           "data": {
             "pathName": "M4 Shoot - M3"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M3-Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
         }
       ]
     }

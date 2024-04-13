@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7336934388833163,
-      "y": 4.348392164717821
+      "x": 0.7531929553170285,
+      "y": 4.397140955802102
     },
-    "rotation": -59.03624346792651
+    "rotation": -61.78264414527071
   },
   "command": {
     "type": "sequential",
@@ -24,24 +24,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.4
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intake"
-          }
-        },
-        {
           "type": "wait",
           "data": {
             "waitTime": 0.2
@@ -50,19 +32,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source - Source Note"
+            "pathName": "Test Fast Source - M5short"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "target_speaker_podium"
+            "pathName": "Test M5 - Stage"
           }
         },
         {
@@ -74,6 +50,6 @@
       ]
     }
   },
-  "folder": "Scrap",
+  "folder": null,
   "choreoAuto": false
 }

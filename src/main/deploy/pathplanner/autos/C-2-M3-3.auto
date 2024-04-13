@@ -86,7 +86,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle3-ShootSpeaker"
+            "pathName": "Middle3 - Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center - Source Note"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "target_speaker_podium"
           }
         },
         {
