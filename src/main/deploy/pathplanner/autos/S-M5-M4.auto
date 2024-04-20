@@ -76,12 +76,6 @@
           "data": {
             "name": "shoot"
           }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
         }
       ]
     }

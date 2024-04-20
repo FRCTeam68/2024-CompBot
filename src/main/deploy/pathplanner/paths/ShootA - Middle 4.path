@@ -12,7 +12,7 @@
         "y": 3.0309042538701627
       },
       "isLocked": false,
-      "linkedName": "ShootStage"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 8.783446683838475,
+        "x": 8.55,
         "y": 2.4466492847066843
       },
       "prevControl": {
-        "x": 7.55579159486149,
+        "x": 7.322344911023015,
         "y": 2.544690700556265
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Middle 4"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

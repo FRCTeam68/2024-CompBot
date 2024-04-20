@@ -19,11 +19,12 @@ import frc.robot.Constants;
 
 public class ShooterSubSystem extends SubsystemBase {
 
-    public enum State{
-        IDLE,
-        SPINUP,
-        SHOOT
-    }
+    // public enum State{
+    //     IDLE,
+    //     SPINUP,
+    //     SHOOT,
+    //     STOP
+    // }
 
     public enum Mode{
         VOLTAGE_OUT,
@@ -31,7 +32,7 @@ public class ShooterSubSystem extends SubsystemBase {
         CURRENTTORQUE_FOC
     }
 
-    private State m_presentState;
+    // private State m_presentState;
     private Mode m_presentMode;
     private double m_setPoint_Left_Speed;
     private double m_setPoint_Right_Speed;
@@ -48,17 +49,19 @@ public class ShooterSubSystem extends SubsystemBase {
     private double m_rightOffset_Voltage;
     private LinearFilter m_atSpeedFilter;
     private double m_filteredLeftSpeed;
+    private boolean m_stop;
 
     //left is bottom  
     //right is top
     public ShooterSubSystem(){
-        m_presentState = State.IDLE;
+        // m_presentState = State.IDLE;
         m_presentMode = Mode.VOLTAGE_FOC;
         m_setPoint_Left_Speed = 0;
         m_setPoint_Right_Speed = 0;
         m_rightOffset_Speed = Constants.SHOOTER.RIGHT_OFFSET;
         m_atSpeedFilter = LinearFilter.movingAverage(5);
         m_filteredLeftSpeed = 0;
+        m_stop = true;
 
         shooterMotorsInit();
     }
@@ -216,6 +219,8 @@ public class ShooterSubSystem extends SubsystemBase {
             Logger.recordOutput("Shooter/setRightSpeed", m_setPoint_Right_Speed);
         }
         else {
+            m_stop = false;
+
             if (desiredRotationsPerSecond > Constants.SHOOTER.MAX_SPEED){
                 m_setPoint_Left_Speed = Constants.SHOOTER.MAX_SPEED;
                 m_setPoint_Right_Speed = -Constants.SHOOTER.MAX_SPEED;
@@ -266,6 +271,15 @@ public class ShooterSubSystem extends SubsystemBase {
         Logger.recordOutput("Speed/LeftSpeedF", m_filteredLeftSpeed );
         Logger.recordOutput("Speed/LeftVoltage", m_shooterLeftMotor.get() );
         Logger.recordOutput("Speed/RightVoltage", m_shooterRightMotor.get() );
+
+        if ((m_setPoint_Left_Speed==0)&&(!m_stop)) {
+            if (m_filteredLeftSpeed < Constants.SHOOTER.SPINLOW_SPEED){
+                // we set speed to 0 to coast down shooter.
+                // now we are below speed we want to stay at, so set speed now
+                setRightOffsetSpeed(0);
+                setSpeed(Constants.SHOOTER.SPINLOW_SPEED);
+            }
+        }
     }
 
     public boolean atSpeed(){
@@ -304,42 +318,49 @@ public class ShooterSubSystem extends SubsystemBase {
         builder.addDoubleProperty("right speed", this::getRightSpeed,null);
         builder.addDoubleProperty("spinup speed", this::getSpinUpSpeed,this::setSpinUpSpeed);
         builder.addDoubleProperty("right offset speed", this::getRightOffsetSpeed,this::setRightOffsetSpeed);
-        builder.addStringProperty("State", () -> m_presentState.toString(),null);
+        // builder.addStringProperty("State", () -> m_presentState.toString(),null);
         builder.addStringProperty("Mode", () -> m_presentMode.toString(),null);
     }
 
-
-    public void setState(State wantedState) {
-		// m_presentState = wantedState;
-
-        double desiredSpeed = 0;
-
-        // System.out.println("set shooter state: " + wantedState.toString());
-        Logger.recordOutput("Shooter/setState",  wantedState);
-
-        switch(wantedState){
-
-            case SPINUP:   // L1
-                desiredSpeed = m_spinUp_Speed;
-                break;
-            case SHOOT:     // L2
-                // TBD
-                // check if note present (top beam break is true)
-                // check if shooter wheels are atspeed,
-                // finally spin TopRoller at shoot speed, to feed note into shooter
-                // wait 2 seconds, set speed back to 0
-                break;
-            default:
-            case IDLE:
-                //nothing, stay with zero speed
-                break;
-        }
-
-        this.setSpeed(desiredSpeed);
-	}
-
-    public State getState(){
-        return this.m_presentState;
+    public void stop (){
+        m_stop = true;
     }
+
+    // public void setState(State wantedState) {
+	// 	// m_presentState = wantedState;
+
+    //     double desiredSpeed = 0;
+
+    //     // System.out.println("set shooter state: " + wantedState.toString());
+    //     Logger.recordOutput("Shooter/setState",  wantedState);
+
+    //     switch(wantedState){
+
+    //         case SPINUP:   // L1
+    //             desiredSpeed = m_spinUp_Speed;
+    //             m_stop = false;
+    //             break;
+    //         case SHOOT:     // L2
+    //             // TBD
+    //             // check if note present (top beam break is true)
+    //             // check if shooter wheels are atspeed,
+    //             // finally spin TopRoller at shoot speed, to feed note into shooter
+    //             // wait 2 seconds, set speed back to 0
+    //             break;
+    //         case STOP:
+    //             desiredSpeed = 0;
+    //             m_stop = true;
+    //         default:
+    //         case IDLE:
+    //             //nothing, stay with zero speed
+    //             break;
+    //     }
+
+    //     this.setSpeed(desiredSpeed);
+	// }
+
+    // public State getState(){
+    //     return this.m_presentState;
+    // }
 
 }

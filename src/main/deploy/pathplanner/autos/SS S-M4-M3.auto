@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6628436333795761,
-      "y": 3.7001035540532623
+      "x": 0.7531929553170285,
+      "y": 4.406890714018958
     },
-    "rotation": -69.90476880809517
+    "rotation": -59.03624346792648
   },
   "command": {
     "type": "sequential",
@@ -32,19 +32,31 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.1
+            "waitTime": 0.2
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Copy of Source - Middle Note 5"
+            "pathName": "Speaker-M4"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle Note 5 - ShootM"
+            "pathName": "bM4-shoot-SS"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
           }
         },
         {
@@ -62,7 +74,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootA - Middle 4"
+            "pathName": "ShootA - Middle 4-SS"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "M3-Shoot-SS"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]

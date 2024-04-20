@@ -64,7 +64,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Scrap_paths",
   "previewStartingState": {
     "rotation": 89.86339208747495,
     "velocity": 0

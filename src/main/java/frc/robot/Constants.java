@@ -88,6 +88,7 @@ public final class Constants {
         public static final double DISLODGE_SHOOT_SPEED = -60;
         public static final double PASS1_SPEED = 60;
         public static final double PASS2_SPEED = 60; //40;
+        public static final double SPINLOW_SPEED = 10;
     }
 
     public static final class ANGLE {
@@ -106,11 +107,12 @@ public final class Constants {
         public static final double TRAP = 0;   //distance 1.57M
         public static final double SPEAKER = 0;
         public static final double SPEAKER_1M = 21; //18 ; //16 //15 //20
-        public static final double SPEAKER_PODIUM = 26; //24; //16 //22 //24
+        public static final double SPEAKER_PODIUM = 24; //26; //24; //16 //22 //24
         public static final double INTAKE = 17; // 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
         public static final double SPEAKER_PODIUM_SOURCE = 16;
+        public static final double SPEAKER_STAGE = 35; // 36; //34;
         
     }
 

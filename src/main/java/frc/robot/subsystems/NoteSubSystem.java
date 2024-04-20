@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -409,8 +410,8 @@ public class NoteSubSystem extends SubsystemBase {
                 Logger.recordOutput("Note/Comment",  "note shot");
                 //not stopping FD2 because false triggers.  let it run
                 // m_Feeder2.setSpeed(0);
-                m_shootStopTime.stop();
-                m_shootStopTime.reset();
+                // m_shootStopTime.stop();
+                // m_shootStopTime.reset();
                 setHaveNote1(false);
                 LEDSegment.side1.setColor(LightsSubsystem.orange);
                 setState(State.IDLE);
@@ -452,32 +453,38 @@ public class NoteSubSystem extends SubsystemBase {
                     // if (m_haveNote1){
                         //not stopping FD2 because false triggers.  let it run
                         // m_Feeder2.setSpeed(0);  
+                        
+                        // step down speed when not autonomous mode
+                        if (!DriverStation.isAutonomous()){
+                            m_Shooter.setSpeed(0);   //will coast down to low speed velocity
+                        }
                         setHaveNote1(false);
                         LEDSegment.side1.setColor(LightsSubsystem.orange);
                         setState(State.IDLE);
                     // }
                 }
                 break;
-            case STOP:
-                Logger.recordOutput("Note/Comment",  "stop 40");
-                m_Intake.setSpeed(0);
-                m_Feeder1.setSpeed(0);
-                m_Feeder2.setSpeed(0);
-                m_shooter_setpoint = 40;
-                spinUp();
-                m_shootStopTime.stop();
-                m_shootStopTime.reset();
-                setShooterSpunUp(true);
-                setState(State.IDLE);
-                LEDSegment.side1.setColor(LightsSubsystem.orange);
-                setAction(ActionRequest.IDLE);
-                break;
+            // case STOP:
+            //     Logger.recordOutput("Note/Comment",  "stop 40");
+            //     m_Intake.setSpeed(0);
+            //     m_Feeder1.setSpeed(0);
+            //     m_Feeder2.setSpeed(0);
+            //     m_shooter_setpoint = 40;
+            //     spinUp();
+            //     m_shootStopTime.stop();
+            //     m_shootStopTime.reset();
+            //     setShooterSpunUp(true);
+            //     setState(State.IDLE);
+            //     LEDSegment.side1.setColor(LightsSubsystem.orange);
+            //     setAction(ActionRequest.IDLE);
+            //     break;
             case STOP_ALL:
                 Logger.recordOutput("Note/Comment",  "stop all");
                 m_Intake.setSpeed(0);
                 m_Feeder1.setSpeed(0);
                 m_Feeder2.setSpeed(0);
                 m_Shooter.setSpeed(0);
+                m_Shooter.stop();
                 m_shootStopTime.stop();
                 m_shootStopTime.reset();
                 setShooterSpunUp(false);

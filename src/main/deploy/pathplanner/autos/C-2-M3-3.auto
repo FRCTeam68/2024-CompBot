@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7531929553170285,
-      "y": 4.406890714018958
+      "x": 1.4,
+      "y": 5.52811290895741
     },
-    "rotation": -59.03624346792648
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -32,31 +32,37 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
+            "waitTime": 0.4
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Speaker-M4"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "bM4-shoot"
+            "name": "intake"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center;Center source"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "target_speaker_1m"
           }
         },
         {
@@ -74,7 +80,49 @@
         {
           "type": "path",
           "data": {
-            "pathName": "M4 Shoot - M3"
+            "pathName": "Center-Middle3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle3 - Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center - Source Note"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "target_speaker_podium"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]

@@ -108,6 +108,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("target_speaker_1m", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_1M, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
     NamedCommands.registerCommand("target_speaker_podium", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
     NamedCommands.registerCommand("target_speaker_podium_source", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_PODIUM_SOURCE, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
+    NamedCommands.registerCommand("target_speaker_stage", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER_STAGE, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
     NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 
@@ -177,7 +178,7 @@ public class RobotContainer {
     // m_xboxController.pov(180).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(-0.2 * MaxSpeed).withVelocityY(0)));
     // m_xboxController.pov(90).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(-0.2 * MaxSpeed)));
     // m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
-    m_xboxController.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));
+    // m_xboxController.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));  replaced with coastdown + LOWSPEED
 
     m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
