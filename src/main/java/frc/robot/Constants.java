@@ -50,9 +50,8 @@ public final class Constants {
   }
 
     public static final class Pathfind {
-        public static final double mVelMS = 2
-        ;
-        public static final double mAccMS = 2;
+        public static final double mVelMS = 1;
+        public static final double mAccMS = 1;
         public static final double mRVelRS = Math.PI/2;
         public static final double mRAccRS = Math.PI;
     }
@@ -186,6 +185,9 @@ public final class Constants {
     public static final class BLUE_TAGS {
         public static final int[] stage = {14,15,16};
         public static final Pose2d goal = new Pose2d(2.01, 6.00, new Rotation2d(Units.degreesToRadians(-178.57)));
+        public static final Pose2d front16tag = new Pose2d(4.20, 3.13, new Rotation2d(Units.degreesToRadians(61+180)));
+        public static final Pose2d front15tag = new Pose2d(4.45, 5.05, new Rotation2d(Units.degreesToRadians(-61+180)));
+
     }
 
     public static final class LightsConstants {

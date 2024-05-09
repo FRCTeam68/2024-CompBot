@@ -191,9 +191,14 @@ public class RobotContainer {
     //for trial
     // m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 
-    m_xboxController.x().whileTrue(m_DriveSubSystem.angleDrive(16, () -> -m_xboxController.getLeftY() * MaxSpeed, () -> -m_xboxController.getLeftX() * MaxSpeed));
-    // m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
-    m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
+    // m_xboxController.a().whileTrue(Pathfind.goToPose(m_DriveSubSystem.getEstimatedPose(), Constants.BLUE_TAGS.front15tag).andThen(
+    //   m_DriveSubSystem.angleDrive(15, () -> -m_xboxController.getLeftY() * MaxSpeed, () -> -m_xboxController.getLeftX() * MaxSpeed)));
+    
+    m_xboxController.a().whileTrue(
+      m_DriveSubSystem.angleDrive(7, () -> -m_xboxController.getLeftY() * MaxSpeed, () -> -m_xboxController.getLeftX() * MaxSpeed));
+    
+    m_xboxController.x().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.TRAP)));
+    // m_xboxController.a().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER)));
     //for trial
     // m_xboxController.a().onTrue(new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
 

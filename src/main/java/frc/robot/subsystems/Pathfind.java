@@ -19,7 +19,7 @@ public class Pathfind {
         PathConstraints constraints = new PathConstraints(Constants.Pathfind.mVelMS, 
             Constants.Pathfind.mAccMS, Constants.Pathfind.mRVelRS,Constants.Pathfind.mRAccRS);
          return AutoBuilder.pathfindToPose(
-                    new Pose2d(1.96, 7.98, Rotation2d.fromDegrees(-90)),
+                    pose,
                     constraints);
     }
     

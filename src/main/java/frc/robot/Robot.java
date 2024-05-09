@@ -22,8 +22,8 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   public static RobotContainer m_robotContainer;
-
-  private final boolean UseLimelight = false;
+  public static boolean isTeleop = false;
+    private final boolean UseLimelight = false;
 
   @Override
   public void robotInit() {
@@ -134,7 +134,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+    isTeleop = false;
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -156,6 +156,8 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    isTeleop = true;
   }
 
   /** This function is called periodically during operator control. */

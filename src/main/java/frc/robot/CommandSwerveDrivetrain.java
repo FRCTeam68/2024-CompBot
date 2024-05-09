@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -95,34 +96,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             driveBaseRadius = Math.max(driveBaseRadius, moduleLocation.getNorm());
         }
 
-        // AutoBuilder.configureHolonomic(
-        //     ()->this.getState().Pose, // Supplier of current robot pose
-        //     this::seedFieldRelative,  // Consumer for seeding pose against auto
-        //     this::getCurrentRobotChassisSpeeds,
-        //     (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
-        //     new HolonomicPathFollowerConfig(new PIDConstants(1, 0, 0),
-        //                                     new PIDConstants(1, 0, 0),
-        //                                     TunerConstants.kSpeedAt12VoltsMps,
-        //                                     driveBaseRadius,
-        //                                     new ReplanningConfig()),
-        //     () -> {
-        //             // Boolean supplier that controls when the path will be mirrored for the red alliance
-        //             // This will flip the path being followed to the red side of the field.
-        //             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-        //             var alliance = DriverStation.getAlliance();
-        //             if (alliance.isPresent()) {
-        //                 return alliance.get() == DriverStation.Alliance.Red;
-        //             }
-        //             return false;
-        //         },
-        //     this); // Subsystem for requirements
-
         
         AutoBuilder.configureHolonomic(
             this::getEstimatedPose, // Supplier of current robot pose
-            this::seedFieldRelative,  // Consumer for seeding pose against auto
-            ()->m_kinematics.toChassisSpeeds(this.m_moduleStates),
+            this::setPose,  // Consumer for seeding pose against auto
+            this::getCurrentRobotChassisSpeeds,
             (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
             new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
                                             new PIDConstants(5, 0, 0),
@@ -145,6 +123,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void setPose (Pose2d pose) {
         poseEstimator.resetPosition(m_pigeon2.getRotation2d(), m_modulePositions, pose);
+        this.seedFieldRelative();
     }
 
     public Command drive(Supplier<SwerveRequest.FieldCentric> requestSupplier, CommandXboxController xboxController) { 
@@ -190,22 +169,22 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public void angle(int tagID, double xSpeed, double ySpeed) {
         Optional<Pose3d> tagPose  = Constants.Vision.aprillayout.getTagPose(tagID);
-        ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, 0);
-
+        ChassisSpeeds speeds = new ChassisSpeeds(0, 0, 0);
+        
         if (tagPose.isPresent()){
             Pose2d tag = tagPose.get().toPose2d();
             Pose2d robotPose = getEstimatedPose();
             double dx = tag.getX()-robotPose.getX();
             double dy = tag.getY()-robotPose.getY();
             double hyp = Math.hypot(dx, dy);
-            double ySign = (Math.abs(dy)/dy)-1;
-            double  theta = -(Math.asin(dx/hyp) + (ySign*Math.PI/8) + (Math.PI/2));
+            double ySign = -(Math.abs(dy)/dy);
+            double  theta = ySign*(Math.asin(dx/hyp) + (Math.PI/2));
             Pose2d referencePose = new Pose2d(getEstimatedPose().getTranslation(), new Rotation2d(theta));
             speeds.omegaRadiansPerSecond = trajCont.calculate(getEstimatedPose(), referencePose, 0, new Rotation2d(theta)).omegaRadiansPerSecond;
             if (Math.abs(speeds.omegaRadiansPerSecond) < 0.1) {
                 speeds.omegaRadiansPerSecond = 0;
             }
-            System.out.println("Deg: "+ theta*180/Math.PI + " | OMEGA: " + speeds.omegaRadiansPerSecond);
+            System.out.println(getEstimatedPose().toString());
             this.setControl(this.autoRequest.withSpeeds(speeds));
             return;
         }
@@ -234,7 +213,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Pose2d getEstimatedPose() {
+        if (Robot.isTeleop) {
         return poseEstimator.getEstimatedPosition();
+        } else {
+            return this.getState().Pose;
+        }
     }
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
