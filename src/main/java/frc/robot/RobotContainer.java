@@ -100,18 +100,15 @@ public class RobotContainer {
 
     m_DriveSubSystem.setCurrentLimits();
 
-    speedChooser.addOption("100%", 1.0);
-    speedChooser.addOption("95%", 0.95);
+    speedChooser.setDefaultOption("100%", 1.0);
     speedChooser.addOption("90%", 0.9);
-    speedChooser.addOption("85%", 0.85);
     speedChooser.addOption("80%", 0.8);
-    speedChooser.addOption("75%", 0.75);
     speedChooser.addOption("70%", 0.7);
     speedChooser.addOption("60%", 0.6);
-    speedChooser.addOption("55%", 0.55);
     speedChooser.addOption("50%", 0.5);
-    speedChooser.addOption("35%", 0.35);
-    speedChooser.setDefaultOption("100%", 0.65);
+    speedChooser.addOption("35%", 0.4);
+    speedChooser.addOption("55%", 0.3);
+    speedChooser.addOption("55%", 0.2);
     SmartDashboard.putData("Speed Limit", speedChooser);
 
     configureBindings();
@@ -277,6 +274,8 @@ public class RobotContainer {
   private void newSpeed() {
     lastSpeed = speedChooser.getSelected();
     MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * lastSpeed;
+    System.out.println("last speed: " + lastSpeed);
+    System.out.println(" max speed: " + MaxSpeed);
   }
 
 
