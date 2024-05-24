@@ -30,11 +30,15 @@ public class TunerConstants {
         // .withKP(49).withKI(0).withKD(2.3)
         // .withKS(0.44).withKV(0.09).withKA(0.06);
         // .withKP(49).withKI(0).withKD(0)
+
         // 5/21-sysid-position-ctre_pro:
-        .withKP(2.3).withKI(0).withKD(0)
-        .withKS(.55).withKV(1.4).withKA(.3);
+        // .withKP(2.3).withKI(0).withKD(0)
+        // .withKS(.55).withKV(1.4).withKA(.3);
+        // .withKS(0).withKV(0).withKA(0);
+
         // 5/21-sysid-position-default:
-        // .withKP(56.876).withKI(0).withKD(5.136)
+        .withKP(56.9).withKI(0).withKD(0)
+        .withKS(0).withKV(0).withKA(0);
         // .withKS(.414).withKV(1.4516).withKA(.283);
 
     // When using closed-loop control, the drive motor uses the control
