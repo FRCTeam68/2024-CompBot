@@ -76,8 +76,8 @@ public final class Constants {
         public static final int RIGHT_CANID = 31;
         public static final String CANBUS = "rio";
         public static final double MAX_SPEED = 100;  // rps
-        public static final double SPEAKER_SHOOT_SPEED = 80;
-        public static final double TRAP_SHOOT_SPEED = 43; 
+        public static final double SPEAKER_SHOOT_SPEED = 40;
+        public static final double TRAP_SHOOT_SPEED = 39; 
         public static final double AMP_SHOOT_SPEED = 23;   //20 layup // 26 dunk VelFOC.
         public static final double AMP_RIGHT_OFFSET = 15;  //14 layup // 16 dunk VelFOC.  //0 to tune shooter pid - 26 ,top does not roll at 26
         public static final double RIGHT_OFFSET = 0;
@@ -86,8 +86,8 @@ public final class Constants {
         public static final double STOP_TIME = 2; 
         public static final double ATSPEED_TIMEOUT = 1;  //seconds
         public static final double DISLODGE_SHOOT_SPEED = -60;
-        public static final double PASS1_SPEED = 60;
-        public static final double PASS2_SPEED = 60; //40;
+        public static final double PASS1_SPEED = 30;
+        public static final double PASS2_SPEED = 30; //40;
         public static final double SPINLOW_SPEED = 10;
     }
 

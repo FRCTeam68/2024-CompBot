@@ -106,9 +106,9 @@ public class RobotContainer {
     speedChooser.addOption("70%", 0.7);
     speedChooser.addOption("60%", 0.6);
     speedChooser.addOption("50%", 0.5);
-    speedChooser.addOption("35%", 0.4);
-    speedChooser.addOption("55%", 0.3);
-    speedChooser.addOption("55%", 0.2);
+    speedChooser.addOption("40%", 0.4);
+    speedChooser.addOption("30%", 0.3);
+    speedChooser.addOption("20%", 0.2);
     SmartDashboard.putData("Speed Limit", speedChooser);
 
     configureBindings();
@@ -153,10 +153,10 @@ public class RobotContainer {
     speedPick.onTrue(Commands.runOnce(() -> newSpeed()));
     
     m_DriveSubSystem.setDefaultCommand( // Drivetrain will execute this command periodically
-        m_DriveSubSystem.drive(() -> drive.withVelocityX(-m_xboxController.getLeftY() * MaxSpeed) // Drive forward with
+        m_DriveSubSystem.drive(() -> drive.withVelocityX(-m_xboxController.getLeftY() * MaxSpeed *.2) // Drive forward with
                                                                                            // negative Y (forward)
-            .withVelocityY(-m_xboxController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-m_xboxController.getRightX() * MaxAngularRate)
+            .withVelocityY(-m_xboxController.getLeftX() * MaxSpeed * .2) // Drive left with negative X (left)
+            .withRotationalRate(-m_xboxController.getRightX() * MaxAngularRate * .4)
            // Drive counterclockwise with negative X (left)
         , m_xboxController).ignoringDisable(true));
 
@@ -185,9 +185,9 @@ public class RobotContainer {
     m_xboxController.pov(180).whileTrue(m_DriveSubSystem.drive(
       () -> drive.withVelocityX(-lastSpeed).withVelocityY(0).withRotationalRate(0),m_xboxController));
     m_xboxController.pov(90).whileTrue(m_DriveSubSystem.drive(
-      () -> drive.withVelocityX(0).withVelocityY(lastSpeed).withRotationalRate(0),m_xboxController));
-    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.drive(
       () -> drive.withVelocityX(0).withVelocityY(-lastSpeed).withRotationalRate(0),m_xboxController));
+    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.drive(
+      () -> drive.withVelocityX(0).withVelocityY(lastSpeed).withRotationalRate(0),m_xboxController));
 
 
     m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
