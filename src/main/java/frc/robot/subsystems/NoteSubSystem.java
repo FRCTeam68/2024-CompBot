@@ -328,7 +328,7 @@ public class NoteSubSystem extends SubsystemBase {
             //     break;
             case SPEAKER_PODIUM:
                 m_Angle.setState(AngleSubSystem.State.SPEAKER_PODIUM);
-                m_shooter_setpoint = Constants.SHOOTER.SPEAKER_SHOOT_SPEED;
+                m_shooter_setpoint = Constants.SHOOTER.PODIUM_SHOOT_SPEED;
                 LEDSegment.side1target.setColor(LightsSubsystem.orange);
                 break;
             case SPEAKER_PODIUM_SOURCE:

@@ -76,10 +76,11 @@ public final class Constants {
         public static final int RIGHT_CANID = 31;
         public static final String CANBUS = "rio";
         public static final double MAX_SPEED = 100;  // rps
-        public static final double SPEAKER_SHOOT_SPEED = 80;
-        public static final double TRAP_SHOOT_SPEED = 43; 
-        public static final double AMP_SHOOT_SPEED = 23;   //20 layup // 26 dunk VelFOC.
-        public static final double AMP_RIGHT_OFFSET = 15;  //14 layup // 16 dunk VelFOC.  //0 to tune shooter pid - 26 ,top does not roll at 26
+        public static final double SPEAKER_SHOOT_SPEED = 40;
+        public static final double PODIUM_SHOOT_SPEED = 80;
+        public static final double TRAP_SHOOT_SPEED = 80; 
+        public static final double AMP_SHOOT_SPEED = 50;   //20 layup // 26 dunk VelFOC.
+        public static final double AMP_RIGHT_OFFSET = 10;  //14 layup // 16 dunk VelFOC.  //0 to tune shooter pid - 26 ,top does not roll at 26
         public static final double RIGHT_OFFSET = 0;
         public static final double BUMP_VALUE = 1;   // rps
         public static final double SPINUP_TIME = 2;  // seconds
@@ -103,11 +104,11 @@ public final class Constants {
         //motor rotations
         public static final double MIN_POSITION = 0;  
         public static final double MAX_POSITION = 50;
-        public static final double AMP = 2;
-        public static final double TRAP = 0;   //distance 1.57M
+        public static final double AMP = 10;
+        public static final double TRAP = 34;   //distance 1.57M
         public static final double SPEAKER = 0;
         public static final double SPEAKER_1M = 21; //18 ; //16 //15 //20
-        public static final double SPEAKER_PODIUM = 24; //26; //24; //16 //22 //24
+        public static final double SPEAKER_PODIUM = 28; //26; //24; //16 //22 //24
         public static final double INTAKE = 17; // 12;   //14
         public static final double BUMP_VALUE = .5;    //rotations
         public static final double ATANGLE_TIMEOUT = 1;  //seconds
