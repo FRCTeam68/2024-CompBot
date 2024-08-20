@@ -49,13 +49,14 @@ public class Robot extends LoggedRobot {
 
     // Set up data receivers
     // Running on a real robot, log to a USB stick ("/U/logs")
-    Logger.addDataReceiver(new WPILOGWriter());
+    Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
     Logger.addDataReceiver(new NT4Publisher());
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
-    SignalLogger.setPath("//media/sda1/");
+    // media/sda1 is a usb stick
+    // SignalLogger.setPath(//media/sda1/);
     // SignalLogger.start();
     
     // Start AdvantageKit logger
