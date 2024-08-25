@@ -29,8 +29,17 @@ public class TunerConstants {
         // try4 sysid
         // .withKP(49).withKI(0).withKD(2.3)
         // .withKS(0.44).withKV(0.09).withKA(0.06);
-        .withKP(49).withKI(0).withKD(0)
+        // .withKP(49).withKI(0).withKD(0)
+
+        // 5/21-sysid-position-ctre_pro:
+        // .withKP(2.3).withKI(0).withKD(0)
+        // .withKS(.55).withKV(1.4).withKA(.3);
+        // .withKS(0).withKV(0).withKA(0);
+
+        // 5/21-sysid-position-default:
+        .withKP(56.9).withKI(0).withKD(0)
         .withKS(0).withKV(0).withKA(0);
+        // .withKS(.414).withKV(1.4516).withKA(.283);
 
     // When using closed-loop control, the drive motor uses the control
     // output type specified by SwerveModuleConstants.DriveMotorClosedLoopOutput
@@ -39,10 +48,17 @@ public class TunerConstants {
         // .withKP(28).withKI(0).withKD(0)    //38,0,0  //4,0,0
         // .withKS(0).withKV(0).withKA(0);
 
-        // try4 sysid
+        // try4 sysid - worlds
         .withKP(0.04).withKI(0).withKD(0)
         .withKS(0).withKV(0.1).withKA(0.03);
 
+         // 5/21-sysid-position-ctre_pro:
+        // .withKP(0.180).withKI(0).withKD(0)
+        // .withKS(.242).withKV(0.122).withKA(0.007);
+
+         // 5/21-sysid-position-default:
+        // .withKP(0.0976).withKI(0).withKD(0)
+        // .withKS(.242).withKV(0.122).withKA(0.007);
 
         //Monkey PID stuff
         public static final PIDController steerPID = new PIDController(steerGains.kP, steerGains.kI, steerGains.kD);
@@ -67,9 +83,10 @@ public class TunerConstants {
     // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
     // This may need to be tuned to your individual robot
     private static final double kCoupleRatio = 0;
+    //private static final double kCoupleRatio = 3.5714285714285716;
 
     private static final double kDriveGearRatio = 5.88; 
-    private static final double kSteerGearRatio = 1;
+    private static final double kSteerGearRatio = 12.8; //1;
     private static final double kWheelRadiusInches = 1.95;  //2;
 
     private static final boolean kSteerMotorReversed = false; //false

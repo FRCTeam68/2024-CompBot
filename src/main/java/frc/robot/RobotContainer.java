@@ -36,7 +36,7 @@ import frc.robot.subsystems.Vision;
 import frc.robot.commands.*;
 
 public class RobotContainer {
-  private double MaxSpeed = 5.2; // meters per second desired top speed, see tuner consts kSpeedAt12VoltsMps
+  private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // Initial max is true top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
@@ -75,28 +75,14 @@ public class RobotContainer {
   private final SendableChooser<String> m_autoWaitTimeChooser = new SendableChooser<>();
 
   private final LoggedDashboardChooser<Command> autoChooser;
+  // private final LoggedDashboardChooser<Command> speedChooser;
+  private SendableChooser<Double> speedChooser = new SendableChooser<>();
+
+  private Double lastSpeed = 1.0;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-  
-    // Register Named Commands
-    // NamedCommands.registerCommand("shoot_spinup", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
-    //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
-    //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP))    );
-
-    // NamedCommands.registerCommand("shoot", Commands.runOnce(()->SmartDashboard.putBoolean("shoot", true))
-    //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER))
-    //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))    );
-
-    // NamedCommands.registerCommand("intake2", Commands.runOnce(()->SmartDashboard.putBoolean("intake", true))
-    //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.INTAKE))
-    //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.INTAKENOTE))    );
-
-    // NamedCommands.registerCommand("shoot2", Commands.runOnce(()->SmartDashboard.putBoolean("shoot2", true))
-    //                                                     .andThen(()->m_NoteSubSystem.setTarget(Target.SPEAKER_1M))
-    //                                                     .andThen(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT))   );
-
     
     NamedCommands.registerCommand("shoot_spinup", Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.SHOOT_SPINUP))    );
     NamedCommands.registerCommand("target_speaker", new SetTargetCustomCmd(m_NoteSubSystem, Constants.ANGLE.SPEAKER, Constants.SHOOTER.SPEAKER_SHOOT_SPEED));
@@ -112,14 +98,23 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("DelayStart", new WaitCommand(m_autoWaitTimeSelected));
 
-     m_DriveSubSystem.setCurrentLimits();
+    m_DriveSubSystem.setCurrentLimits();
+
+    speedChooser.setDefaultOption("100%", 1.0);
+    speedChooser.addOption("90%", 0.9);
+    speedChooser.addOption("80%", 0.8);
+    speedChooser.addOption("70%", 0.7);
+    speedChooser.addOption("60%", 0.6);
+    speedChooser.addOption("50%", 0.5);
+    speedChooser.addOption("35%", 0.4);
+    speedChooser.addOption("55%", 0.3);
+    speedChooser.addOption("55%", 0.2);
+    SmartDashboard.putData("Speed Limit", speedChooser);
 
     configureBindings();
 
     // setupPidTuningCommandShuffleboard();
 
-    
-    
 
     // Put subsystems to dashboard.
     Shuffleboard.getTab("NoteSubsystem").add(m_NoteSubSystem);
@@ -153,6 +148,9 @@ public class RobotContainer {
    */
   private void configureBindings() {
     System.out.println("config bindings");
+
+    Trigger speedPick = new Trigger(() -> lastSpeed != speedChooser.getSelected());
+    speedPick.onTrue(Commands.runOnce(() -> newSpeed()));
     
     m_DriveSubSystem.setDefaultCommand( // Drivetrain will execute this command periodically
         m_DriveSubSystem.drive(() -> drive.withVelocityX(-m_xboxController.getLeftY() * MaxSpeed) // Drive forward with
@@ -178,7 +176,19 @@ public class RobotContainer {
     // m_xboxController.pov(180).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(-0.2 * MaxSpeed).withVelocityY(0)));
     // m_xboxController.pov(90).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(-0.2 * MaxSpeed)));
     // m_xboxController.pov(270).whileTrue(m_DriveSubSystem.applyRequest(() -> forwardStraight.withVelocityX(0).withVelocityY(0.2 * MaxSpeed)));
-    // m_xboxController.povDown().onTrue(Commands.runOnce(()->m_NoteSubSystem.setAction(ActionRequest.STOP)));  replaced with coastdown + LOWSPEED
+
+    //use to isolate drive straigh forward, left, back, right
+    //use selectable speed on dashboard test driving slower
+    //using drive() so that discretize() is used.   Does this fix drifting?????
+    m_xboxController.pov(0).whileTrue(m_DriveSubSystem.drive(
+      () -> drive.withVelocityX(lastSpeed).withVelocityY(0).withRotationalRate(0),m_xboxController));
+    m_xboxController.pov(180).whileTrue(m_DriveSubSystem.drive(
+      () -> drive.withVelocityX(-lastSpeed).withVelocityY(0).withRotationalRate(0),m_xboxController));
+    m_xboxController.pov(90).whileTrue(m_DriveSubSystem.drive(
+      () -> drive.withVelocityX(0).withVelocityY(lastSpeed).withRotationalRate(0),m_xboxController));
+    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.drive(
+      () -> drive.withVelocityX(0).withVelocityY(-lastSpeed).withRotationalRate(0),m_xboxController));
+
 
     m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
     m_xboxController.b().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.AMP)));
@@ -260,6 +270,14 @@ public class RobotContainer {
 
     return autoChooser.get();
   }
+
+  private void newSpeed() {
+    lastSpeed = speedChooser.getSelected();
+    MaxSpeed = TunerConstants.kSpeedAt12VoltsMps * lastSpeed;
+    System.out.println("last speed: " + lastSpeed);
+    System.out.println(" max speed: " + MaxSpeed);
+  }
+
 
   @SuppressWarnings("unused")
   private void setupPidTuningCommandShuffleboard(){
