@@ -408,12 +408,9 @@ public class NoteSubSystem extends SubsystemBase {
             else if(m_presentState == State.SHOOTING){
                 //backside of note coming through
                 Logger.recordOutput("Note/Comment",  "note shot");
-                //not stopping FD2 because false triggers.  let it run
-                // m_Feeder2.setSpeed(0);
-                // m_shootStopTime.stop();
-                // m_shootStopTime.reset();
+                // need to wait a bit before shifting to lower speed on shooter
+                m_shootStopTime.restart();
                 setHaveNote1(false);
-                LEDSegment.side1.setColor(LightsSubsystem.orange);
                 setState(State.IDLE);
                 setAction(ActionRequest.IDLE);
             }
@@ -445,23 +442,24 @@ public class NoteSubSystem extends SubsystemBase {
             case IDLE:
 
                 if (m_shootStopTime.hasElapsed(.3)){
-                    // shooting  has started and timer elasped
-                    // account for BEAM3 action was missed that would have set back no NOTE1
+                    // shooting  has started , beam3 break already seen, timer elasped
                     m_shootStopTime.stop();
                     m_shootStopTime.reset();
                     Logger.recordOutput("Note/Comment",  "shoot timer elapsed");
-                    // if (m_haveNote1){
-                        //not stopping FD2 because false triggers.  let it run
-                        // m_Feeder2.setSpeed(0);  
-                        
-                        // step down speed when not autonomous mode
-                        if (!DriverStation.isAutonomous()){
-                            m_Shooter.setSpeed(0);   //will coast down to low speed velocity
-                        }
-                        setHaveNote1(false);
-                        LEDSegment.side1.setColor(LightsSubsystem.orange);
-                        setState(State.IDLE);
-                    // }
+                    // 9/17/2024 - backside of note has gone through and now the elasped
+                    //             time after that has expired, so coast down the shooter.
+                    // there is a check later that once speed goes below a lowspeed threshold, 
+                    // it will set it to that threshold
+
+                    //not stopping FD2 because false triggers.  let it run
+                    // m_Feeder2.setSpeed(0);  
+                    
+                    // step down speed when not autonomous mode
+                    if (!DriverStation.isAutonomous()){
+                        m_Shooter.setSpeed(0);   //will coast down to low speed velocity
+                    }
+                    LEDSegment.side1.setColor(LightsSubsystem.orange);
+                    setState(State.IDLE);
                 }
                 break;
             // case STOP:
@@ -567,7 +565,6 @@ public class NoteSubSystem extends SubsystemBase {
                     m_Feeder2.setSpeed(m_shooterfeeder2_setpoint);
                     setState(State.SHOOTING);
                     LEDSegment.side1.setColor(LightsSubsystem.red);
-                    m_shootStopTime.restart();
                     setAction(ActionRequest.IDLE);
                  }
                 break;
