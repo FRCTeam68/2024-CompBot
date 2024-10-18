@@ -66,6 +66,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -96,6 +102,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "shoot"
@@ -123,6 +135,12 @@
           "type": "named",
           "data": {
             "name": "target_speaker_podium"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
           }
         },
         {
