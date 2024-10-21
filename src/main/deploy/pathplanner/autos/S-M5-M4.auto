@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Source - M5"
+            "pathName": "S-M5"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle Note 5 - ShootM"
+            "pathName": "M5-Shoot3"
           }
         },
         {
@@ -62,13 +62,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ShootA - Middle 4"
+            "pathName": "Shoot3-M4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "M4-ShootM"
+            "pathName": "M4-Shoot3"
           }
         },
         {

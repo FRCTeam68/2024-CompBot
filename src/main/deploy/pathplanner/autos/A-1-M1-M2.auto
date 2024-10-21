@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp -  Amp Note"
+            "pathName": "A-1"
           }
         },
         {
@@ -80,13 +80,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "AmpNote-Middle1"
+            "pathName": "1-M1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Middle1-Shoot"
+            "pathName": "M1-shoot1"
           }
         },
         {
@@ -110,7 +110,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "M2-shoot"
+            "pathName": "M2-shoot1"
           }
         },
         {
