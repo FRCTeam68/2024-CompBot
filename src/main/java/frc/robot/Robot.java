@@ -48,15 +48,21 @@ public class Robot extends LoggedRobot {
     }
 
     // Set up data receivers
-    // Running on a real robot, log to a USB stick ("/U/logs")
-    Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+    // uncomment line below to log to a USB stick, default if no parameters is: "/U/logs"
+    Logger.addDataReceiver(new WPILOGWriter());
+    // uncomment line below to log to Rio
+    //Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+
     Logger.addDataReceiver(new NT4Publisher());
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
 
-    // media/sda1 is a usb stick
-    // SignalLogger.setPath(//media/sda1/);
+    // uncomment the line below to log CTRE devices to usb stick
+    SignalLogger.setPath("//media/sda1/");
+    // do not call the setPath and will be logged to rio at "/home/lvuser/logs"
+
+
     // SignalLogger.start();
     
     // Start AdvantageKit logger
