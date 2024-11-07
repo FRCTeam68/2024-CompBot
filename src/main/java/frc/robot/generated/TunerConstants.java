@@ -87,7 +87,7 @@ public class TunerConstants {
 
     private static final double kDriveGearRatio = 5.88; 
     private static final double kSteerGearRatio = 12.8; //1;
-    private static final double kWheelRadiusInches = 1.8;  //2;
+    private static final double kWheelRadiusInches = 1.75;  //2;
 
     private static final boolean kSteerMotorReversed = false; //false
     private static final boolean kInvertLeftSide = false;  //true; //false
@@ -144,7 +144,7 @@ public class TunerConstants {
     private static final int kFrontRightDriveMotorId = 3;
     private static final int kFrontRightSteerMotorId = 4;
     private static final int kFrontRightEncoderId = 16;
-    private static final double kFrontRightEncoderOffset = -0.143798828125;
+    private static final double kFrontRightEncoderOffset = -0.135498046875;  //-0.143798828125;
 
     private static final double kFrontRightXPosInches = 9.75;
     private static final double kFrontRightYPosInches = -11.25;
@@ -180,8 +180,10 @@ public class TunerConstants {
     public static final CommandSwerveDrivetrain DriveTrain = new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft,
             FrontRight, BackLeft, BackRight);
 
-public static CurrentLimitsConfigs driveLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(80);
-public static CurrentLimitsConfigs steerLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(60);
-public static TalonFXConfiguration driveConfig = new TalonFXConfiguration().withCurrentLimits(driveLimit);
-public static TalonFXConfiguration steerConfig = new TalonFXConfiguration().withCurrentLimits(steerLimit);
+public static CurrentLimitsConfigs driveLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(120)
+                                                                          .withStatorCurrentLimitEnable(true);
+public static CurrentLimitsConfigs steerLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(40)
+                                                                          .withStatorCurrentLimitEnable(true);
+//public static TalonFXConfiguration driveConfig = new TalonFXConfiguration().withCurrentLimits(driveLimit);
+//public static TalonFXConfiguration steerConfig = new TalonFXConfiguration().withCurrentLimits(steerLimit);
 }
