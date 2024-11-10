@@ -18,10 +18,12 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +31,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Vision;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem
@@ -48,6 +53,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
+    private double lastTurnCommandSeconds;
+    private boolean keepHeadingSetpointSet;
+
+    private final PIDController keepHeadingPid;
+
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         // configNeutralMode(NeutralModeValue.Coast);
@@ -55,6 +65,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        keepHeadingPid = new PIDController(.1, 0, 0);
+        keepHeadingPid.enableContinuousInput(-180, 180);
     }
     
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
@@ -64,7 +76,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
-
+        keepHeadingPid = new PIDController(.1, 0, 0);
+        keepHeadingPid.enableContinuousInput(-180, 180);
     }
 
     private void configurePathPlanner() {
@@ -129,6 +142,32 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         }
         */
+
+        double rotationRadPerSec;
+        double yawDeg;
+
+        rotationRadPerSec = request.RotationalRate;
+        yawDeg = getPigeon2().getYaw().getValue();
+        
+        Logger.recordOutput("Swerve/RotRateCmd", rotationRadPerSec);
+        Logger.recordOutput("Swerve/yawRad", yawDeg);
+
+        if (rotationRadPerSec != 0) {
+            lastTurnCommandSeconds = Timer.getFPGATimestamp();
+            keepHeadingSetpointSet = false;
+        }
+        if (lastTurnCommandSeconds + .5 <= Timer.getFPGATimestamp()
+                && !keepHeadingSetpointSet) { // If it has been at least .5 seconds.
+            keepHeadingPid.setSetpoint(yawDeg);
+            keepHeadingSetpointSet = true;
+        }
+        
+        Logger.recordOutput("Swerve/KeepHeading", keepHeadingSetpointSet);
+        if (keepHeadingSetpointSet) {
+            rotationRadPerSec = Rotation2d.fromDegrees(keepHeadingPid.calculate(yawDeg)).getRadians();
+            request.withRotationalRate(rotationRadPerSec);
+        }
+        
 
         // Test driving with this in and see how it feels.
         ChassisSpeeds speeds = ChassisSpeeds.discretize(request.VelocityX, request.VelocityY, request.RotationalRate, 0.02);

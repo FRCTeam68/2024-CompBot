@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.function.Function;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -36,8 +38,37 @@ public final class Constants {
     }
 
     public static RobotType getRobot() {
-    return robotType;
-  }
+        return robotType;
+    }
+
+    public static double STICK_DEADBAND = 0.08;
+
+    // public static final Function<Double, Double> inputCurve = (x) -> x;
+    public static final Function<Double, Double> inputCurve = (x) -> .8 * x + .2 * (x * x * x);
+
+    public static final class Swerve {
+        /* DriveSubsystem Profiling Values */
+        /** Meters per Second */
+        public static final double MAX_SPEED = 5.2; // TODO: This must be tuned to specific robot
+        /**
+         * Radians per Second
+         *
+         * <p>Can likely be figured out using an equation. Or we can just tornado spin it and see
+         * what happens.
+         *
+         * <p>public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND =
+         * MAX_VELOCITY_METERS_PER_SECOND / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+         * DRIVETRAIN_WHEELBASE_METERS / 2.0);
+         *
+         * <p>Assuming our robot can still go at 4.6 meters per second (which it can't, this value
+         * was taken when we had like nothing on our robot, we can go
+         * 10.348178456877813130498318828226534894488969421353632604171 radians per second while
+         * spinning
+         */
+        //  5.2 m/s  / sqrt((9.75in + 11.25in)),  5.2 / sqrt(0.5334m) = 7.12 rad/s = 387 deg/s
+        // what do realword measuremest say ???
+        public static final double MAX_ANGULAR_VELOCITY = 7.12; // TODO: This must be tuned to specific robot
+    }
 
     public static final class LED {
         public static final int PWMPORT = 0;

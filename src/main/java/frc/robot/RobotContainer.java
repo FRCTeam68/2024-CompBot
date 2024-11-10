@@ -37,7 +37,7 @@ import frc.robot.commands.*;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // Initial max is true top speed
-  private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+  private double MaxAngularRate = Constants.Swerve.MAX_ANGULAR_VELOCITY; // old: 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController m_xboxController = new CommandXboxController(0); // drive controller
