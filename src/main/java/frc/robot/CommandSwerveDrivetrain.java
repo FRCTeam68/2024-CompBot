@@ -78,7 +78,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             this::seedFieldRelative,  // Consumer for seeding pose against auto
             this::getCurrentRobotChassisSpeeds,
             (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
-            new HolonomicPathFollowerConfig(new PIDConstants(10, 0, 0),
+            new HolonomicPathFollowerConfig(new PIDConstants(10, 0.1, .05),
                                             new PIDConstants(5, 0, 0),
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
@@ -141,15 +141,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public void setCurrentLimits(){
-        this.getModule(0).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
-        this.getModule(1).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
-        this.getModule(2).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
-        this.getModule(3).getDriveMotor().getConfigurator().refresh(TunerConstants.driveConfig);
+        this.getModule(0).getDriveMotor().getConfigurator().apply(TunerConstants.driveLimit);
+        this.getModule(1).getDriveMotor().getConfigurator().apply(TunerConstants.driveLimit);
+        this.getModule(2).getDriveMotor().getConfigurator().apply(TunerConstants.driveLimit);
+        this.getModule(3).getDriveMotor().getConfigurator().apply(TunerConstants.driveLimit);
 
-        this.getModule(0).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
-        this.getModule(1).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
-        this.getModule(2).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
-        this.getModule(3).getSteerMotor().getConfigurator().refresh(TunerConstants.steerConfig);
+        this.getModule(0).getSteerMotor().getConfigurator().apply(TunerConstants.steerLimit);
+        this.getModule(1).getSteerMotor().getConfigurator().apply(TunerConstants.steerLimit);
+        this.getModule(2).getSteerMotor().getConfigurator().apply(TunerConstants.steerLimit);
+        this.getModule(3).getSteerMotor().getConfigurator().apply(TunerConstants.steerLimit);
     
         
     }

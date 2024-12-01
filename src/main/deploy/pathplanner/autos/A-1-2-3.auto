@@ -50,7 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp -  Amp Note"
+            "pathName": "A-1"
           }
         },
         {
@@ -86,7 +86,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp Note -  Center"
+            "pathName": "1-2"
           }
         },
         {
@@ -122,7 +122,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center - Source Note"
+            "pathName": "2-3"
           }
         },
         {

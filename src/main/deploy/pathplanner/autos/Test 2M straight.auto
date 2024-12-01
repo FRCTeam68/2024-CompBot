@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7531929553170285,
-      "y": 4.397140955802102
+      "x": 0.5,
+      "y": 4.0
     },
-    "rotation": -61.78264414527071
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -32,25 +32,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "S-M5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "M5-Shoot3"
+            "waitTime": 0.4
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "intake"
           }
         },
         {
@@ -62,19 +50,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot3-M4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "M4-Shoot3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
+            "pathName": "Straight_2M"
           }
         }
       ]

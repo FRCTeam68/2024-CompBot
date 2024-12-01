@@ -3,51 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7531929553170285,
-        "y": 4.397140955802102
+        "x": 8.06,
+        "y": 0.76
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0749349764732798,
-        "y": 3.8121554627907357
+        "x": 4.599753814892247,
+        "y": 0.7992223676755058
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.4,
-        "y": 0.62
+        "x": 1.8666106562982372,
+        "y": 3.5224985834587055
       },
       "prevControl": {
-        "x": 7.273069844704858,
-        "y": 0.6303248314949224
+        "x": 4.234676930892325,
+        "y": 0.8682909673511654
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.75,
-      "rotationDegrees": 0.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Start Intake",
-      "waypointRelativePos": 0.35,
+      "name": "target",
+      "waypointRelativePos": 0.25,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
-                "name": "intake"
+                "name": "target_speaker_podium_source"
               }
             }
           ]
@@ -56,20 +50,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 7.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
-    "rotateFast": true
+    "rotation": -50.47736872882879,
+    "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -59.90678339857099,
+    "rotation": 0,
     "velocity": 0
   },
   "useDefaultConstraints": false

@@ -185,9 +185,9 @@ public class RobotContainer {
     m_xboxController.pov(180).whileTrue(m_DriveSubSystem.drive(
       () -> drive.withVelocityX(-lastSpeed).withVelocityY(0).withRotationalRate(0),m_xboxController));
     m_xboxController.pov(90).whileTrue(m_DriveSubSystem.drive(
-      () -> drive.withVelocityX(0).withVelocityY(lastSpeed).withRotationalRate(0),m_xboxController));
-    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.drive(
       () -> drive.withVelocityX(0).withVelocityY(-lastSpeed).withRotationalRate(0),m_xboxController));
+    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.drive(
+      () -> drive.withVelocityX(0).withVelocityY(lastSpeed).withRotationalRate(0),m_xboxController));
 
 
     m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));
