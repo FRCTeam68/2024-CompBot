@@ -180,7 +180,7 @@ public class TunerConstants {
     public static final CommandSwerveDrivetrain DriveTrain = new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft,
             FrontRight, BackLeft, BackRight);
 
-public static CurrentLimitsConfigs driveLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(120)
+public static CurrentLimitsConfigs driveLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(60)
                                                                           .withStatorCurrentLimitEnable(true);
 public static CurrentLimitsConfigs steerLimit = new CurrentLimitsConfigs().withStatorCurrentLimit(40)
                                                                           .withStatorCurrentLimitEnable(true);
