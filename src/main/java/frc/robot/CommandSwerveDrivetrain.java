@@ -149,7 +149,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         rotationRadPerSec = request.RotationalRate;
         yawDeg = getPigeon2().getYaw().getValue();
         
-        Logger.recordOutput("Swerve/RotRateCmd", rotationRadPerSec);
+        Logger.recordOutput("Swerve/RotRateInput", rotationRadPerSec);
         Logger.recordOutput("Swerve/yawRad", yawDeg);
 
         if (rotationRadPerSec != 0) {
@@ -167,6 +167,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             rotationRadPerSec = Rotation2d.fromDegrees(keepHeadingPid.calculate(yawDeg)).getRadians();
             request.withRotationalRate(rotationRadPerSec);
         }
+        Logger.recordOutput("Swerve/RotRateCmd", rotationRadPerSec);
         
 
         // Test driving with this in and see how it feels.
