@@ -87,15 +87,15 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    if (UseLimelight) {    
-      var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
+    // if (UseLimelight) {    
+    //   var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
 
-      Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
+    //   Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
 
-      if (lastResult.valid) {
-        m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
-      }
-    }
+    //   if (lastResult.valid) {
+    //     m_robotContainer.m_DriveSubSystem.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
+    //   }
+    // }
 
     CANBusStatus canInfo = CANBus.getStatus("DRIVEbus");
     Logger.recordOutput("CANBUS/DRIVEbus/Util", canInfo.BusUtilization);
