@@ -153,7 +153,7 @@ public class RobotContainer {
     speedPick.onTrue(Commands.runOnce(() -> newSpeed()));
     
     m_DriveSubSystem.setDefaultCommand( // Drivetrain will execute this command periodically
-        m_DriveSubSystem.drive(() -> drive.withVelocityX(-m_xboxController.getLeftY() * MaxSpeed) // Drive forward with
+        m_DriveSubSystem.drive(() -> forwardStraight.withVelocityX(-m_xboxController.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(-m_xboxController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(-m_xboxController.getRightX() * MaxAngularRate)
@@ -180,14 +180,14 @@ public class RobotContainer {
     //use to isolate drive straigh forward, left, back, right
     //use selectable speed on dashboard test driving slower
     //using drive() so that discretize() is used.   Does this fix drifting?????
-    m_xboxController.pov(0).whileTrue(m_DriveSubSystem.drive(
-      () -> drive.withVelocityX(lastSpeed).withVelocityY(0).withRotationalRate(0),m_xboxController));
-    m_xboxController.pov(180).whileTrue(m_DriveSubSystem.drive(
-      () -> drive.withVelocityX(-lastSpeed).withVelocityY(0).withRotationalRate(0),m_xboxController));
-    m_xboxController.pov(90).whileTrue(m_DriveSubSystem.drive(
-      () -> drive.withVelocityX(0).withVelocityY(-lastSpeed).withRotationalRate(0),m_xboxController));
-    m_xboxController.pov(270).whileTrue(m_DriveSubSystem.drive(
-      () -> drive.withVelocityX(0).withVelocityY(lastSpeed).withRotationalRate(0),m_xboxController));
+    // m_xboxController.pov(0).whileTrue(m_DriveSubSystem.drive(
+    //   () -> drive.withVelocityX(lastSpeed).withVelocityY(0).withRotationalRate(0),m_xboxController));
+    // m_xboxController.pov(180).whileTrue(m_DriveSubSystem.drive(
+    //   () -> drive.withVelocityX(-lastSpeed).withVelocityY(0).withRotationalRate(0),m_xboxController));
+    // m_xboxController.pov(90).whileTrue(m_DriveSubSystem.drive(
+    //   () -> drive.withVelocityX(0).withVelocityY(-lastSpeed).withRotationalRate(0),m_xboxController));
+    // m_xboxController.pov(270).whileTrue(m_DriveSubSystem.drive(
+    //   () -> drive.withVelocityX(0).withVelocityY(lastSpeed).withRotationalRate(0),m_xboxController));
 
 
     m_xboxController.y().onTrue(Commands.runOnce(()->m_NoteSubSystem.setTarget(Target.SPEAKER_PODIUM)));

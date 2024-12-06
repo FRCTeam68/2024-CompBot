@@ -110,7 +110,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             this); // Subsystem for requirements
     }
 
-    public Command drive(Supplier<SwerveRequest.FieldCentric> requestSupplier, CommandXboxController xboxController) { 
+    public Command drive(Supplier<SwerveRequest.RobotCentric> requestSupplier, CommandXboxController xboxController) { 
         return run(() -> this.actuallyDrive(requestSupplier.get(), xboxController));
     }
 
@@ -123,7 +123,46 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new PathPlannerAuto(pathName);
     }
 
-    public void actuallyDrive(SwerveRequest.FieldCentric request,CommandXboxController xboxController) {
+    // simple proportional turning control with Limelight.
+    // "proportional control" is a control algorithm in which the output is proportional to the error.
+    // in this case, we are going to return an angular velocity that is proportional to the 
+    // "tx" value from the Limelight.
+    double limelight_aim_proportional()
+    {    
+        // kP (constant of proportionality)
+        // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
+        // if it is too high, the robot will oscillate.
+        // if it is too low, the robot will never reach its target
+        // if the robot never turns in the correct direction, kP should be inverted.
+        double kP = .035;
+
+        // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
+        // your limelight 3 feed, tx should return roughly 31 degrees.
+        double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
+
+        // convert to radians per second for our drive method
+        targetingAngularVelocity *= Constants.Swerve.MAX_ANGULAR_VELOCITY;
+
+        //invert since tx is positive when the target is to the right of the crosshair
+        targetingAngularVelocity *= -1.0;
+
+        return targetingAngularVelocity;
+    }
+
+    // simple proportional ranging control with Limelight's "ty" value
+    // this works best if your Limelight's mount height and target mount height are different.
+    // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging rather than "ty"
+    double limelight_range_proportional()
+    {    
+        double kP = .1;
+        double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
+        targetingForwardSpeed *= Constants.Swerve.MAX_SPEED;
+        targetingForwardSpeed *= -1.0;
+        return targetingForwardSpeed;
+    }
+
+
+    public void actuallyDrive(SwerveRequest.RobotCentric request,CommandXboxController xboxController) {
      
         /*
         if (xboxController.y().getAsBoolean()) // When Y is pressed Hopefully you will lock onto Fiscal Target 8.
@@ -144,34 +183,53 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         */
 
         double rotationRadPerSec;
-        double yawDeg;
+        // double yawDeg;
 
+        // rotationRadPerSec = request.RotationalRate;
+        // yawDeg = getPigeon2().getYaw().getValue();
+        
+        // Logger.recordOutput("Swerve/RotRateInput", rotationRadPerSec);
+        // Logger.recordOutput("Swerve/yawRad", yawDeg);
+
+        // if (rotationRadPerSec != 0) {
+        //     lastTurnCommandSeconds = Timer.getFPGATimestamp();
+        //     keepHeadingSetpointSet = false;
+        // }
+        // if (lastTurnCommandSeconds + .5 <= Timer.getFPGATimestamp()
+        //         && !keepHeadingSetpointSet) { // If it has been at least .5 seconds.
+        //     keepHeadingPid.setSetpoint(yawDeg);
+        //     keepHeadingSetpointSet = true;
+        // }
+        
+        // Logger.recordOutput("Swerve/KeepHeading", keepHeadingSetpointSet);
+        // if (keepHeadingSetpointSet) {
+        //     rotationRadPerSec = Rotation2d.fromDegrees(keepHeadingPid.calculate(yawDeg)).getRadians();
+        //     request.withRotationalRate(rotationRadPerSec);
+        // }
+        // Logger.recordOutput("Swerve/RotRateCmd", rotationRadPerSec);
+
+        var xSpeed = request.VelocityX;
+        var ySpeed = request.VelocityY;
         rotationRadPerSec = request.RotationalRate;
-        yawDeg = getPigeon2().getYaw().getValue();
-        
-        Logger.recordOutput("Swerve/RotRateInput", rotationRadPerSec);
-        Logger.recordOutput("Swerve/yawRad", yawDeg);
+        var llAim = xboxController.y().getAsBoolean();
 
-        if (rotationRadPerSec != 0) {
-            lastTurnCommandSeconds = Timer.getFPGATimestamp();
-            keepHeadingSetpointSet = false;
-        }
-        if (lastTurnCommandSeconds + .5 <= Timer.getFPGATimestamp()
-                && !keepHeadingSetpointSet) { // If it has been at least .5 seconds.
-            keepHeadingPid.setSetpoint(yawDeg);
-            keepHeadingSetpointSet = true;
-        }
+            // while the A-button is pressed, overwrite some of the driving values with the output of our limelight methods
+        if(llAim)
+         {
+            final var rot_limelight = limelight_aim_proportional();
+            rotationRadPerSec = rot_limelight;
+
+            final var forward_limelight = limelight_range_proportional();
+            xSpeed = forward_limelight;
+         }
         
-        Logger.recordOutput("Swerve/KeepHeading", keepHeadingSetpointSet);
-        if (keepHeadingSetpointSet) {
-            rotationRadPerSec = Rotation2d.fromDegrees(keepHeadingPid.calculate(yawDeg)).getRadians();
-            request.withRotationalRate(rotationRadPerSec);
-        }
-        Logger.recordOutput("Swerve/RotRateCmd", rotationRadPerSec);
-        
+         Logger.recordOutput("Swerve/LLaim", llAim);   
+        Logger.recordOutput("Swerve/LLrot", rotationRadPerSec);
+        Logger.recordOutput("Swerve/LLXspeed", xSpeed);
+        Logger.recordOutput("Swerve/Yspeed", ySpeed);
 
         // Test driving with this in and see how it feels.
-        ChassisSpeeds speeds = ChassisSpeeds.discretize(request.VelocityX, request.VelocityY, request.RotationalRate, 0.02);
+        ChassisSpeeds speeds = ChassisSpeeds.discretize(xSpeed, ySpeed, rotationRadPerSec, 0.02);
 
         this.setControl(request.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond).withRotationalRate(speeds.omegaRadiansPerSecond));
     }
