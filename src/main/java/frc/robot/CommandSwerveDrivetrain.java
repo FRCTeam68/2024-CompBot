@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Vision;
 import edu.wpi.first.math.controller.PIDController;
@@ -127,18 +128,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     // "proportional control" is a control algorithm in which the output is proportional to the error.
     // in this case, we are going to return an angular velocity that is proportional to the 
     // "tx" value from the Limelight.
-    double limelight_aim_proportional()
+    double limelight_aim_proportional(double tx)
     {    
         // kP (constant of proportionality)
         // this is a hand-tuned number that determines the aggressiveness of our proportional control loop
         // if it is too high, the robot will oscillate.
         // if it is too low, the robot will never reach its target
         // if the robot never turns in the correct direction, kP should be inverted.
-        double kP = .035;
+        double kP = 0.01;  //.035;
 
         // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
         // your limelight 3 feed, tx should return roughly 31 degrees.
-        double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
+        double targetingAngularVelocity = tx * kP;
 
         // convert to radians per second for our drive method
         targetingAngularVelocity *= Constants.Swerve.MAX_ANGULAR_VELOCITY;
@@ -152,13 +153,21 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     // simple proportional ranging control with Limelight's "ty" value
     // this works best if your Limelight's mount height and target mount height are different.
     // if your limelight and target are mounted at the same or similar heights, use "ta" (area) for target ranging rather than "ty"
-    double limelight_range_proportional()
+    double limelight_range_drive(double stopAngle)
     {    
-        double kP = .1;
-        double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
-        targetingForwardSpeed *= Constants.Swerve.MAX_SPEED;
-        targetingForwardSpeed *= -1.0;
-        return targetingForwardSpeed;
+        // double kP = .05;
+        double targetAngle = LimelightHelpers.getTY("limelight");
+
+        if(targetAngle<0){
+            //crosshair is above target, giving a negative TY, so invert it so robot will drive forward
+            targetAngle = -1.0;
+        }
+        else if(targetAngle < stopAngle)  //30 is for AMP target.  17 for speaker
+        {
+            // targetingForwardSpeed *= Constants.Swerve.MAX_SPEED;
+            targetAngle = -1.0;
+        }
+        return targetAngle;
     }
 
 
@@ -211,19 +220,39 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         var xSpeed = request.VelocityX;
         var ySpeed = request.VelocityY;
         rotationRadPerSec = request.RotationalRate;
-        var llAim = xboxController.y().getAsBoolean();
+        var llAim = xboxController.x().getAsBoolean();
+        var targetCount = LimelightHelpers.getTargetCount("limelight");
+        double stopThreshold = 0;
 
             // while the A-button is pressed, overwrite some of the driving values with the output of our limelight methods
-        if(llAim)
-         {
-            final var rot_limelight = limelight_aim_proportional();
-            rotationRadPerSec = rot_limelight;
+        if(llAim && targetCount>0)
+        {
+            int i;
+            RawFiducial fid[] = LimelightHelpers.getRawFiducials("limelight");
 
-            final var forward_limelight = limelight_range_proportional();
-            xSpeed = forward_limelight;
-         }
+            for (i = 0; i < fid.length; i++) {
+                if (fid[i].id == 5){    //amp
+                    stopThreshold = 30;
+                    break;
+                }
+                else if (fid[i].id == 4){    //speaker
+                    stopThreshold = 17;
+                    break;
+                }
+
+            }
+            if (stopThreshold != 0){
+                final var rot_limelight = limelight_aim_proportional(fid[i].txnc);
+                rotationRadPerSec = rot_limelight;
+
+                final var forward_limelight = limelight_range_drive(stopThreshold);
+                xSpeed = forward_limelight;
+            }
+        }
         
-         Logger.recordOutput("Swerve/LLaim", llAim);   
+        Logger.recordOutput("Swerve/stopThreshold", stopThreshold);   
+        Logger.recordOutput("Swerve/LLaim", llAim);   
+        Logger.recordOutput("Swerve/LLaim", llAim);   
         Logger.recordOutput("Swerve/LLrot", rotationRadPerSec);
         Logger.recordOutput("Swerve/LLXspeed", xSpeed);
         Logger.recordOutput("Swerve/Yspeed", ySpeed);
