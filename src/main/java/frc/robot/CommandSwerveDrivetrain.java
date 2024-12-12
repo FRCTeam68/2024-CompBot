@@ -35,6 +35,7 @@ import frc.robot.subsystems.Vision;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem
@@ -135,7 +136,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // if it is too high, the robot will oscillate.
         // if it is too low, the robot will never reach its target
         // if the robot never turns in the correct direction, kP should be inverted.
-        double kP = 0.01;  //.035;
+        double kP = 0.015;  //.035;
 
         // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
         // your limelight 3 feed, tx should return roughly 31 degrees.
@@ -157,17 +158,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     {    
         // double kP = .05;
         double targetAngle = LimelightHelpers.getTY("limelight-shoot");
+        double targetDriveSpeed = 0;
 
         if(targetAngle<0){
             //crosshair is above target, giving a negative TY, so invert it so robot will drive forward
-            targetAngle = -1.0;
+            targetDriveSpeed = -1.0;
         }
         else if(targetAngle < stopAngle)  //30 is for AMP target.  17 for speaker
         {
             // targetingForwardSpeed *= Constants.Swerve.MAX_SPEED;
-            targetAngle = -1.0;
+            targetDriveSpeed = -1.0;
         }
-        return targetAngle;
+        return targetDriveSpeed;
     }
 
 
