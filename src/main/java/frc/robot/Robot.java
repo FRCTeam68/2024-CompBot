@@ -88,7 +88,7 @@ public class Robot extends LoggedRobot {
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
     // if (UseLimelight) {    
-    //   var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
+    //   var lastResult = LimelightHelpers.getLatestResults("limelight-shoot").targetingResults;
 
     //   Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
 

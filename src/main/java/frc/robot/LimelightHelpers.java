@@ -583,7 +583,7 @@ public class LimelightHelpers {
 
     static final String sanitizeName(String name) {
         if (name == "" || name == null) {
-            return "limelight";
+            return "limelight-shoot";
         }
         return name;
     }

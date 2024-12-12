@@ -156,7 +156,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     double limelight_range_drive(double stopAngle)
     {    
         // double kP = .05;
-        double targetAngle = LimelightHelpers.getTY("limelight");
+        double targetAngle = LimelightHelpers.getTY("limelight-shoot");
 
         if(targetAngle<0){
             //crosshair is above target, giving a negative TY, so invert it so robot will drive forward
@@ -221,14 +221,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         var ySpeed = request.VelocityY;
         rotationRadPerSec = request.RotationalRate;
         var llAim = xboxController.x().getAsBoolean();
-        var targetCount = LimelightHelpers.getTargetCount("limelight");
+        var targetCount = LimelightHelpers.getTargetCount("limelight-shoot");
         double stopThreshold = 0;
 
             // while the A-button is pressed, overwrite some of the driving values with the output of our limelight methods
         if(llAim && targetCount>0)
         {
             int i;
-            RawFiducial fid[] = LimelightHelpers.getRawFiducials("limelight");
+            RawFiducial fid[] = LimelightHelpers.getRawFiducials("limelight-shoot");
 
             for (i = 0; i < fid.length; i++) {
                 if (fid[i].id == 5){    //amp

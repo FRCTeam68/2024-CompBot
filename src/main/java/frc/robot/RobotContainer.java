@@ -117,6 +117,9 @@ public class RobotContainer {
 
     // setupPidTuningCommandShuffleboard();
 
+    int[] validIDs = {5,4};
+    LimelightHelpers.SetFiducialIDFiltersOverride("limelight-shoot", validIDs);
+
 
     // Put subsystems to dashboard.
     Shuffleboard.getTab("NoteSubsystem").add(m_NoteSubSystem);
